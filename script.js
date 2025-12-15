@@ -1,273 +1,23 @@
 // =========================
-// CONFIGURAÇÃO GLOBAL
+// CONFIGURAÇÕES GLOBAIS
 // =========================
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 // =========================
-// DADOS DO SITE
+// NOTIFICAÇÕES (TOAST)
 // =========================
-const siteData = {
-  servicos: [
-    {
-      id: "s1",
-      title: "Web Apps e PWAs",
-      desc: "Sistemas web progressivos (PWAs) de alta performance e usabilidade.",
-      img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      info: {
-        title: "PWAs & Web Apps",
-        desc: "Desenvolvemos aplicações web com performance nativa, prontas para funcionar offline e com excelentes métricas de Core Web Vitals.",
-        demoLink: "projetos-principais/projeto-pwa-educacao.html"
-      }
-    },
-    {
-      id: "s2",
-      title: "Avatares & Consultores IA",
-      desc: "Assistentes conversacionais e personagens digitais para vendas e suporte 24/7.",
-      img: "https://plus.unsplash.com/premium_photo-1733266868412-cfc2ac17b497?q=80&w=1278&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      info: {
-        title: "Consultoria de IA",
-        desc: "Desenvolvemos e integramos modelos de linguagem (LLMs) em assistentes virtuais 3D ou textuais, focando em tarefas de alta complexidade como análise jurídica ou suporte técnico especializado."
-      }
-    },
-    {
-      id: "s3",
-      title: "Automações RPA e Scripts",
-      desc: "Otimização de rotinas de negócio (e-mail, planilhas, dados) com *bots* inteligentes.",
-      img: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      info: {
-        title: "Robotic Process Automation (RPA)",
-        desc: "Implementamos *bots* para tarefas repetitivas. Integração com APIs externas (ex: CRM, ERP) para fluidez operacional e redução de erros humanos."
-      }
-    },
-    {
-      id: "s4",
-      title: "Modelagem 3D e Experiências",
-      desc: "Visualizações interativas, realidade aumentada (AR) e modelos de produto 3D para e-commerce e arquitetura.",
-      img: "https://plus.unsplash.com/premium_photo-1718198501772-53cc7b846403?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      info: {
-        title: "3D para Web e AR",
-        desc: "Criação e otimização de modelos 3D (GLTF/GLB) para exibição em tempo real na web, utilizando Three.js e WebGL. Ideal para configuradores de produto e tour virtual."
-      }
-    },
-    {
-      id: "s5",
-      title: "Sistemas e Dashboards",
-      desc: "Backends escaláveis, APIs robustas e painéis de análise de dados em tempo real.",
-      img: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=806&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      info: {
-        title: "Sistemas & Dashboards",
-        desc: "Construímos backends escaláveis, painéis analíticos e integrações em tempo real para tomada de decisão. Boa prática de observability e deploy automatizado."
-      }
-    },
-    {
-      id: "s6",
-      title: "Conteúdo & SEO Técnico",
-      desc: "Estratégias de conteúdo para IA, SEO de alta performance e copywriting.",
-      img: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=1200&q=60&auto=format&fit=crop",
-      info: {
-        title: "Estratégia de Conteúdo",
-        desc: "Conteúdo otimizado para motores de busca e para modelos de linguagem. Estrutura técnica (schema markup, performance) para máxima visibilidade."
-      }
-    }
-  ],
-
-  portfolioSlides: [
-    {
-      title: "PWA Educacional com Gamificação",
-      desc: "Plataforma de EAD de alta performance. Implementação de sistema de recompensas, trilhas personalizadas e IA para resumo de conteúdo.",
-      img: "https://images.unsplash.com/photo-1763107228544-2ad5d71c21f0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fHRlY2hub2xvZ3klMjBhcHB8ZW58MHx8MHx8fDA%3D",
-      projectId: "ead-pwa"
-    },
-    {
-      title: "Consultor 3D de Vendas",
-      desc: "Avatar interativo com IA generativa para suporte ao cliente e vendas complexas, integrado ao CRM. Redução de 40% no tempo de atendimento.",
-      img: "https://www.operacionesbinarias.org/wp-content/uploads/2023/10/Soluciones-avanzadas-de-soporte-tecnico-con-Inteligencia-Artificial.jpg",
-      projectId: "3d-avatar"
-    },
-    {
-      title: "Dashboard de Observabilidade em Tempo Real",
-      desc: "Painel analítico customizado com alertas e visualizações 3D para monitoramento de servidores e processos de logística.",
-      img: "https://plus.unsplash.com/premium_photo-1682147575923-d35d333704b5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8RGFzaGJvYXJkJTIwZGUlMjBPYnNlcnZhYmlsaWRhZGUlMjBlbSUyMFRlbXBvJTIwUmVhbCUyMFBhaW5lbCUyMGFuYWwlQzMlQUR0aWNvJTIwY3VzdG9taXphZG8lMjBjb20lMjBhbGVydGFzJTIwZSUyMHZpc3VhbGl6YSVDMyVBNyVDMyVCNWVzJTIwM0QlMjBwYXJhJTIwbW9uaXRvcmFtZW50byUyMGQlMjBzZXJ2aWRvcmVzJTIwZSUyMHByb2Nlc3NvcyUyMGQlMjBsb2clQzMlQURzdGljYS58ZW58MHx8MHx8fDA%3D",
-      projectId: "obs-dashboard"
-    }
-  ],
-
-  cases: [
-    {
-      id: "case-academy",
-      title: "AHA Academy",
-      desc: "Redesenho da plataforma educacional com gamificação, PWA e testes A/B. +300% de engajamento em 3 meses.",
-      img: "https://tse1.mm.bing.net/th/id/OIP.q2slyWqO82eveiHG8EmsMQHaEk?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
-      info: "Implementação de design system, arquitetura de PWA e trilhas de gamificação. Foco em retenção e performance."
-    },
-    {
-      id: "case-santuario",
-      title: "Santuário Emocional",
-      desc: "Aplicativo de bem-estar com diários e rituais. Uso de animações imersivas para retenção.",
-      img: "https://play-lh.googleusercontent.com/5M8qQxm-whmrGgcx4-vJ_iO4OyKaU-8u2n3ntEyRJo1QGnzdcmfRJQXn-clj9Noljg",
-      info: "Desenvolvimento focado em UX, com métricas de engajamento. Plataforma pronta para escalabilidade global."
-    },
-    {
-      id: "case-fashion",
-      title: "E-commerce Fashion",
-      desc: "Plataforma de moda com visualizador 3D de produtos. +40% em conversões em 2 meses.",
-      img: "https://static.wixstatic.com/media/53407e_e3d11174eec344a996b1d5b65f15ca30~mv2.jpg/v1/fill/w_980,h_465,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/COMO%20FUNCIONA%20FASHION%203D%20STUDIO%203.jpg",
-      info: "Implementação de visualizador 3D e realidade aumentada para produtos de moda. Integração com CRM e analytics."
-    }
-  ],
-
-  faq: [
-    {
-      q: "faq_q_1",
-      a: "faq_a_1"
-    },
-    {
-      q: "faq_q_2",
-      a: "faq_a_2"
-    },
-    {
-      q: "faq_q_3",
-      a: "faq_a_3"
-    },
-    {
-      q: "faq_q_4",
-      a: "faq_a_4"
-    },
-    {
-      q: "faq_q_5",
-      a: "faq_a_5"
-    },
-    {
-      q: "faq_q_6",
-      a: "faq_a_6"
-    }
-  ],
-
-  tecnologias: [
-    {
-      id: "tech-react",
-      title: "React / Next.js / PWAs",
-      desc: "Frontend modular e performático.",
-      img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=60&auto=format&fit=crop",
-      info: {
-        title: "React & Next.js",
-        desc: "Bibliotecas modernas para interfaces dinâmicas e Single Page Applications (SPAs). Focamos em Server-Side Rendering (SSR) e Static Site Generation (SSG) para performance máxima."
-      }
-    },
-    {
-      id: "tech-fastapi",
-      title: "Python / FastAPI",
-      desc: "APIs rápidas e eficientes para serviços de IA.",
-      img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=60&auto=format&fit=crop",
-      info: {
-        title: "FastAPI",
-        desc: "APIs rápidas com validação automática e documentação integrada. Excelente para serviços de ML e integrações em tempo real."
-      }
-    },
-    {
-      id: "tech-supabase",
-      title: "Supabase / PostgreSQL",
-      desc: "Auth, realtime e banco relacional.",
-      img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=60&auto=format&fit=crop",
-      info: {
-        title: "Supabase & Postgres",
-        desc: "Auth, realtime e storage prontos para uso. Usamos como backend leve para MVPs e serviços com baixa latência."
-      }
-    },
-    {
-      id: "tech-design",
-      title: "Tailwind / Design System",
-      desc: "Componentes reutilizáveis e temas.",
-      img: "https://images.unsplash.com/photo-1581093588401-2f5b12666f8f?w=1200&q=60&auto=format&fit=crop",
-      info: {
-        title: "Design Systems",
-        desc: "Usamos uma arquitetura de design token para garantir consistência visual e fácil customização, acelerando o desenvolvimento e a manutenção."
-      }
-    }
-  ],
-
-  assistentes: [
-    {
-      id: "ai-marketing",
-      title: "AI Marketing & Conteúdo",
-      desc: "Criação de copies e fluxos de email marketing.",
-      img: "https://tse1.mm.bing.net/th/id/OIP.R9WMePBScBC_hE4NO1mPQQHaE8?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
-      info: {
-        title: "Assistente de Marketing",
-        desc: "Criação de fluxos de e-mail marketing personalizados para nutrição e conversão com métricas integradas."
-      }
-    },
-    {
-      id: "ai-nutricao",
-      title: "AI Nutrição & Saúde",
-      desc: "Plano de refeições otimizado baseado em dados do cliente e recomendações.",
-      img: "https://img.cancaonova.com/cnimages/canais/uploads/sites/6/2017/03/formacao_a-nutricao-considera-o-alimento-um-remedio-para-a-saude.jpg",
-      info: {
-        title: "Assistente de Nutrição",
-        desc: "Criação de fluxos de e-mail marketing personalizados para nutrição e conversão com métricas integradas."
-      }
-    }
-  ],
-
-  produtos: [
-    {
-      id: "prod-pwa",
-      title: "Template PWA de Vendas",
-      desc: "PWA pronto para e-commerce ou catálogos digitais.",
-      img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=60&auto=format&fit=crop",
-      info: {
-        title: "Template PWA",
-        desc: "Um esqueleto de PWA otimizado, com rotas, cache e manifest configurados. Reduza o tempo de desenvolvimento em 30%."
-      }
-    },
-    {
-      id: "prod-dashboard",
-      title: "Dashboard 3D",
-      desc: "Visualizações interativas para decisões rápidas.",
-      img: "https://img.freepik.com/premium-photo/web-dashboard-portfolio-analysis-dashboard-with-portfolio-analysis-tools-concept-idea-design-art_655090-978645.jpg",
-      info: {
-        title: "Dashboard 3D",
-        desc: "Visualizações 3D integradas a dados em tempo real, ideais para operações que precisam identificar padrões rapidamente."
-      }
-    }
-  ],
-
-  blog: [
-    {
-      title: "Como migrar para FastAPI em 2025",
-      desc: "Guia prático — performance e async.",
-      link: "#artigo1"
-    },
-    {
-      title: "Design Systems: O que são e por que usar",
-      desc: "Consistência e escalabilidade visual.",
-      link: "#artigo2"
-    },
-    {
-      title: "WCAG e Acessibilidade: Checklist para Devs",
-      desc: "Otimizando a experiência para todos.",
-      link: "#artigo3"
-    }
-  ]
-};
-
-// =========================
-// FUNÇÕES UTILITÁRIAS
-// =========================
-
-/**
- * Mostra notificação toast
- */
 function showToast(message, type = 'success') {
   const existingToast = $('.toast-notification');
   if (existingToast) existingToast.remove();
 
   const toast = document.createElement('div');
-  toast.className = `toast-notification`;
+  toast.className = 'toast-notification';
   toast.setAttribute('role', 'status');
   toast.setAttribute('aria-live', 'polite');
   toast.setAttribute('aria-atomic', 'true');
+  
+  // Estilos inline para performance
   toast.style.cssText = `
     position: fixed;
     left: 50%;
@@ -275,17 +25,21 @@ function showToast(message, type = 'success') {
     bottom: 120px;
     background: ${type === 'error' ? '#ef4444' : '#10b981'};
     color: white;
-    padding: 16px 24px;
+    padding: 12px 20px;
     border-radius: 12px;
     z-index: 9999;
     font-weight: 600;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     animation: toastIn 0.3s ease;
     max-width: 90vw;
     text-align: center;
+    font-size: 14px;
   `;
+  
   toast.textContent = message;
   document.body.appendChild(toast);
+  
+  // Remove após 3 segundos
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transform = 'translateX(-50%) translateY(20px)';
@@ -293,21 +47,37 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
-/**
- * Gerenciamento de foco para acessibilidade
- */
+// Animação CSS para toast
+const toastStyle = document.createElement('style');
+toastStyle.textContent = `
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+`;
+document.head.appendChild(toastStyle);
+
+// =========================
+// GERENCIAMENTO DE FOCO (ACESSIBILIDADE)
+// =========================
 let _trapHandler = null;
 let _lastFocusedElement = null;
 
 function trapFocus(container) {
-  const focusable = container.querySelectorAll('a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+  const focusable = container.querySelectorAll(
+    'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  );
   if (!focusable.length) return;
 
-  const first = focusable[0], last = focusable[focusable.length - 1];
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  
+  // Salva o elemento com foco antes de abrir
   _lastFocusedElement = document.activeElement;
 
   _trapHandler = function (e) {
     if (e.key !== 'Tab') return;
+    
     if (e.shiftKey && document.activeElement === first) {
       e.preventDefault();
       last.focus();
@@ -316,6 +86,7 @@ function trapFocus(container) {
       first.focus();
     }
   };
+  
   document.addEventListener('keydown', _trapHandler);
 }
 
@@ -324,6 +95,8 @@ function releaseFocusTrap() {
     document.removeEventListener('keydown', _trapHandler);
     _trapHandler = null;
   }
+  
+  // Restaura foco ao elemento anterior
   if (_lastFocusedElement) {
     _lastFocusedElement.focus();
     _lastFocusedElement = null;
@@ -331,191 +104,112 @@ function releaseFocusTrap() {
 }
 
 // =========================
-// MANIPULAÇÃO DO DOM
+// NAVEGAÇÃO MOBILE
 // =========================
+const hamburgerBtn = $('#hamburgerBtn');
+const closeMobileNav = $('#closeMobileNav');
+const mobileNav = $('#mobileNav');
 
-/**
- * Cria um card de serviço
- */
-function createServiceCard(service, isMobile = false) {
-  return `
-    <article class="card" role="listitem" aria-labelledby="${service.id}">
-      <img class="card-thumb" src="${service.img}" alt="${service.title}" loading="lazy">
-      <h4 id="${service.id}">${service.title}</h4>
-      <p class="muted">${service.desc}</p>
-      <div class="card-actions">
-        <a href="#" class="saiba-mais" data-topic="${service.id}" aria-expanded="false" 
-           aria-controls="info-${service.id}">Saiba mais →</a>
-      </div>
-      <div class="info-card" id="info-${service.id}" data-topic="${service.id}" aria-hidden="true" 
-           role="region" aria-labelledby="info-heading-${service.id}">
-        <div class="info-row">
-          <img src="${service.img}" alt="${service.info.title}">
-          <div>
-            <h5 id="info-heading-${service.id}">${service.info.title}</h5>
-            <p>${service.info.desc}</p>
-            <div class="info-actions">
-              ${service.info.demoLink ? 
-                `<a href="${service.info.demoLink}" class="btn primary" target="_blank" rel="noopener">Ver demo ao vivo</a>` : 
-                `<button class="btn primary" onclick="openProject('${service.id}')">Ver demo</button>`
-              }
-              <a href="#portfolio" class="btn ghost">Ir ao portfólio</a>
-              <button class="close-info" type="button" aria-label="Fechar detalhes">Fechar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </article>
-  `;
+function closeNav() {
+  mobileNav.classList.remove('active');
+  mobileNav.setAttribute('aria-hidden', 'true');
+  hamburgerBtn.setAttribute('aria-expanded', 'false');
+  releaseFocusTrap();
 }
 
-/**
- * Cria um slide do carrossel principal
- */
-function createPortfolioSlide(slide, index) {
-  return `
-    <div class="carousel-item" role="group" aria-label="Slide ${index + 1} de ${siteData.portfolioSlides.length}">
-      <img src="${slide.img}" alt="${slide.title}">
-      <div class="carousel-content">
-        <h4>${slide.title}</h4>
-        <p>${slide.desc}</p>
-        <div class="carousel-actions">
-          <button class="btn primary" onclick="openProject('${slide.projectId}')">Ver projeto</button>
-          <button class="btn secondary" onclick="openCase('${slide.projectId}')">Ver Case</button>
-        </div>
-      </div>
-    </div>
-  `;
+function openNav() {
+  mobileNav.classList.add('active');
+  mobileNav.setAttribute('aria-hidden', 'false');
+  hamburgerBtn.setAttribute('aria-expanded', 'true');
+  
+  // Foca no botão de fechar
+  if (closeMobileNav) closeMobileNav.focus();
+  trapFocus(mobileNav);
 }
 
-/**
- * Cria um card de caso
- */
-function createCaseCard(caseItem, isMobile = false) {
-  return `
-    <div class="card" role="listitem" aria-labelledby="${caseItem.id}">
-      <h4 id="${caseItem.id}">${caseItem.title}</h4>
-      <p class="muted">${caseItem.desc}</p>
-      <div style="margin-top:16px; display:flex; gap:12px">
-        <a href="#portfolio" class="saiba-mais" data-topic="${caseItem.id}" aria-expanded="false">
-          Ver case completo →
-        </a>
-      </div>
-      <div class="info-card" data-topic="${caseItem.id}" aria-hidden="true">
-        <div class="info-row">
-          <img src="${caseItem.img}" alt="${caseItem.title} Case">
-          <div>
-            <h5>Case: ${caseItem.title}</h5>
-            <p>${caseItem.info}</p>
-            <div class="info-actions">
-              <a href="#portfolio" class="btn ghost">Ver case</a>
-              <button class="close-info" type="button" aria-label="Fechar detalhes">Fechar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+// Event Listeners para navegação mobile
+if (hamburgerBtn) {
+  hamburgerBtn.addEventListener('click', openNav);
 }
 
-/**
- * Cria um item FAQ
- */
-function createFaqItem(item, index) {
-  return `
-    <details class="fade-up">
-      <summary data-i18n="${item.q}">${translations[currentLang][item.q] || item.q}</summary>
-      <p class="muted" data-i18n="${item.a}">${translations[currentLang][item.a] || item.a}</p>
-    </details>
-  `;
+if (closeMobileNav) {
+  closeMobileNav.addEventListener('click', closeNav);
 }
+
+// Fecha menu ao clicar em links
+$$('.mobile-nav-list a').forEach(link => {
+  link.addEventListener('click', closeNav);
+});
+
+// Fecha menu ao clicar fora
+if (mobileNav) {
+  mobileNav.addEventListener('click', (e) => {
+    if (e.target === mobileNav) closeNav();
+  });
+}
+
+// Fecha menu com ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+    closeNav();
+  }
+});
 
 // =========================
-// INICIALIZAÇÃO DO CONTEÚDO
+// TEMA (DARK/LIGHT MODE)
 // =========================
+const desktopToggle = $('#themeToggle');
+const mobileToggle = $('#mobileThemeToggle');
+const initialTheme = localStorage.getItem('theme') || 
+  (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
 
-/**
- * Carrega todo o conteúdo dinâmico
- */
-function loadDynamicContent() {
-  // Carrega serviços
-  const servicosGrid = $('#servicosGrid');
-  const servicosCarousel = $('#servicosCarousel');
+function applyTheme(theme) {
+  const isLight = theme === 'light';
   
-  if (servicosGrid) {
-    servicosGrid.innerHTML = siteData.servicos.map(service => createServiceCard(service)).join('');
-  }
+  // Aplica tema ao HTML
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
   
-  if (servicosCarousel) {
-    servicosCarousel.innerHTML = siteData.servicos.map(service => createServiceCard(service, true)).join('');
-  }
-
-  // Carrega portfolio
-  const carouselInner = $('#carouselInner');
-  const dotsContainer = $('#dots');
+  // Atualiza ícones e labels
+  const icon = isLight ? '☀️' : '🌙';
+  const label = isLight ? 'Alternar para tema escuro' : 'Alternar para tema claro';
   
-  if (carouselInner) {
-    carouselInner.innerHTML = siteData.portfolioSlides.map((slide, i) => createPortfolioSlide(slide, i)).join('');
+  if (desktopToggle) {
+    desktopToggle.textContent = icon;
+    desktopToggle.setAttribute('aria-label', label);
+    desktopToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
   }
   
-  if (dotsContainer) {
-    dotsContainer.innerHTML = siteData.portfolioSlides.map((_, i) => `
-      <button class="dot ${i === 0 ? 'active' : ''}" role="tab" aria-controls="carouselInner" 
-              aria-label="Ir para o slide ${i + 1}"></button>
-    `).join('');
+  if (mobileToggle) {
+    mobileToggle.textContent = icon;
+    mobileToggle.setAttribute('aria-label', label);
+    mobileToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
   }
-
-  // Carrega cases
-  const casesGrid = $('#casesGrid');
-  const casesCarousel = $('#casesCarousel');
-  
-  if (casesGrid) {
-    casesGrid.innerHTML = siteData.cases.map(caseItem => createCaseCard(caseItem)).join('');
-  }
-  
-  if (casesCarousel) {
-    casesCarousel.innerHTML = siteData.cases.map(caseItem => createCaseCard(caseItem, true)).join('');
-  }
-
-  // Carrega FAQ
-  const faqList = $('#faqList');
-  if (faqList) {
-    faqList.innerHTML = siteData.faq.map((item, i) => createFaqItem(item, i)).join('');
-  }
-
-  // Carrega outras seções (tecnologias, assistentes, produtos, blog)
-  loadSection('tecnologias', siteData.tecnologias, createServiceCard);
-  loadSection('assistentes', siteData.assistentes, createServiceCard);
-  loadSection('produtos', siteData.produtos, createServiceCard);
-  loadSection('blog', siteData.blog, (item) => `
-    <article class="card">
-      <h4><a href="${item.link}" style="text-decoration:none;color:var(--text)">${item.title}</a></h4>
-      <p class="muted">${item.desc}</p>
-      <div class="card-actions">
-        <a href="${item.link}" class="saiba-mais" aria-expanded="false">Ler artigo →</a>
-      </div>
-    </article>
-  `);
 }
 
-/**
- * Carrega uma seção específica
- */
-function loadSection(sectionId, items, createItemFn) {
-  const grid = $(`#${sectionId}Grid`);
-  const carousel = $(`#${sectionId}Carousel`);
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
   
-  if (grid) {
-    grid.innerHTML = items.map(item => createItemFn(item)).join('');
-  }
+  // Feedback para usuário
+  const message = currentLang === 'en' ? 
+    `${next === 'light' ? 'Light' : 'Dark'} theme activated` :
+    currentLang === 'es' ? 
+      `Tema ${next === 'light' ? 'claro' : 'oscuro'} activado` :
+      `Tema ${next === 'light' ? 'claro' : 'escuro'} ativado`;
   
-  if (carousel) {
-    carousel.innerHTML = items.map(item => createItemFn(item, true)).join('');
-  }
+  showToast(message);
+}
+
+function initTheme() {
+  if (desktopToggle) desktopToggle.addEventListener('click', toggleTheme);
+  if (mobileToggle) mobileToggle.addEventListener('click', toggleTheme);
+  applyTheme(initialTheme);
 }
 
 // =========================
-// TRADUÇÕES (I18N)
+// IDIOMAS (I18N)
 // =========================
 const translations = {
   pt: {
@@ -530,7 +224,7 @@ const translations = {
     cta_primary: "Quero minha solução",
     ver_portfolio: "Ver portfólio →",
     btn_enviar: "Enviar mensagem",
-    msg_sent: "Mensagem enviada",
+    msg_sent: "Mensagem enviada! Responderemos em até 24h.",
     faq_q_1: "Quanto tempo leva para desenvolver um site?",
     faq_a_1: "Depende do escopo. Protótipos: 1–2 semanas. Projeto completo: 4–8 semanas. Implementamos milestones e entregas parciais.",
     faq_q_2: "Vocês oferecem suporte multilíngue?",
@@ -559,7 +253,7 @@ const translations = {
     cta_primary: "I want my solution",
     ver_portfolio: "View portfolio →",
     btn_enviar: "Send message",
-    msg_sent: "Message sent",
+    msg_sent: "Message sent! We'll respond within 24 hours.",
     faq_q_1: "How long does it take to develop a website?",
     faq_a_1: "It depends on the scope. Prototypes: 1–2 weeks. Full project: 4–8 weeks. We implement milestones and partial deliveries.",
     faq_q_2: "Do you offer multilingual support?",
@@ -588,7 +282,7 @@ const translations = {
     cta_primary: "Quiero mi solución",
     ver_portfolio: "Ver portafolio →",
     btn_enviar: "Enviar mensaje",
-    msg_sent: "Mensaje enviado",
+    msg_sent: "¡Mensaje enviado! Responderemos en 24 horas.",
     faq_q_1: "¿Cuánto tiempo lleva desarrollar un sitio web?",
     faq_a_1: "Depende del alcance. Prototipos: 1–2 semanas. Proyecto completo: 4–8 semanas. Implementamos hitos y entregas parciales.",
     faq_q_2: "¿Ofrecen soporte multilingüe?",
@@ -613,169 +307,129 @@ function applyLang(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
   const dict = translations[lang] || translations['pt'];
-
+  
+  // Atualiza todos os elementos com data-i18n
   $$('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    let translation = dict[key] || translations['pt'][key] || el.textContent;
+    let translation = dict[key] || el.textContent;
+    
+    // Permite HTML no hero_title
     if (key === 'hero_title') {
       el.innerHTML = translation;
     } else {
       el.textContent = translation;
     }
   });
-
-  // Atualiza botões ativos
-  $$('.lang-btn, .mobile-lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-    btn.setAttribute('aria-pressed', btn.dataset.lang === lang ? 'true' : 'false');
+  
+  // Atualiza botões ativos (desktop)
+  $$('.lang-btn').forEach(btn => {
+    const active = btn.dataset.lang === lang;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
   });
-
+  
+  // Atualiza botões ativos (mobile)
+  $$('.mobile-lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  
+  // Atualiza atributo lang no HTML
   document.documentElement.lang = lang;
-  showToast(`Idioma alterado para ${lang.toUpperCase()}`);
+  
+  // Feedback para usuário
+  const langNames = { pt: 'Português', en: 'English', es: 'Español' };
+  showToast(`${langNames[lang]} selected`);
 }
 
 function initLang() {
-  const langBtns = $$('.lang-btn, .mobile-lang-btn');
-  langBtns.forEach(btn => {
+  // Desktop language buttons
+  $$('.lang-btn, .mobile-lang-btn').forEach(btn => {
     btn.addEventListener('click', function () {
       const lang = this.dataset.lang;
       applyLang(lang);
     });
   });
+  
   applyLang(currentLang);
 }
 
 // =========================
-// TEMA (DARK/LIGHT)
+// INFO CARDS (SAIBA MAIS)
 // =========================
-function initTheme() {
-  const desktopToggle = $('#themeToggle');
-  const mobileToggle = $('#mobileThemeToggle');
-  const initialTheme = localStorage.getItem('theme') || 
-    (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-
-  function applyTheme(theme) {
-    const isLight = theme === 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-
-    if (desktopToggle) {
-      desktopToggle.textContent = isLight ? '☀️' : '🌙';
-      desktopToggle.setAttribute('aria-label', isLight ? 'Alternar para tema escuro' : 'Alternar para tema claro');
-      desktopToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-    }
-
-    if (mobileToggle) {
-      mobileToggle.textContent = isLight ? '☀️' : '🌙';
-      mobileToggle.setAttribute('aria-label', isLight ? 'Alternar para tema escuro' : 'Alternar para tema claro');
-      mobileToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-    }
+function openInfoCard(infoEl, triggerBtn) {
+  infoEl.classList.add('open');
+  infoEl.setAttribute('aria-hidden', 'false');
+  
+  if (triggerBtn) {
+    triggerBtn.setAttribute('aria-expanded', 'true');
   }
-
-  function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    showToast(`Tema ${next === 'light' ? 'claro' : 'escuro'} ativado`);
-  }
-
-  if (desktopToggle) desktopToggle.addEventListener('click', toggleTheme);
-  if (mobileToggle) mobileToggle.addEventListener('click', toggleTheme);
-  applyTheme(initialTheme);
+  
+  // Foca no botão de fechar
+  const closeBtn = infoEl.querySelector('.close-info');
+  if (closeBtn) closeBtn.focus();
+  
+  trapFocus(infoEl);
 }
 
-// =========================
-// MENU MOBILE
-// =========================
-function initMobileMenu() {
-  const hamburgerBtn = $('#hamburgerBtn');
-  const closeMobileNav = $('#closeMobileNav');
-  const mobileNav = $('#mobileNav');
-
-  function closeNav() {
-    mobileNav.classList.remove('active');
-    mobileNav.setAttribute('aria-hidden', 'true');
-    hamburgerBtn.setAttribute('aria-expanded', 'false');
-    releaseFocusTrap();
-  }
-
-  function openNav() {
-    mobileNav.classList.add('active');
-    mobileNav.setAttribute('aria-hidden', 'false');
-    hamburgerBtn.setAttribute('aria-expanded', 'true');
-    trapFocus(mobileNav);
-  }
-
-  if (hamburgerBtn) hamburgerBtn.addEventListener('click', openNav);
-  if (closeMobileNav) closeMobileNav.addEventListener('click', closeNav);
-
-  $$('.mobile-nav-list a').forEach(link => {
-    link.addEventListener('click', closeNav);
-  });
-
-  if (mobileNav) mobileNav.addEventListener('click', (e) => {
-    if (e.target === mobileNav) closeNav();
-  });
+function closeInfoCard(infoEl) {
+  infoEl.classList.remove('open');
+  infoEl.setAttribute('aria-hidden', 'true');
+  
+  // Restaura aria-expanded no trigger
+  const topic = infoEl.dataset.topic;
+  const trigger = $(`.saiba-mais[data-topic="${topic}"]`);
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  
+  releaseFocusTrap();
+  if (trigger) trigger.focus(); // Retorna foco ao botão "Saiba Mais"
 }
 
-// =========================
-// INFO CARDS (Saiba Mais)
-// =========================
+// Inicializa info cards
 function initInfoCards() {
-  function openInfoCard(infoEl, triggerBtn) {
-    infoEl.classList.add('open');
-    infoEl.setAttribute('aria-hidden', 'false');
-    if (triggerBtn) triggerBtn.setAttribute('aria-expanded', 'true');
-    const closeBtn = infoEl.querySelector('.close-info');
-    if (closeBtn) closeBtn.focus();
-    trapFocus(infoEl);
-  }
-
-  function closeInfoCard(infoEl) {
-    infoEl.classList.remove('open');
-    infoEl.setAttribute('aria-hidden', 'true');
-    const topic = infoEl.dataset.topic;
-    const trigger = $(`.saiba-mais[data-topic="${topic}"]`);
-    if (trigger) trigger.setAttribute('aria-expanded', 'false');
-    releaseFocusTrap();
-    if (trigger) trigger.focus();
-  }
-
+  // Event listeners para botões "Saiba Mais"
   $$('.saiba-mais').forEach(btn => {
     btn.addEventListener('click', function (e) {
       e.preventDefault();
       const topic = this.dataset.topic;
       
+      // Encontra o info-card correto baseado no tamanho da tela
       let info;
       if (window.innerWidth < 768) {
+        // Mobile: usa card do carrossel
         info = $(`.cards-carousel-container .info-card[data-topic="${topic}"]`);
       } else {
+        // Desktop: usa card do grid
         info = $(`.grid.mobile-carousel .info-card[data-topic="${topic}"]`);
       }
       
-      if (!info) {
-        info = $(`.info-card[data-topic="${topic}"]`);
-      }
-
+      // Fallback se não encontrar
+      if (!info) info = $(`.info-card[data-topic="${topic}"]`);
+      
+      if (!info) return;
+      
+      // Fecha outros cards abertos
       $$('.info-card.open').forEach(card => {
         if (card !== info) closeInfoCard(card);
       });
-
-      if (info && !info.classList.contains('open')) {
-        openInfoCard(info, this);
-      } else {
+      
+      // Alterna estado
+      if (info.classList.contains('open')) {
         closeInfoCard(info);
+      } else {
+        openInfoCard(info, this);
       }
     });
   });
-
+  
+  // Event listeners para botões "Fechar"
   $$('.close-info').forEach(btn => {
     btn.addEventListener('click', function () {
       const info = this.closest('.info-card');
       if (info) closeInfoCard(info);
     });
   });
-
+  
+  // Fecha com ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const openCard = $('.info-card.open');
@@ -785,42 +439,48 @@ function initInfoCards() {
 }
 
 // =========================
-// CARROSSEL PRINCIPAL
+// CARROSSEL PRINCIPAL (PORTFOLIO)
 // =========================
-function initCarousel() {
+function initMainCarousel() {
   const inner = $('#carouselInner');
   const dots = $('#dots');
+  
   if (!inner || !dots) return;
-
+  
   const slides = inner.children.length;
   let currentIndex = 0;
   let intervalId;
   let isMobile = window.innerWidth < 768;
-
+  let isAutoPlaying = false;
+  
   function updateCarousel() {
+    // Aplica transform apenas em desktop
     if (!isMobile) {
       const offset = -currentIndex * 100;
       inner.style.transform = `translateX(${offset}%)`;
     }
-
+    
+    // Atualiza dots
     $$('.dot').forEach((dot, index) => {
       dot.classList.toggle('active', index === currentIndex);
-      dot.setAttribute('aria-label', `Ir para o slide ${index + 1}`);
+      dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
       dot.setAttribute('aria-selected', index === currentIndex);
     });
-
+    
+    // Atualiza aria-hidden dos slides
     $$('.carousel-item').forEach((item, index) => {
       item.setAttribute('aria-hidden', index !== currentIndex);
     });
   }
-
+  
   function goToSlide(index) {
     currentIndex = (index + slides) % slides;
     updateCarousel();
-
+    
     if (!isMobile) {
       resetAutoPlay();
     } else {
+      // Em mobile, scroll suave
       const slideWidth = inner.children[0].offsetWidth + 16;
       inner.scrollTo({
         left: currentIndex * slideWidth,
@@ -828,22 +488,27 @@ function initCarousel() {
       });
     }
   }
-
+  
+  // Event listeners para dots
   $$('.dot').forEach((dot, index) => {
     dot.addEventListener('click', () => goToSlide(index));
   });
-
+  
+  // Auto-play apenas em desktop
   function startAutoPlay() {
-    if (!isMobile) {
+    if (!isMobile && !isAutoPlaying) {
+      isAutoPlaying = true;
       intervalId = setInterval(() => goToSlide(currentIndex + 1), 8000);
     }
   }
-
+  
   function resetAutoPlay() {
     clearInterval(intervalId);
+    isAutoPlaying = false;
     startAutoPlay();
   }
-
+  
+  // Mobile: detecta scroll para atualizar dots
   if (isMobile) {
     let scrollTimeout;
     inner.addEventListener('scroll', () => {
@@ -852,6 +517,7 @@ function initCarousel() {
         const scrollPos = inner.scrollLeft;
         const slideWidth = inner.children[0].offsetWidth + 16;
         const newIndex = Math.round(scrollPos / slideWidth);
+        
         if (newIndex !== currentIndex) {
           currentIndex = newIndex;
           updateCarousel();
@@ -859,16 +525,42 @@ function initCarousel() {
       }, 100);
     });
   }
-
+  
+  // Pausa auto-play ao interagir
+  inner.addEventListener('mouseenter', () => {
+    if (!isMobile && isAutoPlaying) {
+      clearInterval(intervalId);
+      isAutoPlaying = false;
+    }
+  });
+  
+  inner.addEventListener('mouseleave', () => {
+    if (!isMobile) startAutoPlay();
+  });
+  
+  // Teclado: setas esquerda/direita
+  inner.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goToSlide(currentIndex - 1);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      goToSlide(currentIndex + 1);
+    }
+  });
+  
   updateCarousel();
   startAutoPlay();
-
+  
+  // Recalcula ao redimensionar
   window.addEventListener('resize', () => {
     const newIsMobile = window.innerWidth < 768;
     if (newIsMobile !== isMobile) {
       isMobile = newIsMobile;
+      
       if (isMobile) {
         clearInterval(intervalId);
+        isAutoPlaying = false;
         inner.style.transform = 'none';
       } else {
         startAutoPlay();
@@ -882,32 +574,41 @@ function initCarousel() {
 // CARROSSEIS DE CARDS (MOBILE)
 // =========================
 function initCardCarousels() {
-  const carousels = [
-    'servicos', 'tech', 'assistentes', 'produtos', 'blog', 'cases'
-  ];
-
-  carousels.forEach(key => {
-    const carousel = $(`#${key}Carousel`);
+  const carousels = {
+    'servicos': '#servicosCarousel',
+    'tech': '#techCarousel',
+    'assistentes': '#assistentesCarousel',
+    'produtos': '#produtosCarousel',
+    'blog': '#blogCarousel',
+    'cases': '#casesCarousel'
+  };
+  
+  Object.keys(carousels).forEach(key => {
+    const carousel = $(carousels[key]);
     const indicators = $(`#${key}Indicators`);
-
+    
     if (!carousel || !indicators) return;
-
+    
     const cards = carousel.children;
     const cardCount = cards.length;
-
+    
+    // Cria indicadores
     indicators.innerHTML = '';
     for (let i = 0; i < cardCount; i++) {
       const indicator = document.createElement('button');
       indicator.className = `carousel-indicator ${i === 0 ? 'active' : ''}`;
-      indicator.setAttribute('aria-label', `Ir para o card ${i + 1}`);
+      indicator.setAttribute('aria-label', `Go to card ${i + 1}`);
       indicator.setAttribute('type', 'button');
+      
       indicator.addEventListener('click', () => {
         scrollToCard(carousel, i);
         updateIndicators(indicators, i);
       });
+      
       indicators.appendChild(indicator);
     }
-
+    
+    // Atualiza indicadores durante scroll
     let scrollTimeout;
     carousel.addEventListener('scroll', () => {
       clearTimeout(scrollTimeout);
@@ -918,7 +619,8 @@ function initCardCarousels() {
         updateIndicators(indicators, currentIndex);
       }, 100);
     });
-
+    
+    // Navegação por teclado
     carousel.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();
@@ -928,13 +630,13 @@ function initCardCarousels() {
         const newIndex = e.key === 'ArrowLeft'
           ? Math.max(0, currentIndex - 1)
           : Math.min(cardCount - 1, currentIndex + 1);
-
+        
         scrollToCard(carousel, newIndex);
         updateIndicators(indicators, newIndex);
       }
     });
   });
-
+  
   function scrollToCard(carousel, index) {
     const cardWidth = carousel.children[0].offsetWidth + 16;
     carousel.scrollTo({
@@ -942,7 +644,7 @@ function initCardCarousels() {
       behavior: 'smooth'
     });
   }
-
+  
   function updateIndicators(indicators, activeIndex) {
     const indicatorButtons = indicators.querySelectorAll('.carousel-indicator');
     indicatorButtons.forEach((indicator, index) => {
@@ -958,43 +660,59 @@ function initAssistant() {
   const assistantBtn = $('#assistantBtn');
   const assistantPanel = $('#assistantPanel');
   const assistantIframe = $('#assistantIframe');
+  
   if (!assistantBtn || !assistantPanel) return;
-
+  
   function toggleAssistant() {
     const open = assistantPanel.classList.toggle('open');
     assistantBtn.setAttribute('aria-expanded', open);
     assistantPanel.setAttribute('aria-hidden', !open);
-
-    if (open && assistantIframe) {
+    
+    // Adiciona/remove classe de pulso no botão
+    assistantBtn.classList.toggle('pulse', !open);
+    
+    if (open) {
+      // Foca no iframe quando abre
       setTimeout(() => {
-        assistantIframe.focus();
-        if (assistantIframe.contentWindow) {
-          assistantIframe.contentWindow.postMessage({ type: 'PING' }, '*');
+        if (assistantIframe) {
+          assistantIframe.focus();
+          // Comunicação com iframe se necessário
+          if (assistantIframe.contentWindow) {
+            assistantIframe.contentWindow.postMessage({ type: 'ASSISTANT_OPEN' }, '*');
+          }
         }
       }, 300);
+      trapFocus(assistantPanel);
     } else {
       releaseFocusTrap();
+      assistantBtn.focus();
     }
   }
-
+  
   assistantBtn.addEventListener('click', toggleAssistant);
-
+  
+  // Fecha com ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && assistantPanel.classList.contains('open')) {
       toggleAssistant();
-      assistantBtn.focus();
     }
   });
-
+  
+  // Escuta mensagens do iframe
   window.addEventListener('message', (event) => {
     if (event.data?.type === 'ASSISTANT_READY') {
-      console.log('🤖 Assistente IA carregado com sucesso');
+      console.log('🤖 Assistente IA carregado');
     }
-
+    
     if (event.data?.type === 'CLOSE_ASSISTANT') {
       toggleAssistant();
     }
   });
+  
+  // Inicia com pulso
+  setTimeout(() => {
+    assistantBtn.classList.add('pulse');
+  }, 2000);
 }
 
 // =========================
@@ -1003,45 +721,57 @@ function initAssistant() {
 function initFormValidation() {
   const form = $('#contactForm');
   if (!form) return;
-
-  form.addEventListener('submit', function (e) {
+  
+  form.onsubmit = function (e) {
     e.preventDefault();
     
     const nome = $('#nome')?.value.trim();
     const email = $('#email')?.value.trim();
     const mensagem = $('#mensagem')?.value.trim();
-    const lang = currentLang;
-
-    if (!nome || !email || !mensagem) {
-      showToast(
-        lang === 'en' ? 'Please fill in all required fields.' : 
-        lang === 'es' ? 'Por favor, rellene todos los campos obligatorios.' : 
-        'Por favor, preencha todos os campos obrigatórios.',
-        'error'
-      );
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast(
-        lang === 'en' ? 'Please enter a valid email address.' : 
-        lang === 'es' ? 'Por favor, introduzca una dirección de correo electrónico válida.' : 
-        'Por favor, insira um endereço de e-mail válido.',
-        'error'
-      );
-      return;
-    }
-
-    console.log({ 
-      nome, 
-      email, 
-      mensagem, 
-      servico: $('#servico')?.value 
-    });
     
-    showToast(translations[lang].msg_sent, 'success');
+    // Validação
+    if (!nome || !email || !mensagem) {
+      const msg = currentLang === 'en' 
+        ? 'Please fill in all required fields.' 
+        : currentLang === 'es' 
+          ? 'Por favor, rellene todos los campos obligatorios.' 
+          : 'Por favor, preencha todos os campos obrigatórios.';
+      showToast(msg, 'error');
+      return;
+    }
+    
+    // Valida email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      const msg = currentLang === 'en'
+        ? 'Please enter a valid email address.'
+        : currentLang === 'es'
+          ? 'Por favor, introduzca una dirección de correo electrónico válida.'
+          : 'Por favor, insira um endereço de e-mail válido.';
+      showToast(msg, 'error');
+      return;
+    }
+    
+    // Simulação de envio (substituir por API real)
+    const formData = {
+      nome,
+      email,
+      mensagem,
+      servico: $('#servico')?.value,
+      lang: currentLang,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('📨 Form submitted:', formData);
+    
+    // Feedback ao usuário
+    showToast(translations[currentLang].msg_sent, 'success');
+    
+    // Reset form
     form.reset();
-  });
+    
+    // Foco no primeiro campo
+    $('#nome')?.focus();
+  };
 }
 
 // =========================
@@ -1049,91 +779,172 @@ function initFormValidation() {
 // =========================
 function initAnimatedCounters() {
   const counterElements = $$('.kpi strong');
-  const duration = 2000;
-  const totalFrames = duration / (1000 / 60);
-
+  if (!counterElements.length) return;
+  
+  const duration = 2000; // 2 segundos
+  const totalFrames = Math.floor(duration / (1000 / 60)); // 60 FPS
+  
   counterElements.forEach(element => {
     const fullText = element.textContent.trim();
-    const targetValue = parseInt(fullText.match(/[\d.]+/));
-    const prefix = fullText.match(/^[^0-9.]*/) ? fullText.match(/^[^0-9.]*/)[0] : '';
-    const suffix = fullText.match(/[^0-9.]*$/) ? fullText.match(/[^0-9.]*$/)[0] : '';
-
+    const targetValue = parseFloat(fullText.match(/[\d.]+/)?.[0]) || 0;
+    const prefix = fullText.match(/^[^0-9.]*/)?.[0] || '';
+    const suffix = fullText.match(/[^0-9.]*$/)?.[0] || '';
+    
     let frame = 0;
-
-    const updateCounter = () => {
+    
+    const animate = () => {
       frame++;
       let progress = frame / totalFrames;
+      
+      // Ease out effect
       progress = 1 - Math.pow(1 - progress, 3);
+      
       const currentValue = Math.min(targetValue, Math.floor(targetValue * progress));
       element.textContent = `${prefix}${currentValue}${suffix}`;
-
+      
       if (frame < totalFrames) {
-        requestAnimationFrame(updateCounter);
+        requestAnimationFrame(animate);
       } else {
-        element.textContent = fullText;
+        element.textContent = fullText; // Valor final exato
       }
     };
-    requestAnimationFrame(updateCounter);
+    
+    requestAnimationFrame(animate);
   });
 }
 
 // =========================
-// ADSENSE
+// ANIMAÇÕES DE ENTRADA
 // =========================
-function initAdSense() {
-  setTimeout(function () {
-    const ads = $$('.adsbygoogle');
-    if (ads.length > 0) {
-      (adsbygoogle = window.adsbygoogle || []).push({});
-      console.log('AdSense carregado para ' + ads.length + ' anúncios');
-    }
-  }, 1000);
+function initAnimations() {
+  // Observer para animações ao scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+        
+        // Inicia contadores quando KPIs ficarem visíveis
+        if (entry.target.classList.contains('kpis')) {
+          initAnimatedCounters();
+        }
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '50px'
+  });
+  
+  // Observa todos os elementos com classe fade-up
+  $$('.fade-up').forEach(el => {
+    observer.observe(el);
+  });
+  
+  // Observa especificamente os KPIs
+  const kpisSection = $('.kpis');
+  if (kpisSection) observer.observe(kpisSection);
 }
 
 // =========================
-// FUNÇÕES GLOBAIS
+// GOOGLE ADSENSE
 // =========================
-window.openProject = (project) => showToast(`Abrindo projeto: ${project}`);
-window.openCode = (project) => showToast(`Abrindo código: ${project}`);
-window.openCase = (caseName) => showToast(`Abrindo case: ${caseName}`);
+function initAdSense() {
+  // Carrega AdSense após um pequeno delay para performance
+  setTimeout(() => {
+    const ads = $$('.adsbygoogle');
+    if (ads.length > 0 && window.adsbygoogle) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        console.log(`📢 AdSense carregado para ${ads.length} anúncios`);
+      } catch (error) {
+        console.warn('⚠️ Erro ao carregar AdSense:', error);
+      }
+    }
+  }, 1500);
+}
 
 // =========================
-// INICIALIZAÇÃO
+// FUNÇÕES GLOBAIS (para botões de demo)
 // =========================
-document.addEventListener('DOMContentLoaded', function () {
-  // Carrega conteúdo
-  loadDynamicContent();
+window.openProject = (project) => {
+  const message = currentLang === 'en'
+    ? `Opening project: ${project}`
+    : currentLang === 'es'
+      ? `Abriendo proyecto: ${project}`
+      : `Abrindo projeto: ${project}`;
+  showToast(message);
+  
+  // Aqui você pode adicionar lógica para abrir projetos específicos
+  if (project === 'ead-pwa') {
+    window.open('projetos-principais/projeto-pwa-educacao.html', '_blank');
+  }
+};
+
+window.openCase = (caseName) => {
+  const message = currentLang === 'en'
+    ? `Opening case study: ${caseName}`
+    : currentLang === 'es'
+      ? `Abriendo caso de estudio: ${caseName}`
+      : `Abrindo case: ${caseName}`;
+  showToast(message);
+};
+
+window.openCode = (project) => {
+  showToast(`Código do projeto ${project}`, 'success');
+};
+
+// =========================
+// INICIALIZAÇÃO GERAL
+// =========================
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 MakerAI Studio inicializando...');
   
   // Inicializa módulos
   initTheme();
   initLang();
-  initMobileMenu();
   initInfoCards();
-  initCarousel();
+  initMainCarousel();
   initCardCarousels();
   initAssistant();
   initFormValidation();
+  initAnimations();
   initAdSense();
-
-  // Inicia animação dos números quando visíveis
-  const kpisSection = $('.hero .kpis');
-  if (kpisSection) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          initAnimatedCounters();
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-    observer.observe(kpisSection);
-  }
-
-  // Aplica animações fade-up
-  setTimeout(() => {
-    $$('.fade-up').forEach((el, i) => {
-      el.style.transitionDelay = `${i * 0.1}s`;
-      el.classList.add('show');
+  
+  // Smooth scroll para links âncora
+  $$('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      if (href === '#' || href === '#0') return;
+      
+      const target = $(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        
+        // Atualiza URL sem recarregar a página
+        history.pushState(null, null, href);
+      }
     });
-  }, 100);
+  });
+  
+  // Adiciona classe para dispositivos touch
+  if ('ontouchstart' in window || navigator.maxTouchPoints) {
+    document.body.classList.add('touch-device');
+  }
+  
+  console.log('✅ MakerAI Studio inicializado com sucesso!');
 });
+
+// =========================
+// UTILITÁRIOS DE DEBUG
+// =========================
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  console.log('🔧 Modo desenvolvimento ativo');
+  
+  // Log de eventos úteis
+  window.addEventListener('error', (e) => {
+    console.error('❌ Erro capturado:', e.error);
+  });
+}
