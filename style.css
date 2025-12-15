@@ -42,138 +42,7 @@ html[data-theme="light"] {
   --glass: var(--glass-light);
 }
 
-/* =========================
-   LOADING STYLES
-   ========================= */
-#pageLoading {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--bg);
-  z-index: 99999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-#pageLoading.hidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.loading-content {
-  text-align: center;
-}
-
-.loading-text {
-  color: var(--text);
-  font-weight: 600;
-  margin-top: 20px;
-  font-size: 18px;
-}
-
-.loading-spinner {
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-}
-
-.loading-spinner.large {
-  width: 50px;
-  height: 50px;
-  border-width: 4px;
-}
-
-.loading-spinner.medium {
-  width: 30px;
-  height: 30px;
-  border-width: 3px;
-}
-
-.loading-spinner.small {
-  width: 20px;
-  height: 20px;
-  border-width: 2px;
-}
-
-.loading-spinner.btn-spinner {
-  width: 16px;
-  height: 16px;
-  border-width: 2px;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-.assistant-loading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
-  border-width: 2px;
-}
-
-.image-loading {
-  width: 100%;
-  background: var(--glass);
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  z-index: 1;
-}
-
-.image-loading.small {
-  width: clamp(120px, 20vw, 200px);
-  height: clamp(120px, 20vw, 200px);
-  border-radius: 20px;
-}
-
-.image-loading:not(.small) {
-  height: 250px;
-  aspect-ratio: 16/9;
-}
-
-.hero-img,
-.about-img {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.hero-img.loaded,
-.about-img.loaded {
-  opacity: 1;
-}
-
-.carousel.loading::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  z-index: 10;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* =========================
-   RESET E ESTILOS BASE
-   ========================= */
+/* Reset e estilos base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -443,21 +312,6 @@ header h1 {
   margin: 0;
 }
 
-.close-mobile-nav {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  cursor: pointer;
-  font-size: 24px;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: var(--glass);
-}
-
 /* Lista de navegação mobile */
 .mobile-nav-list {
   flex: 1;
@@ -682,10 +536,6 @@ section {
   font-size: clamp(20px, 3vw, 28px);
   margin-bottom: 4px;
   color: var(--accent);
-}
-
-.hero-card {
-  position: relative;
 }
 
 .hero-card img {
@@ -1066,7 +916,6 @@ section {
   min-height: 48px;
   min-width: 48px;
   transition: all 0.2s;
-  position: relative;
 }
 
 .btn.primary {
@@ -1099,19 +948,6 @@ section {
 .btn.secondary:hover {
   background: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
-}
-
-.btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn .btn-text,
-.btn .btn-loading {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
 
 /* =========================
@@ -1179,7 +1015,6 @@ details p {
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  position: relative;
 }
 
 @media (min-width: 768px) {
@@ -1424,7 +1259,6 @@ footer {
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  position: relative;
 }
 
 .assistant:hover {
@@ -1434,23 +1268,6 @@ footer {
 
 .assistant.pulse {
   animation: pulse 2s infinite;
-}
-
-.assistant-icon {
-  transition: opacity 0.3s ease;
-}
-
-.assistant-loading {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.assistant.loading .assistant-icon {
-  opacity: 0;
-}
-
-.assistant.loading .assistant-loading {
-  opacity: 1;
 }
 
 @keyframes pulse {
