@@ -5,90 +5,6 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 // =========================
-// FUNÇÕES DE LOADING
-// =========================
-
-/**
- * Mostra loading no botão
- */
-function showButtonLoading(button, text = '') {
-  const btnText = button.querySelector('.btn-text');
-  const btnLoading = button.querySelector('.btn-loading');
-  
-  if (btnText && btnLoading) {
-    button.dataset.originalText = btnText.textContent;
-    btnText.style.display = 'none';
-    btnLoading.style.display = 'inline-flex';
-    if (text) {
-      btnLoading.querySelector('span:not(.btn-spinner)').textContent = text;
-    }
-  } else {
-    // Fallback para botões sem estrutura de loading
-    button.dataset.originalHTML = button.innerHTML;
-    button.innerHTML = `
-      <div class="loading-spinner btn-spinner"></div>
-      ${text || 'Processando...'}
-    `;
-  }
-  
-  button.disabled = true;
-}
-
-/**
- * Remove loading do botão
- */
-function hideButtonLoading(button) {
-  const btnText = button.querySelector('.btn-text');
-  const btnLoading = button.querySelector('.btn-loading');
-  
-  if (btnText && btnLoading) {
-    btnText.style.display = 'inline';
-    btnLoading.style.display = 'none';
-  } else if (button.dataset.originalHTML) {
-    button.innerHTML = button.dataset.originalHTML;
-  } else if (button.dataset.originalText) {
-    button.textContent = button.dataset.originalText;
-  }
-  
-  button.disabled = false;
-}
-
-/**
- * Mostra loading no assistente IA
- */
-function showAssistantLoading() {
-  const assistantBtn = $('#assistantBtn');
-  if (assistantBtn) {
-    assistantBtn.classList.add('loading');
-  }
-}
-
-/**
- * Remove loading do assistente IA
- */
-function hideAssistantLoading() {
-  const assistantBtn = $('#assistantBtn');
-  if (assistantBtn) {
-    assistantBtn.classList.remove('loading');
-  }
-}
-
-/**
- * Remove loading inicial da página
- */
-function hidePageLoading() {
-  const pageLoading = $('#pageLoading');
-  if (pageLoading) {
-    pageLoading.classList.add('hidden');
-    setTimeout(() => {
-      if (pageLoading.parentNode) {
-        pageLoading.remove();
-      }
-    }, 500);
-  }
-}
-
-// =========================
 // DADOS DO SITE
 // =========================
 const siteData = {
@@ -424,12 +340,7 @@ function releaseFocusTrap() {
 function createServiceCard(service, isMobile = false) {
   return `
     <article class="card" role="listitem" aria-labelledby="${service.id}">
-      <div class="image-loading" style="height:200px; margin-bottom:20px; border-radius:12px">
-        <div class="loading-spinner medium"></div>
-      </div>
-      <img class="card-thumb" src="${service.img}" alt="${service.title}" loading="lazy"
-           onload="this.previousElementSibling.style.display='none'; this.style.display='block'"
-           style="display:none">
+      <img class="card-thumb" src="${service.img}" alt="${service.title}" loading="lazy">
       <h4 id="${service.id}">${service.title}</h4>
       <p class="muted">${service.desc}</p>
       <div class="card-actions">
@@ -464,12 +375,7 @@ function createServiceCard(service, isMobile = false) {
 function createPortfolioSlide(slide, index) {
   return `
     <div class="carousel-item" role="group" aria-label="Slide ${index + 1} de ${siteData.portfolioSlides.length}">
-      <div class="image-loading" style="height:100%; position:absolute; width:100%; border-radius:20px">
-        <div class="loading-spinner large"></div>
-      </div>
-      <img src="${slide.img}" alt="${slide.title}" 
-           onload="this.previousElementSibling.style.display='none'"
-           style="display:none">
+      <img src="${slide.img}" alt="${slide.title}">
       <div class="carousel-content">
         <h4>${slide.title}</h4>
         <p>${slide.desc}</p>
@@ -577,7 +483,7 @@ function loadDynamicContent() {
     faqList.innerHTML = siteData.faq.map((item, i) => createFaqItem(item, i)).join('');
   }
 
-  // Carrega outras seções
+  // Carrega outras seções (tecnologias, assistentes, produtos, blog)
   loadSection('tecnologias', siteData.tecnologias, createServiceCard);
   loadSection('assistentes', siteData.assistentes, createServiceCard);
   loadSection('produtos', siteData.produtos, createServiceCard);
@@ -835,12 +741,10 @@ function initInfoCards() {
     if (trigger) trigger.focus();
   }
 
-  // Delegação de eventos para lidar com conteúdo dinâmico
-  document.addEventListener('click', function(e) {
-    const saibaMaisBtn = e.target.closest('.saiba-mais');
-    if (saibaMaisBtn) {
+  $$('.saiba-mais').forEach(btn => {
+    btn.addEventListener('click', function (e) {
       e.preventDefault();
-      const topic = saibaMaisBtn.dataset.topic;
+      const topic = this.dataset.topic;
       
       let info;
       if (window.innerWidth < 768) {
@@ -858,17 +762,18 @@ function initInfoCards() {
       });
 
       if (info && !info.classList.contains('open')) {
-        openInfoCard(info, saibaMaisBtn);
+        openInfoCard(info, this);
       } else {
         closeInfoCard(info);
       }
-    }
+    });
+  });
 
-    const closeBtn = e.target.closest('.close-info');
-    if (closeBtn) {
-      const info = closeBtn.closest('.info-card');
+  $$('.close-info').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const info = this.closest('.info-card');
       if (info) closeInfoCard(info);
-    }
+    });
   });
 
   document.addEventListener('keydown', (e) => {
@@ -910,10 +815,6 @@ function initCarousel() {
   }
 
   function goToSlide(index) {
-    // Adiciona classe de loading
-    const carousel = $('.carousel');
-    carousel.classList.add('loading');
-    
     currentIndex = (index + slides) % slides;
     updateCarousel();
 
@@ -926,11 +827,6 @@ function initCarousel() {
         behavior: 'smooth'
       });
     }
-    
-    // Remove loading após animação
-    setTimeout(() => {
-      carousel.classList.remove('loading');
-    }, 600);
   }
 
   $$('.dot').forEach((dot, index) => {
@@ -1065,43 +961,19 @@ function initAssistant() {
   if (!assistantBtn || !assistantPanel) return;
 
   function toggleAssistant() {
-    const open = !assistantPanel.classList.contains('open');
-    
-    if (open) {
-      // Mostra loading no botão
-      showAssistantLoading();
-      
-      // Abre o painel
-      assistantPanel.classList.add('open');
-      assistantBtn.setAttribute('aria-expanded', 'true');
-      assistantPanel.setAttribute('aria-hidden', 'false');
+    const open = assistantPanel.classList.toggle('open');
+    assistantBtn.setAttribute('aria-expanded', open);
+    assistantPanel.setAttribute('aria-hidden', !open);
 
-      // Foca no iframe quando carregar
-      if (assistantIframe) {
-        assistantIframe.onload = () => {
-          // Remove loading
-          hideAssistantLoading();
-          
-          setTimeout(() => {
-            assistantIframe.focus();
-            if (assistantIframe.contentWindow) {
-              assistantIframe.contentWindow.postMessage({ type: 'PING' }, '*');
-            }
-          }, 300);
-        };
-        
-        // Recarrega o iframe se já estiver carregado
-        if (assistantIframe.contentDocument) {
-          assistantIframe.contentWindow.location.reload();
+    if (open && assistantIframe) {
+      setTimeout(() => {
+        assistantIframe.focus();
+        if (assistantIframe.contentWindow) {
+          assistantIframe.contentWindow.postMessage({ type: 'PING' }, '*');
         }
-      }
+      }, 300);
     } else {
-      // Fecha o painel
-      assistantPanel.classList.remove('open');
-      assistantBtn.setAttribute('aria-expanded', 'false');
-      assistantPanel.setAttribute('aria-hidden', 'true');
       releaseFocusTrap();
-      hideAssistantLoading();
     }
   }
 
@@ -1117,7 +989,6 @@ function initAssistant() {
   window.addEventListener('message', (event) => {
     if (event.data?.type === 'ASSISTANT_READY') {
       console.log('🤖 Assistente IA carregado com sucesso');
-      hideAssistantLoading();
     }
 
     if (event.data?.type === 'CLOSE_ASSISTANT') {
@@ -1133,16 +1004,14 @@ function initFormValidation() {
   const form = $('#contactForm');
   if (!form) return;
 
-  form.addEventListener('submit', async function (e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
     
-    const submitBtn = this.querySelector('button[type="submit"]');
     const nome = $('#nome')?.value.trim();
     const email = $('#email')?.value.trim();
     const mensagem = $('#mensagem')?.value.trim();
     const lang = currentLang;
 
-    // Validação
     if (!nome || !email || !mensagem) {
       showToast(
         lang === 'en' ? 'Please fill in all required fields.' : 
@@ -1163,13 +1032,6 @@ function initFormValidation() {
       return;
     }
 
-    // Mostra loading no botão
-    showButtonLoading(submitBtn, translations[lang].btn_enviar);
-
-    // Simula envio (substitua por fetch real)
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Log dos dados (substitua por envio real)
     console.log({ 
       nome, 
       email, 
@@ -1177,11 +1039,7 @@ function initFormValidation() {
       servico: $('#servico')?.value 
     });
     
-    // Remove loading e mostra sucesso
-    hideButtonLoading(submitBtn);
     showToast(translations[lang].msg_sent, 'success');
-    
-    // Reseta o formulário
     form.reset();
   });
 }
@@ -1220,52 +1078,6 @@ function initAnimatedCounters() {
 }
 
 // =========================
-// GERENCIAMENTO DE IMAGENS
-// =========================
-function initImageLoading() {
-  // Configura carregamento de imagens
-  const heroImg = $('.hero-img');
-  const aboutImg = $('.about-img');
-  
-  if (heroImg) {
-    heroImg.onload = function() {
-      this.classList.add('loaded');
-      const loading = this.previousElementSibling;
-      if (loading && loading.classList.contains('image-loading')) {
-        loading.style.display = 'none';
-      }
-    };
-    
-    // Fallback: se a imagem já estiver carregada
-    if (heroImg.complete) {
-      heroImg.classList.add('loaded');
-      const loading = heroImg.previousElementSibling;
-      if (loading && loading.classList.contains('image-loading')) {
-        loading.style.display = 'none';
-      }
-    }
-  }
-  
-  if (aboutImg) {
-    aboutImg.onload = function() {
-      this.classList.add('loaded');
-      const loading = this.previousElementSibling;
-      if (loading && loading.classList.contains('image-loading')) {
-        loading.style.display = 'none';
-      }
-    };
-    
-    if (aboutImg.complete) {
-      aboutImg.classList.add('loaded');
-      const loading = aboutImg.previousElementSibling;
-      if (loading && loading.classList.contains('image-loading')) {
-        loading.style.display = 'none';
-      }
-    }
-  }
-}
-
-// =========================
 // ADSENSE
 // =========================
 function initAdSense() {
@@ -1281,35 +1093,21 @@ function initAdSense() {
 // =========================
 // FUNÇÕES GLOBAIS
 // =========================
-window.openProject = (project) => {
-  showToast(`Abrindo projeto: ${project}`);
-  // Aqui você pode adicionar a lógica real para abrir projetos
-};
-
-window.openCode = (project) => {
-  showToast(`Abrindo código: ${project}`);
-  // Aqui você pode adicionar a lógica real para abrir código
-};
-
-window.openCase = (caseName) => {
-  showToast(`Abrindo case: ${caseName}`);
-  // Aqui você pode adicionar a lógica real para abrir cases
-};
+window.openProject = (project) => showToast(`Abrindo projeto: ${project}`);
+window.openCode = (project) => showToast(`Abrindo código: ${project}`);
+window.openCase = (caseName) => showToast(`Abrindo case: ${caseName}`);
 
 // =========================
-// INICIALIZAÇÃO COMPLETA
+// INICIALIZAÇÃO
 // =========================
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('🚀 MakerAI Studio - Inicializando...');
-  
-  // 1. Carrega conteúdo dinâmico
+  // Carrega conteúdo
   loadDynamicContent();
   
-  // 2. Inicializa todos os módulos
+  // Inicializa módulos
   initTheme();
   initLang();
   initMobileMenu();
-  initImageLoading();
   initInfoCards();
   initCarousel();
   initCardCarousels();
@@ -1317,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initFormValidation();
   initAdSense();
 
-  // 3. Inicia animação dos números quando visíveis
+  // Inicia animação dos números quando visíveis
   const kpisSection = $('.hero .kpis');
   if (kpisSection) {
     const observer = new IntersectionObserver((entries) => {
@@ -1331,32 +1129,11 @@ document.addEventListener('DOMContentLoaded', function () {
     observer.observe(kpisSection);
   }
 
-  // 4. Aplica animações fade-up
+  // Aplica animações fade-up
   setTimeout(() => {
     $$('.fade-up').forEach((el, i) => {
       el.style.transitionDelay = `${i * 0.1}s`;
       el.classList.add('show');
     });
   }, 100);
-
-  // 5. Remove loading da página
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      hidePageLoading();
-    }, 500);
-  });
-
-  // Fallback: remove loading após 3 segundos
-  setTimeout(() => {
-    hidePageLoading();
-  }, 3000);
-
-  console.log('✅ MakerAI Studio - Inicialização completa!');
 });
-
-// Fallback global para loading
-if (document.readyState === 'complete') {
-  setTimeout(() => {
-    hidePageLoading();
-  }, 1000);
-}
