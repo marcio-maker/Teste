@@ -1,950 +1,863 @@
-// =========================
-// CONFIGURAÇÕES GLOBAIS
-// =========================
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
+/* ============================================
+   JAVASCRIPT COMPLETO - MAKERAI STUDIO
+   ============================================ */
 
 // =========================
-// NOTIFICAÇÕES (TOAST)
+// ELEMENTOS PRINCIPAIS
 // =========================
-function showToast(message, type = 'success') {
-  const existingToast = $('.toast-notification');
-  if (existingToast) existingToast.remove();
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const closeMenuBtn = document.getElementById('closeMenu');
+const mobileMenu = document.getElementById('mobileMenu');
+const themeToggle = document.getElementById('themeToggle');
+const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+const langButtons = document.querySelectorAll('.lang-btn, .mobile-lang-btn');
+const cardToggles = document.querySelectorAll('.card-toggle');
+const detailsOverlay = document.getElementById('detailsOverlay');
+const closeOverlay = document.querySelector('.close-overlay');
+const detailsContent = document.getElementById('detailsContent');
+const contactForm = document.getElementById('contactForm');
+const carouselTrack = document.querySelector('.carousel-track');
+const dots = document.querySelectorAll('.dot');
+const assistantBtn = document.getElementById('assistantBtn');
+const faqQuestions = document.querySelectorAll('.faq-question');
 
-  const toast = document.createElement('div');
-  toast.className = 'toast-notification';
-  toast.setAttribute('role', 'status');
-  toast.setAttribute('aria-live', 'polite');
-  toast.setAttribute('aria-atomic', 'true');
+// =========================
+// CONTROLE DO MENU MOBILE
+// =========================
+function initMobileMenu() {
+  if (!hamburgerBtn || !closeMenuBtn || !mobileMenu) return;
   
-  // Estilos inline para performance
-  toast.style.cssText = `
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 120px;
-    background: ${type === 'error' ? '#ef4444' : '#10b981'};
-    color: white;
-    padding: 12px 20px;
-    border-radius: 12px;
-    z-index: 9999;
-    font-weight: 600;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    animation: toastIn 0.3s ease;
-    max-width: 90vw;
-    text-align: center;
-    font-size: 14px;
-  `;
-  
-  toast.textContent = message;
-  document.body.appendChild(toast);
-  
-  // Remove após 3 segundos
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateX(-50%) translateY(20px)';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-// Animação CSS para toast
-const toastStyle = document.createElement('style');
-toastStyle.textContent = `
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
-  }
-`;
-document.head.appendChild(toastStyle);
-
-// =========================
-// GERENCIAMENTO DE FOCO (ACESSIBILIDADE)
-// =========================
-let _trapHandler = null;
-let _lastFocusedElement = null;
-
-function trapFocus(container) {
-  const focusable = container.querySelectorAll(
-    'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
-  );
-  if (!focusable.length) return;
-
-  const first = focusable[0];
-  const last = focusable[focusable.length - 1];
-  
-  // Salva o elemento com foco antes de abrir
-  _lastFocusedElement = document.activeElement;
-
-  _trapHandler = function (e) {
-    if (e.key !== 'Tab') return;
-    
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
+  const openMenu = () => {
+    mobileMenu.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    hamburgerBtn.setAttribute('aria-expanded', 'true');
   };
   
-  document.addEventListener('keydown', _trapHandler);
-}
-
-function releaseFocusTrap() {
-  if (_trapHandler) {
-    document.removeEventListener('keydown', _trapHandler);
-    _trapHandler = null;
-  }
+  const closeMenu = () => {
+    mobileMenu.classList.remove('active');
+    document.body.style.overflow = '';
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+  };
   
-  // Restaura foco ao elemento anterior
-  if (_lastFocusedElement) {
-    _lastFocusedElement.focus();
-    _lastFocusedElement = null;
-  }
-}
-
-// =========================
-// NAVEGAÇÃO MOBILE
-// =========================
-const hamburgerBtn = $('#hamburgerBtn');
-const closeMobileNav = $('#closeMobileNav');
-const mobileNav = $('#mobileNav');
-
-function closeNav() {
-  mobileNav.classList.remove('active');
-  mobileNav.setAttribute('aria-hidden', 'true');
-  hamburgerBtn.setAttribute('aria-expanded', 'false');
-  releaseFocusTrap();
-}
-
-function openNav() {
-  mobileNav.classList.add('active');
-  mobileNav.setAttribute('aria-hidden', 'false');
-  hamburgerBtn.setAttribute('aria-expanded', 'true');
+  hamburgerBtn.addEventListener('click', openMenu);
+  closeMenuBtn.addEventListener('click', closeMenu);
   
-  // Foca no botão de fechar
-  if (closeMobileNav) closeMobileNav.focus();
-  trapFocus(mobileNav);
-}
-
-// Event Listeners para navegação mobile
-if (hamburgerBtn) {
-  hamburgerBtn.addEventListener('click', openNav);
-}
-
-if (closeMobileNav) {
-  closeMobileNav.addEventListener('click', closeNav);
-}
-
-// Fecha menu ao clicar em links
-$$('.mobile-nav-list a').forEach(link => {
-  link.addEventListener('click', closeNav);
-});
-
-// Fecha menu ao clicar fora
-if (mobileNav) {
-  mobileNav.addEventListener('click', (e) => {
-    if (e.target === mobileNav) closeNav();
-  });
-}
-
-// Fecha menu com ESC
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
-    closeNav();
-  }
-});
-
-// =========================
-// TEMA (DARK/LIGHT MODE)
-// =========================
-const desktopToggle = $('#themeToggle');
-const mobileToggle = $('#mobileThemeToggle');
-const initialTheme = localStorage.getItem('theme') || 
-  (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-
-function applyTheme(theme) {
-  const isLight = theme === 'light';
-  
-  // Aplica tema ao HTML
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  
-  // Atualiza ícones e labels
-  const icon = isLight ? '☀️' : '🌙';
-  const label = isLight ? 'Alternar para tema escuro' : 'Alternar para tema claro';
-  
-  if (desktopToggle) {
-    desktopToggle.textContent = icon;
-    desktopToggle.setAttribute('aria-label', label);
-    desktopToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-  }
-  
-  if (mobileToggle) {
-    mobileToggle.textContent = icon;
-    mobileToggle.setAttribute('aria-label', label);
-    mobileToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-  }
-}
-
-function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  
-  // Feedback para usuário
-  const message = currentLang === 'en' ? 
-    `${next === 'light' ? 'Light' : 'Dark'} theme activated` :
-    currentLang === 'es' ? 
-      `Tema ${next === 'light' ? 'claro' : 'oscuro'} activado` :
-      `Tema ${next === 'light' ? 'claro' : 'escuro'} ativado`;
-  
-  showToast(message);
-}
-
-function initTheme() {
-  if (desktopToggle) desktopToggle.addEventListener('click', toggleTheme);
-  if (mobileToggle) mobileToggle.addEventListener('click', toggleTheme);
-  applyTheme(initialTheme);
-}
-
-// =========================
-// IDIOMAS (I18N)
-// =========================
-const translations = {
-  pt: {
-    nav_servicos: "Serviços",
-    nav_portfolio: "Portfólio",
-    nav_cases: "Cases",
-    nav_faq: "FAQ",
-    nav_sobre: "Sobre",
-    nav_contato: "Contato",
-    hero_title: "Soluções Inteligentes para Negócios Modernos — <span>IA, Web e Experiências</span>",
-    hero_sub: "Design, desenvolvimento e automações que transformam serviços em experiências rentáveis. Protótipos rápidos, produtos prontos e integração com IA para vendas, atendimento e retenção.",
-    cta_primary: "Quero minha solução",
-    ver_portfolio: "Ver portfólio →",
-    btn_enviar: "Enviar mensagem",
-    msg_sent: "Mensagem enviada! Responderemos em até 24h.",
-    faq_q_1: "Quanto tempo leva para desenvolver um site?",
-    faq_a_1: "Depende do escopo. Protótipos: 1–2 semanas. Projeto completo: 4–8 semanas. Implementamos milestones e entregas parciais.",
-    faq_q_2: "Vocês oferecem suporte multilíngue?",
-    faq_a_2: "Sim — PT, EN, ES com traduções integradas e content fallback.",
-    faq_q_3: "Qual é o custo médio de um projeto?",
-    faq_a_3: "Variável. Sites básicos a partir de R$5.000; sistemas com IA e integrações complexas R$50.000+ (estimativa).",
-    faq_q_4: "Como integramos IA nos projetos?",
-    faq_a_4: "Integramos APIs de ML para chat, recomendações e automação. Podemos usar endpoints próprios (FastAPI) ou serviços externos.",
-    faq_q_5: "Vocês garantem acessibilidade?",
-    faq_a_5: "Sim — seguimento das recomendações WCAG, contraste, navegação por teclado e aria-attributes.",
-    faq_q_6: "Oferecem manutenção e suporte?",
-    faq_a_6: "Sim — planos mensais: correções, atualizações de segurança e monitoramento de performance.",
-    footer_privacy: "Política de Privacidade",
-    footer_terms: "Termos de Uso",
-    footer_contact: "Contato"
-  },
-  en: {
-    nav_servicos: "Services",
-    nav_portfolio: "Portfolio",
-    nav_cases: "Cases",
-    nav_faq: "FAQ",
-    nav_sobre: "About",
-    nav_contato: "Contact",
-    hero_title: "Smart Solutions for Modern Business — <span>AI, Web, & Experiences</span>",
-    hero_sub: "Design, development, and automation that turn services into profitable experiences. Rapid prototypes, finished products, and AI integration for sales, support, and retention.",
-    cta_primary: "I want my solution",
-    ver_portfolio: "View portfolio →",
-    btn_enviar: "Send message",
-    msg_sent: "Message sent! We'll respond within 24 hours.",
-    faq_q_1: "How long does it take to develop a website?",
-    faq_a_1: "It depends on the scope. Prototypes: 1–2 weeks. Full project: 4–8 weeks. We implement milestones and partial deliveries.",
-    faq_q_2: "Do you offer multilingual support?",
-    faq_a_2: "Yes — PT, EN, ES with integrated translations and content fallback.",
-    faq_q_3: "What is the average cost of a project?",
-    faq_a_3: "Variable. Basic websites starting from $1,000; systems with AI and complex integrations $10,000+ (estimate).",
-    faq_q_4: "How do you integrate AI into projects?",
-    faq_a_4: "We integrate ML APIs for chat, recommendations, and automation. We can use our own endpoints (FastAPI) or external services.",
-    faq_q_5: "Do you guarantee accessibility?",
-    faq_a_5: "Yes — following WCAG recommendations, contrast, keyboard navigation, and aria-attributes.",
-    faq_q_6: "Do you offer maintenance and support?",
-    faq_a_6: "Yes — monthly plans: bug fixes, security updates, and performance monitoring.",
-    footer_privacy: "Privacy Policy",
-    footer_terms: "Terms of Use",
-    footer_contact: "Contact"
-  },
-  es: {
-    nav_servicos: "Servicios",
-    nav_portfolio: "Portafolio",
-    nav_cases: "Casos",
-    nav_faq: "FAQ",
-    nav_sobre: "Sobre",
-    nav_contato: "Contacto",
-    hero_title: "Soluciones Inteligentes para Negocios Modernos — <span>IA, Web y Experiencias</span>",
-    hero_sub: "Diseño, desarrollo y automatizaciones que convierten servicios en experiencias rentables. Prototipos rápidos, productos listos e integraciones de IA para ventas, soporte y retención.",
-    cta_primary: "Quiero mi solución",
-    ver_portfolio: "Ver portafolio →",
-    btn_enviar: "Enviar mensaje",
-    msg_sent: "¡Mensaje enviado! Responderemos en 24 horas.",
-    faq_q_1: "¿Cuánto tiempo lleva desarrollar un sitio web?",
-    faq_a_1: "Depende del alcance. Prototipos: 1–2 semanas. Proyecto completo: 4–8 semanas. Implementamos hitos y entregas parciales.",
-    faq_q_2: "¿Ofrecen soporte multilingüe?",
-    faq_a_2: "Sí — PT, EN, ES con traducciones integradas y content fallback.",
-    faq_q_3: "¿Cuál es el costo promedio de un proyecto?",
-    faq_a_3: "Variable. Sitios web básicos a partir de $1,000; sistemas con IA e integraciones complejas $10,000+ (estimación).",
-    faq_q_4: "¿Cómo integran la IA en los proyectos?",
-    faq_a_4: "Integramos APIs de ML para chat, recomendaciones y automatización. Podemos usar endpoints propios (FastAPI) o servicios externos.",
-    faq_q_5: "¿Garantizan la accesibilidad?",
-    faq_a_5: "Sí — siguiendo las recomendaciones WCAG, contraste, navegación por teclado y aria-attributes.",
-    faq_q_6: "¿Ofrecen mantenimiento y soporte?",
-    faq_a_6: "Sí — planes mensuales: correcciones, actualizaciones de seguridad y monitoreo de rendimiento.",
-    footer_privacy: "Política de Privacidad",
-    footer_terms: "Términos de Uso",
-    footer_contact: "Contacto"
-  }
-};
-
-let currentLang = localStorage.getItem('lang') || 'pt';
-
-function applyLang(lang) {
-  currentLang = lang;
-  localStorage.setItem('lang', lang);
-  const dict = translations[lang] || translations['pt'];
-  
-  // Atualiza todos os elementos com data-i18n
-  $$('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    let translation = dict[key] || el.textContent;
-    
-    // Permite HTML no hero_title
-    if (key === 'hero_title') {
-      el.innerHTML = translation;
-    } else {
-      el.textContent = translation;
-    }
+  // Fechar menu ao clicar em links
+  document.querySelectorAll('.mobile-nav a').forEach(link => {
+    link.addEventListener('click', closeMenu);
   });
   
-  // Atualiza botões ativos (desktop)
-  $$('.lang-btn').forEach(btn => {
-    const active = btn.dataset.lang === lang;
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-pressed', active);
+  // Fechar menu ao clicar fora
+  mobileMenu.addEventListener('click', (e) => {
+    if (e.target === mobileMenu) closeMenu();
   });
   
-  // Atualiza botões ativos (mobile)
-  $$('.mobile-lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
-  
-  // Atualiza atributo lang no HTML
-  document.documentElement.lang = lang;
-  
-  // Feedback para usuário
-  const langNames = { pt: 'Português', en: 'English', es: 'Español' };
-  showToast(`${langNames[lang]} selected`);
-}
-
-function initLang() {
-  // Desktop language buttons
-  $$('.lang-btn, .mobile-lang-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const lang = this.dataset.lang;
-      applyLang(lang);
-    });
-  });
-  
-  applyLang(currentLang);
-}
-
-// =========================
-// INFO CARDS (SAIBA MAIS)
-// =========================
-function openInfoCard(infoEl, triggerBtn) {
-  infoEl.classList.add('open');
-  infoEl.setAttribute('aria-hidden', 'false');
-  
-  if (triggerBtn) {
-    triggerBtn.setAttribute('aria-expanded', 'true');
-  }
-  
-  // Foca no botão de fechar
-  const closeBtn = infoEl.querySelector('.close-info');
-  if (closeBtn) closeBtn.focus();
-  
-  trapFocus(infoEl);
-}
-
-function closeInfoCard(infoEl) {
-  infoEl.classList.remove('open');
-  infoEl.setAttribute('aria-hidden', 'true');
-  
-  // Restaura aria-expanded no trigger
-  const topic = infoEl.dataset.topic;
-  const trigger = $(`.saiba-mais[data-topic="${topic}"]`);
-  if (trigger) trigger.setAttribute('aria-expanded', 'false');
-  
-  releaseFocusTrap();
-  if (trigger) trigger.focus(); // Retorna foco ao botão "Saiba Mais"
-}
-
-// Inicializa info cards
-function initInfoCards() {
-  // Event listeners para botões "Saiba Mais"
-  $$('.saiba-mais').forEach(btn => {
-    btn.addEventListener('click', function (e) {
-      e.preventDefault();
-      const topic = this.dataset.topic;
-      
-      // Encontra o info-card correto baseado no tamanho da tela
-      let info;
-      if (window.innerWidth < 768) {
-        // Mobile: usa card do carrossel
-        info = $(`.cards-carousel-container .info-card[data-topic="${topic}"]`);
-      } else {
-        // Desktop: usa card do grid
-        info = $(`.grid.mobile-carousel .info-card[data-topic="${topic}"]`);
-      }
-      
-      // Fallback se não encontrar
-      if (!info) info = $(`.info-card[data-topic="${topic}"]`);
-      
-      if (!info) return;
-      
-      // Fecha outros cards abertos
-      $$('.info-card.open').forEach(card => {
-        if (card !== info) closeInfoCard(card);
-      });
-      
-      // Alterna estado
-      if (info.classList.contains('open')) {
-        closeInfoCard(info);
-      } else {
-        openInfoCard(info, this);
-      }
-    });
-  });
-  
-  // Event listeners para botões "Fechar"
-  $$('.close-info').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const info = this.closest('.info-card');
-      if (info) closeInfoCard(info);
-    });
-  });
-  
-  // Fecha com ESC
+  // Fechar menu com ESC
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      const openCard = $('.info-card.open');
-      if (openCard) closeInfoCard(openCard);
+    if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+      closeMenu();
     }
   });
 }
 
 // =========================
-// CARROSSEL PRINCIPAL (PORTFOLIO)
+// CONTROLE DO TEMA
 // =========================
-function initMainCarousel() {
-  const inner = $('#carouselInner');
-  const dots = $('#dots');
+function initThemeToggle() {
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Atualiza ícones
+    const themeIcon = isDark ? '☀️' : '🌙';
+    const themeLabel = isDark ? 'Alternar para tema escuro' : 'Alternar para tema claro';
+    
+    if (themeToggle) {
+      themeToggle.textContent = themeIcon;
+      themeToggle.setAttribute('aria-label', themeLabel);
+    }
+    if (mobileThemeToggle) {
+      mobileThemeToggle.textContent = themeIcon;
+    }
+    
+    showToast(`Tema ${newTheme === 'light' ? 'claro' : 'escuro'} ativado`);
+  }
   
-  if (!inner || !dots) return;
+  function applySavedTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const isDark = savedTheme === 'dark';
+    
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    const themeIcon = isDark ? '🌙' : '☀️';
+    if (themeToggle) themeToggle.textContent = themeIcon;
+    if (mobileThemeToggle) mobileThemeToggle.textContent = themeIcon;
+  }
   
-  const slides = inner.children.length;
-  let currentIndex = 0;
-  let intervalId;
-  let isMobile = window.innerWidth < 768;
-  let isAutoPlaying = false;
+  if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+  if (mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
+  
+  applySavedTheme();
+}
+
+// =========================
+// CONTROLE DE IDIOMA
+// =========================
+function initLanguageSwitcher() {
+  const translations = {
+    pt: {
+      // Menu
+      'nav_services': 'Serviços',
+      'nav_portfolio': 'Portfólio',
+      'nav_cases': 'Cases',
+      'nav_faq': 'FAQ',
+      'nav_about': 'Sobre',
+      'nav_contact': 'Contato',
+      'nav_assistants': 'Assistentes IA',
+      'nav_tech': 'Tecnologias',
+      'nav_products': 'Produtos',
+      'nav_blog': 'Blog',
+      'nav_login': 'Login',
+      
+      // Hero
+      'hero_title': 'Soluções Inteligentes para Negócios Modernos — <span class="gradient-text">IA, Web e Experiências</span>',
+      'hero_subtitle': 'Design, desenvolvimento e automações que transformam serviços em experiências rentáveis.',
+      'cta_primary': 'Quero minha solução',
+      'cta_secondary': 'Ver portfólio →',
+      
+      // Seções
+      'services_title': 'Serviços e Foco',
+      'services_subtitle': 'Ajudamos sua empresa a crescer com tecnologia inteligente.',
+      'portfolio_title': 'Portfólio em Destaque',
+      'portfolio_subtitle': 'Uma amostra dos projetos que criamos.',
+      'cases_title': 'Cases de Sucesso',
+      'cases_subtitle': 'Como transformamos negócios com foco em resultados.',
+      'faq_title': 'Perguntas Frequentes (FAQ)',
+      'faq_subtitle': 'Tiramos as dúvidas mais comuns.',
+      'about_title': 'Sobre a MakerAI Studio',
+      'about_subtitle': 'Nosso foco é na união entre criatividade e inteligência artificial.',
+      'assistants_title': 'Assistentes IA de Negócio',
+      'assistants_subtitle': 'Automação de tarefas de alto valor.',
+      'tech_title': 'Tecnologias Core',
+      'tech_subtitle': 'O que usamos para construir o futuro do seu negócio.',
+      'products_title': 'Produtos Prontos',
+      'products_subtitle': 'Soluções white-label para kickstart rápido.',
+      'blog_title': 'Últimos Artigos',
+      'blog_subtitle': 'Conteúdo sobre IA, desenvolvimento e tendências.',
+      'contact_title': 'Fale com a MakerAI Studio',
+      'contact_subtitle': 'Quer transformar seu negócio com IA e criatividade?',
+      
+      // Formulário
+      'form_name': 'Nome completo',
+      'form_email': 'E-mail profissional',
+      'form_service': 'Serviço de interesse...',
+      'form_message': 'Sua mensagem e escopo do projeto',
+      'form_submit': 'Enviar mensagem',
+      'form_reset': 'Limpar',
+      'form_note': 'Garantimos a privacidade dos seus dados e sigilo total sobre seu projeto.',
+      
+      // FAQ
+      'faq_q1': 'Quanto tempo leva para desenvolver um site?',
+      'faq_a1': 'Depende do escopo. Protótipos: 1–2 semanas. Projeto completo: 4–8 semanas. Implementamos milestones e entregas parciais.',
+      'faq_q2': 'Vocês oferecem suporte multilíngue?',
+      'faq_a2': 'Sim — PT, EN, ES com traduções integradas e content fallback.',
+      'faq_q3': 'Qual é o custo médio de um projeto?',
+      'faq_a3': 'Variável. Sites básicos a partir de R$5.000; sistemas com IA e integrações complexas R$50.000+ (estimativa).',
+      'faq_q4': 'Como integramos IA nos projetos?',
+      'faq_a4': 'Integramos APIs de ML para chat, recomendações e automação. Podemos usar endpoints próprios (FastAPI) ou serviços externos.',
+      'faq_q5': 'Vocês garantem acessibilidade?',
+      'faq_a5': 'Sim — seguimento das recomendações WCAG, contraste, navegação por teclado e aria-attributes.',
+      'faq_q6': 'Oferecem manutenção e suporte?',
+      'faq_a6': 'Sim — planos mensais: correções, atualizações de segurança e monitoramento de performance.',
+      
+      // Footer
+      'footer_copyright': '© 2026 MakerAI Studio — Desenvolvido com foco em performance e acessibilidade',
+      'footer_privacy': 'Política de Privacidade',
+      'footer_terms': 'Termos de Uso',
+      'footer_contact': 'Contato'
+    },
+    en: {
+      // Menu
+      'nav_services': 'Services',
+      'nav_portfolio': 'Portfolio',
+      'nav_cases': 'Cases',
+      'nav_faq': 'FAQ',
+      'nav_about': 'About',
+      'nav_contact': 'Contact',
+      'nav_assistants': 'AI Assistants',
+      'nav_tech': 'Technologies',
+      'nav_products': 'Products',
+      'nav_blog': 'Blog',
+      'nav_login': 'Login',
+      
+      // Hero
+      'hero_title': 'Smart Solutions for Modern Business — <span class="gradient-text">AI, Web & Experiences</span>',
+      'hero_subtitle': 'Design, development, and automation that transform services into profitable experiences.',
+      'cta_primary': 'I want my solution',
+      'cta_secondary': 'View portfolio →',
+      
+      // Seções
+      'services_title': 'Services and Focus',
+      'services_subtitle': 'We help your company grow with smart technology.',
+      'portfolio_title': 'Featured Portfolio',
+      'portfolio_subtitle': 'A sample of the projects we create.',
+      'cases_title': 'Success Cases',
+      'cases_subtitle': 'How we transform businesses with a focus on results.',
+      'faq_title': 'Frequently Asked Questions',
+      'faq_subtitle': 'We answer the most common questions.',
+      'about_title': 'About MakerAI Studio',
+      'about_subtitle': 'Our focus is on the union between creativity and artificial intelligence.',
+      'assistants_title': 'Business AI Assistants',
+      'assistants_subtitle': 'Automation of high-value tasks.',
+      'tech_title': 'Core Technologies',
+      'tech_subtitle': 'What we use to build the future of your business.',
+      'products_title': 'Ready Products',
+      'products_subtitle': 'White-label solutions for quick kickstart.',
+      'blog_title': 'Latest Articles',
+      'blog_subtitle': 'Content about AI, development and trends.',
+      'contact_title': 'Contact MakerAI Studio',
+      'contact_subtitle': 'Want to transform your business with AI and creativity?',
+      
+      // Formulário
+      'form_name': 'Full name',
+      'form_email': 'Professional email',
+      'form_service': 'Service of interest...',
+      'form_message': 'Your message and project scope',
+      'form_submit': 'Send message',
+      'form_reset': 'Clear',
+      'form_note': 'We guarantee the privacy of your data and total confidentiality about your project.',
+      
+      // FAQ
+      'faq_q1': 'How long does it take to develop a website?',
+      'faq_a1': 'It depends on the scope. Prototypes: 1-2 weeks. Complete project: 4-8 weeks. We implement milestones and partial deliveries.',
+      'faq_q2': 'Do you offer multilingual support?',
+      'faq_a2': 'Yes — PT, EN, ES with integrated translations and content fallback.',
+      'faq_q3': 'What is the average cost of a project?',
+      'faq_a3': 'Variable. Basic websites starting from $1,000; systems with AI and complex integrations $10,000+ (estimate).',
+      'faq_q4': 'How do you integrate AI into projects?',
+      'faq_a4': 'We integrate ML APIs for chat, recommendations and automation. We can use our own endpoints (FastAPI) or external services.',
+      'faq_q5': 'Do you guarantee accessibility?',
+      'faq_a5': 'Yes — following WCAG recommendations, contrast, keyboard navigation and aria-attributes.',
+      'faq_q6': 'Do you offer maintenance and support?',
+      'faq_a6': 'Yes — monthly plans: bug fixes, security updates and performance monitoring.',
+      
+      // Footer
+      'footer_copyright': '© 2026 MakerAI Studio — Developed with focus on performance and accessibility',
+      'footer_privacy': 'Privacy Policy',
+      'footer_terms': 'Terms of Use',
+      'footer_contact': 'Contact'
+    },
+    es: {
+      // Menu
+      'nav_services': 'Servicios',
+      'nav_portfolio': 'Portafolio',
+      'nav_cases': 'Casos',
+      'nav_faq': 'FAQ',
+      'nav_about': 'Sobre',
+      'nav_contact': 'Contacto',
+      'nav_assistants': 'Asistentes IA',
+      'nav_tech': 'Tecnologías',
+      'nav_products': 'Productos',
+      'nav_blog': 'Blog',
+      'nav_login': 'Login',
+      
+      // Hero
+      'hero_title': 'Soluciones Inteligentes para Negocios Modernos — <span class="gradient-text">IA, Web y Experiencias</span>',
+      'hero_subtitle': 'Diseño, desarrollo y automatizaciones que transforman servicios en experiencias rentables.',
+      'cta_primary': 'Quiero mi solución',
+      'cta_secondary': 'Ver portafolio →',
+      
+      // Seções
+      'services_title': 'Servicios y Enfoque',
+      'services_subtitle': 'Ayudamos a tu empresa a crecer con tecnología inteligente.',
+      'portfolio_title': 'Portafolio Destacado',
+      'portfolio_subtitle': 'Una muestra de los proyectos que creamos.',
+      'cases_title': 'Casos de Éxito',
+      'cases_subtitle': 'Cómo transformamos negocios con enfoque en resultados.',
+      'faq_title': 'Preguntas Frecuentes',
+      'faq_subtitle': 'Respondemos las dudas más comunes.',
+      'about_title': 'Sobre MakerAI Studio',
+      'about_subtitle': 'Nuestro enfoque está en la unión entre creatividad e inteligencia artificial.',
+      'assistants_title': 'Asistentes IA de Negocio',
+      'assistants_subtitle': 'Automatización de tareas de alto valor.',
+      'tech_title': 'Tecnologías Principales',
+      'tech_subtitle': 'Lo que usamos para construir el futuro de tu negocio.',
+      'products_title': 'Productos Listos',
+      'products_subtitle': 'Soluciones white-label para inicio rápido.',
+      'blog_title': 'Últimos Artículos',
+      'blog_subtitle': 'Contenido sobre IA, desarrollo y tendencias.',
+      'contact_title': 'Contacta con MakerAI Studio',
+      'contact_subtitle': '¿Quieres transformar tu negocio con IA y creatividad?',
+      
+      // Formulário
+      'form_name': 'Nombre completo',
+      'form_email': 'Correo profesional',
+      'form_service': 'Servicio de interés...',
+      'form_message': 'Tu mensaje y alcance del proyecto',
+      'form_submit': 'Enviar mensaje',
+      'form_reset': 'Limpiar',
+      'form_note': 'Garantizamos la privacidad de tus datos y confidencialidad total sobre tu proyecto.',
+      
+      // FAQ
+      'faq_q1': '¿Cuánto tiempo lleva desarrollar un sitio web?',
+      'faq_a1': 'Depende del alcance. Prototipos: 1-2 semanas. Proyecto completo: 4-8 semanas. Implementamos hitos y entregas parciales.',
+      'faq_q2': '¿Ofrecen soporte multilingüe?',
+      'faq_a2': 'Sí — PT, EN, ES con traducciones integradas y content fallback.',
+      'faq_q3': '¿Cuál es el costo promedio de un proyecto?',
+      'faq_a3': 'Variable. Sitios web básicos a partir de $1,000; sistemas con IA e integraciones complejas $10,000+ (estimación).',
+      'faq_q4': '¿Cómo integran la IA en los proyectos?',
+      'faq_a4': 'Integramos APIs de ML para chat, recomendaciones y automatización. Podemos usar endpoints propios (FastAPI) o servicios externos.',
+      'faq_q5': '¿Garantizan la accesibilidad?',
+      'faq_a5': 'Sí — siguiendo las recomendaciones WCAG, contraste, navegación por teclado y aria-attributes.',
+      'faq_q6': '¿Ofrecen mantenimiento y soporte?',
+      'faq_a6': 'Sí — planes mensuales: correcciones, actualizaciones de seguridad y monitoreo de rendimiento.',
+      
+      // Footer
+      'footer_copyright': '© 2026 MakerAI Studio — Desarrollado con enfoque en rendimiento y accesibilidad',
+      'footer_privacy': 'Política de Privacidad',
+      'footer_terms': 'Términos de Uso',
+      'footer_contact': 'Contacto'
+    }
+  };
+
+  let currentLang = localStorage.getItem('lang') || 'pt';
+  
+  function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    document.documentElement.lang = lang;
+    
+    const dict = translations[lang] || translations.pt;
+    
+    // Atualiza todos os elementos com data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = dict[key];
+        } else if (el.tagName === 'OPTION') {
+          el.textContent = dict[key];
+        } else {
+          el.innerHTML = dict[key];
+        }
+      }
+    });
+    
+    // Atualiza botões ativos
+    langButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+      btn.setAttribute('aria-pressed', btn.dataset.lang === lang);
+    });
+    
+    showToast(`Idioma alterado para ${lang.toUpperCase()}`, 'success');
+  }
+  
+  // Inicializa botões de idioma
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      setLanguage(lang);
+    });
+  });
+  
+  // Aplica idioma salvo
+  setLanguage(currentLang);
+}
+
+// =========================
+// DETALHES DOS CARDS (SERVIÇOS)
+// =========================
+function initCardDetails() {
+  const cardDetails = {
+    'web-apps': {
+      title: 'Web Apps e PWAs',
+      content: `
+        <h3>Desenvolvimento de Aplicações Web Progressivas</h3>
+        <p>Sistemas web de alta performance com funcionalidades nativas:</p>
+        <ul>
+          <li><strong>Performance otimizada:</strong> Core Web Vitals 90+</li>
+          <li><strong>Funcionamento offline:</strong> Cache inteligente</li>
+          <li><strong>Instalação como app nativo:</strong> PWA installable</li>
+          <li><strong>Notificações push:</strong> Engajamento aumentado</li>
+          <li><strong>Sincronização em background:</strong> Dados sempre atualizados</li>
+        </ul>
+        <div class="card-details-actions">
+          <button class="btn primary" onclick="showToast('Orçamento solicitado para Web Apps')">Solicitar Orçamento</button>
+          <button class="btn secondary close-details">Fechar</button>
+        </div>
+      `
+    },
+    'ia': {
+      title: 'Avatares & Consultores IA',
+      content: `
+        <h3>Soluções de Inteligência Artificial</h3>
+        <p>Assistentes conversacionais avançados para diversos setores:</p>
+        <ul>
+          <li><strong>Atendimento ao cliente 24/7:</strong> Redução de custos</li>
+          <li><strong>Vendas automatizadas:</strong> Conversão aumentada</li>
+          <li><strong>Análise de dados em tempo real:</strong> Insights valiosos</li>
+          <li><strong>Integração com sistemas:</strong> CRM, ERP, etc.</li>
+          <li><strong>Personalização total:</strong> Da voz à personalidade</li>
+        </ul>
+        <div class="card-details-actions">
+          <button class="btn primary" onclick="showToast('Orçamento solicitado para IA')">Solicitar Orçamento</button>
+          <button class="btn secondary close-details">Fechar</button>
+        </div>
+      `
+    },
+    'rpa': {
+      title: 'Automações RPA',
+      content: `
+        <h3>Automação de Processos Robóticos</h3>
+        <p>Otimize processos repetitivos com bots inteligentes:</p>
+        <ul>
+          <li><strong>Processamento de documentos:</strong> PDF, Excel, Word</li>
+          <li><strong>Integração entre sistemas:</strong> APIs personalizadas</li>
+          <li><strong>Coleta e análise de dados:</strong> Web scraping inteligente</li>
+          <li><strong>Relatórios automáticos:</strong> Dashboards em tempo real</li>
+          <li><strong>Redução de erros humanos:</strong> Precisão de 99.9%</li>
+        </ul>
+        <div class="card-details-actions">
+          <button class="btn primary" onclick="showToast('Orçamento solicitado para RPA')">Solicitar Orçamento</button>
+          <button class="btn secondary close-details">Fechar</button>
+        </div>
+      `
+    },
+    '3d': {
+      title: 'Modelagem 3D',
+      content: `
+        <h3>Experiências 3D e Realidade Aumentada</h3>
+        <p>Criação de ambientes imersivos para diversos fins:</p>
+        <ul>
+          <li><strong>Visualização de produtos:</strong> E-commerce imersivo</li>
+          <li><strong>Tour virtual:</strong> Imóveis, museus, eventos</li>
+          <li><strong>Simulações interativas:</strong> Treinamentos e demonstrações</li>
+          <li><strong>Realidade aumentada:</strong> Try-before-you-buy</li>
+          <li><strong>Configuradores online:</strong> Personalização em tempo real</li>
+        </ul>
+        <div class="card-details-actions">
+          <button class="btn primary" onclick="showToast('Orçamento solicitado para 3D')">Solicitar Orçamento</button>
+          <button class="btn secondary close-details">Fechar</button>
+        </div>
+      `
+    }
+  };
+
+  cardToggles.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const detail = cardDetails[target];
+      
+      if (detail) {
+        detailsContent.innerHTML = `
+          <h2>${detail.title}</h2>
+          ${detail.content}
+        `;
+        detailsOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  });
+
+  // Fechar overlay
+  if (closeOverlay) {
+    closeOverlay.addEventListener('click', closeDetailsOverlay);
+  }
+
+  if (detailsOverlay) {
+    detailsOverlay.addEventListener('click', (e) => {
+      if (e.target === detailsOverlay) closeDetailsOverlay();
+    });
+  }
+
+  // Fechar com botões dentro do overlay
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('close-details')) {
+      closeDetailsOverlay();
+    }
+  });
+}
+
+function closeDetailsOverlay() {
+  detailsOverlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// =========================
+// CARROSSEL DO PORTFÓLIO
+// =========================
+function initCarousel() {
+  if (!carouselTrack || dots.length === 0) return;
+  
+  let currentSlide = 0;
+  let autoPlayInterval;
+  const totalSlides = dots.length;
   
   function updateCarousel() {
-    // Aplica transform apenas em desktop
-    if (!isMobile) {
-      const offset = -currentIndex * 100;
-      inner.style.transform = `translateX(${offset}%)`;
-    }
+    carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
     
-    // Atualiza dots
-    $$('.dot').forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentIndex);
-      dot.setAttribute('aria-label', `Go to slide ${index + 1}`);
-      dot.setAttribute('aria-selected', index === currentIndex);
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentSlide);
+      dot.setAttribute('aria-label', `Ir para o slide ${index + 1}`);
+      dot.setAttribute('aria-selected', index === currentSlide);
     });
     
-    // Atualiza aria-hidden dos slides
-    $$('.carousel-item').forEach((item, index) => {
-      item.setAttribute('aria-hidden', index !== currentIndex);
+    // Atualiza aria-hidden nos slides
+    document.querySelectorAll('.carousel-slide').forEach((slide, index) => {
+      slide.setAttribute('aria-hidden', index !== currentSlide);
     });
   }
   
   function goToSlide(index) {
-    currentIndex = (index + slides) % slides;
+    currentSlide = (index + totalSlides) % totalSlides;
     updateCarousel();
-    
-    if (!isMobile) {
-      resetAutoPlay();
-    } else {
-      // Em mobile, scroll suave
-      const slideWidth = inner.children[0].offsetWidth + 16;
-      inner.scrollTo({
-        left: currentIndex * slideWidth,
-        behavior: 'smooth'
-      });
-    }
+    resetAutoPlay();
   }
   
-  // Event listeners para dots
-  $$('.dot').forEach((dot, index) => {
+  function nextSlide() {
+    goToSlide(currentSlide + 1);
+  }
+  
+  function prevSlide() {
+    goToSlide(currentSlide - 1);
+  }
+  
+  // Configura dots
+  dots.forEach((dot, index) => {
     dot.addEventListener('click', () => goToSlide(index));
   });
   
-  // Auto-play apenas em desktop
+  // Auto-play
   function startAutoPlay() {
-    if (!isMobile && !isAutoPlaying) {
-      isAutoPlaying = true;
-      intervalId = setInterval(() => goToSlide(currentIndex + 1), 8000);
+    if (totalSlides > 1) {
+      autoPlayInterval = setInterval(nextSlide, 5000);
     }
   }
   
   function resetAutoPlay() {
-    clearInterval(intervalId);
-    isAutoPlaying = false;
+    clearInterval(autoPlayInterval);
     startAutoPlay();
   }
   
-  // Mobile: detecta scroll para atualizar dots
-  if (isMobile) {
-    let scrollTimeout;
-    inner.addEventListener('scroll', () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const scrollPos = inner.scrollLeft;
-        const slideWidth = inner.children[0].offsetWidth + 16;
-        const newIndex = Math.round(scrollPos / slideWidth);
-        
-        if (newIndex !== currentIndex) {
-          currentIndex = newIndex;
-          updateCarousel();
-        }
-      }, 100);
-    });
-  }
-  
-  // Pausa auto-play ao interagir
-  inner.addEventListener('mouseenter', () => {
-    if (!isMobile && isAutoPlaying) {
-      clearInterval(intervalId);
-      isAutoPlaying = false;
-    }
+  // Controles por teclado
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
   });
   
-  inner.addEventListener('mouseleave', () => {
-    if (!isMobile) startAutoPlay();
+  // Pausa auto-play no hover
+  carouselTrack.addEventListener('mouseenter', () => {
+    clearInterval(autoPlayInterval);
   });
   
-  // Teclado: setas esquerda/direita
-  inner.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      goToSlide(currentIndex - 1);
-    } else if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      goToSlide(currentIndex + 1);
-    }
-  });
+  carouselTrack.addEventListener('mouseleave', startAutoPlay);
   
+  // Inicialização
   updateCarousel();
   startAutoPlay();
-  
-  // Recalcula ao redimensionar
-  window.addEventListener('resize', () => {
-    const newIsMobile = window.innerWidth < 768;
-    if (newIsMobile !== isMobile) {
-      isMobile = newIsMobile;
-      
-      if (isMobile) {
-        clearInterval(intervalId);
-        isAutoPlaying = false;
-        inner.style.transform = 'none';
-      } else {
-        startAutoPlay();
-        updateCarousel();
-      }
-    }
-  });
 }
 
 // =========================
-// CARROSSEIS DE CARDS (MOBILE)
+// FAQ ACCORDION
 // =========================
-function initCardCarousels() {
-  const carousels = {
-    'servicos': '#servicosCarousel',
-    'tech': '#techCarousel',
-    'assistentes': '#assistentesCarousel',
-    'produtos': '#produtosCarousel',
-    'blog': '#blogCarousel',
-    'cases': '#casesCarousel'
-  };
-  
-  Object.keys(carousels).forEach(key => {
-    const carousel = $(carousels[key]);
-    const indicators = $(`#${key}Indicators`);
-    
-    if (!carousel || !indicators) return;
-    
-    const cards = carousel.children;
-    const cardCount = cards.length;
-    
-    // Cria indicadores
-    indicators.innerHTML = '';
-    for (let i = 0; i < cardCount; i++) {
-      const indicator = document.createElement('button');
-      indicator.className = `carousel-indicator ${i === 0 ? 'active' : ''}`;
-      indicator.setAttribute('aria-label', `Go to card ${i + 1}`);
-      indicator.setAttribute('type', 'button');
+function initFAQ() {
+  faqQuestions.forEach(question => {
+    question.addEventListener('click', () => {
+      const item = question.parentElement;
+      const isActive = item.classList.contains('active');
       
-      indicator.addEventListener('click', () => {
-        scrollToCard(carousel, i);
-        updateIndicators(indicators, i);
+      // Fecha todos os outros
+      faqQuestions.forEach(q => {
+        const otherItem = q.parentElement;
+        if (otherItem !== item) {
+          otherItem.classList.remove('active');
+          q.setAttribute('aria-expanded', 'false');
+        }
       });
       
-      indicators.appendChild(indicator);
-    }
-    
-    // Atualiza indicadores durante scroll
-    let scrollTimeout;
-    carousel.addEventListener('scroll', () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const scrollPos = carousel.scrollLeft;
-        const cardWidth = carousel.children[0].offsetWidth + 16;
-        const currentIndex = Math.round(scrollPos / cardWidth);
-        updateIndicators(indicators, currentIndex);
-      }, 100);
-    });
-    
-    // Navegação por teclado
-    carousel.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-        e.preventDefault();
-        const scrollPos = carousel.scrollLeft;
-        const cardWidth = carousel.children[0].offsetWidth + 16;
-        const currentIndex = Math.round(scrollPos / cardWidth);
-        const newIndex = e.key === 'ArrowLeft'
-          ? Math.max(0, currentIndex - 1)
-          : Math.min(cardCount - 1, currentIndex + 1);
-        
-        scrollToCard(carousel, newIndex);
-        updateIndicators(indicators, newIndex);
-      }
+      // Alterna o atual
+      item.classList.toggle('active', !isActive);
+      question.setAttribute('aria-expanded', !isActive);
     });
   });
-  
-  function scrollToCard(carousel, index) {
-    const cardWidth = carousel.children[0].offsetWidth + 16;
-    carousel.scrollTo({
-      left: index * cardWidth,
-      behavior: 'smooth'
-    });
-  }
-  
-  function updateIndicators(indicators, activeIndex) {
-    const indicatorButtons = indicators.querySelectorAll('.carousel-indicator');
-    indicatorButtons.forEach((indicator, index) => {
-      indicator.classList.toggle('active', index === activeIndex);
-    });
-  }
-}
-
-// =========================
-// ASSISTENTE DE IA
-// =========================
-function initAssistant() {
-  const assistantBtn = $('#assistantBtn');
-  const assistantPanel = $('#assistantPanel');
-  const assistantIframe = $('#assistantIframe');
-  
-  if (!assistantBtn || !assistantPanel) return;
-  
-  function toggleAssistant() {
-    const open = assistantPanel.classList.toggle('open');
-    assistantBtn.setAttribute('aria-expanded', open);
-    assistantPanel.setAttribute('aria-hidden', !open);
-    
-    // Adiciona/remove classe de pulso no botão
-    assistantBtn.classList.toggle('pulse', !open);
-    
-    if (open) {
-      // Foca no iframe quando abre
-      setTimeout(() => {
-        if (assistantIframe) {
-          assistantIframe.focus();
-          // Comunicação com iframe se necessário
-          if (assistantIframe.contentWindow) {
-            assistantIframe.contentWindow.postMessage({ type: 'ASSISTANT_OPEN' }, '*');
-          }
-        }
-      }, 300);
-      trapFocus(assistantPanel);
-    } else {
-      releaseFocusTrap();
-      assistantBtn.focus();
-    }
-  }
-  
-  assistantBtn.addEventListener('click', toggleAssistant);
-  
-  // Fecha com ESC
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && assistantPanel.classList.contains('open')) {
-      toggleAssistant();
-    }
-  });
-  
-  // Escuta mensagens do iframe
-  window.addEventListener('message', (event) => {
-    if (event.data?.type === 'ASSISTANT_READY') {
-      console.log('🤖 Assistente IA carregado');
-    }
-    
-    if (event.data?.type === 'CLOSE_ASSISTANT') {
-      toggleAssistant();
-    }
-  });
-  
-  // Inicia com pulso
-  setTimeout(() => {
-    assistantBtn.classList.add('pulse');
-  }, 2000);
 }
 
 // =========================
 // FORMULÁRIO DE CONTATO
 // =========================
-function initFormValidation() {
-  const form = $('#contactForm');
-  if (!form) return;
+function initContactForm() {
+  if (!contactForm) return;
   
-  form.onsubmit = function (e) {
+  contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
-    const nome = $('#nome')?.value.trim();
-    const email = $('#email')?.value.trim();
-    const mensagem = $('#mensagem')?.value.trim();
-    
     // Validação
-    if (!nome || !email || !mensagem) {
-      const msg = currentLang === 'en' 
-        ? 'Please fill in all required fields.' 
-        : currentLang === 'es' 
-          ? 'Por favor, rellene todos los campos obligatorios.' 
-          : 'Por favor, preencha todos os campos obrigatórios.';
-      showToast(msg, 'error');
-      return;
-    }
+    const inputs = contactForm.querySelectorAll('input[required], textarea[required], select[required]');
+    let isValid = true;
     
-    // Valida email
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      const msg = currentLang === 'en'
-        ? 'Please enter a valid email address.'
-        : currentLang === 'es'
-          ? 'Por favor, introduzca una dirección de correo electrónico válida.'
-          : 'Por favor, insira um endereço de e-mail válido.';
-      showToast(msg, 'error');
-      return;
-    }
-    
-    // Simulação de envio (substituir por API real)
-    const formData = {
-      nome,
-      email,
-      mensagem,
-      servico: $('#servico')?.value,
-      lang: currentLang,
-      timestamp: new Date().toISOString()
-    };
-    
-    console.log('📨 Form submitted:', formData);
-    
-    // Feedback ao usuário
-    showToast(translations[currentLang].msg_sent, 'success');
-    
-    // Reset form
-    form.reset();
-    
-    // Foco no primeiro campo
-    $('#nome')?.focus();
-  };
-}
-
-// =========================
-// ANIMAÇÃO DE NÚMEROS (KPI)
-// =========================
-function initAnimatedCounters() {
-  const counterElements = $$('.kpi strong');
-  if (!counterElements.length) return;
-  
-  const duration = 2000; // 2 segundos
-  const totalFrames = Math.floor(duration / (1000 / 60)); // 60 FPS
-  
-  counterElements.forEach(element => {
-    const fullText = element.textContent.trim();
-    const targetValue = parseFloat(fullText.match(/[\d.]+/)?.[0]) || 0;
-    const prefix = fullText.match(/^[^0-9.]*/)?.[0] || '';
-    const suffix = fullText.match(/[^0-9.]*$/)?.[0] || '';
-    
-    let frame = 0;
-    
-    const animate = () => {
-      frame++;
-      let progress = frame / totalFrames;
-      
-      // Ease out effect
-      progress = 1 - Math.pow(1 - progress, 3);
-      
-      const currentValue = Math.min(targetValue, Math.floor(targetValue * progress));
-      element.textContent = `${prefix}${currentValue}${suffix}`;
-      
-      if (frame < totalFrames) {
-        requestAnimationFrame(animate);
-      } else {
-        element.textContent = fullText; // Valor final exato
+    inputs.forEach(input => {
+      if (!input.value.trim()) {
+        input.style.borderColor = 'var(--error-color)';
+        isValid = false;
+        
+        // Remove erro ao digitar
+        input.addEventListener('input', () => {
+          input.style.borderColor = '';
+        });
       }
+    });
+    
+    if (!isValid) {
+      showToast('Por favor, preencha todos os campos obrigatórios.', 'error');
+      return;
+    }
+    
+    // Simulação de envio
+    const formData = {
+      nome: contactForm.querySelector('input[type="text"]').value,
+      email: contactForm.querySelector('input[type="email"]').value,
+      servico: contactForm.querySelector('select').value,
+      mensagem: contactForm.querySelector('textarea').value
     };
     
-    requestAnimationFrame(animate);
+    console.log('Formulário enviado:', formData);
+    
+    // Feedback visual
+    showToast('Mensagem enviada com sucesso! Entraremos em contato em breve.', 'success');
+    
+    // Reset do formulário
+    contactForm.reset();
+    
+    // Scroll suave para o topo
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }, 1000);
   });
 }
 
 // =========================
-// ANIMAÇÕES DE ENTRADA
+// BOTÃO ASSISTENTE IA
 // =========================
-function initAnimations() {
-  // Observer para animações ao scroll
+function initAssistant() {
+  if (!assistantBtn) return;
+  
+  assistantBtn.addEventListener('click', () => {
+    showToast('Assistente IA em desenvolvimento. Em breve!', 'info');
+    
+    // Animação de pulse
+    assistantBtn.classList.add('pulse');
+    setTimeout(() => {
+      assistantBtn.classList.remove('pulse');
+    }, 2000);
+  });
+}
+
+// =========================
+// TOAST NOTIFICATIONS
+// =========================
+function showToast(message, type = 'info') {
+  // Remove toast existente
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) existingToast.remove();
+  
+  // Cria novo toast
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  // Remove após 3 segundos
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100%)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// =========================
+// ANIMAÇÃO DE NÚMEROS (HERO STATS)
+// =========================
+function initNumberAnimation() {
+  const stats = document.querySelectorAll('.stat strong');
+  
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('show');
+        const stat = entry.target;
+        const originalText = stat.textContent;
+        const value = parseInt(originalText.replace(/[^\d]/g, ''));
+        const suffix = originalText.replace(/[\d]/g, '');
         
-        // Inicia contadores quando KPIs ficarem visíveis
-        if (entry.target.classList.contains('kpis')) {
-          initAnimatedCounters();
+        if (!isNaN(value)) {
+          animateNumber(stat, 0, value, 2000, suffix);
         }
+        observer.unobserve(stat);
       }
     });
-  }, {
-    threshold: 0.1,
-    rootMargin: '50px'
-  });
+  }, { threshold: 0.5 });
   
-  // Observa todos os elementos com classe fade-up
-  $$('.fade-up').forEach(el => {
-    observer.observe(el);
-  });
-  
-  // Observa especificamente os KPIs
-  const kpisSection = $('.kpis');
-  if (kpisSection) observer.observe(kpisSection);
+  stats.forEach(stat => observer.observe(stat));
 }
 
-// =========================
-// GOOGLE ADSENSE
-// =========================
-function initAdSense() {
-  // Carrega AdSense após um pequeno delay para performance
-  setTimeout(() => {
-    const ads = $$('.adsbygoogle');
-    if (ads.length > 0 && window.adsbygoogle) {
-      try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-        console.log(`📢 AdSense carregado para ${ads.length} anúncios`);
-      } catch (error) {
-        console.warn('⚠️ Erro ao carregar AdSense:', error);
-      }
+function animateNumber(element, start, end, duration, suffix) {
+  let startTimestamp = null;
+  
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    
+    const currentValue = Math.floor(progress * (end - start) + start);
+    element.textContent = currentValue + suffix;
+    
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    } else {
+      element.textContent = end + suffix;
     }
-  }, 1500);
+  };
+  
+  window.requestAnimationFrame(step);
 }
 
 // =========================
-// FUNÇÕES GLOBAIS (para botões de demo)
+// HANDLERS PARA BOTÕES DINÂMICOS
 // =========================
-window.openProject = (project) => {
-  const message = currentLang === 'en'
-    ? `Opening project: ${project}`
-    : currentLang === 'es'
-      ? `Abriendo proyecto: ${project}`
-      : `Abrindo projeto: ${project}`;
-  showToast(message);
+function initDynamicButtons() {
+  document.addEventListener('click', (e) => {
+    // Projetos
+    if (e.target.matches('[data-project]')) {
+      const project = e.target.dataset.project;
+      showToast(`Abrindo projeto: ${project}`, 'info');
+    }
+    
+    // Cases
+    if (e.target.matches('[data-case]')) {
+      const caseName = e.target.dataset.case;
+      showToast(`Abrindo case: ${caseName}`, 'info');
+    }
+    
+    // Assistentes
+    if (e.target.matches('[data-assistant]')) {
+      const assistant = e.target.dataset.assistant;
+      showToast(`Demonstração do assistente: ${assistant}`, 'info');
+    }
+    
+    // Produtos
+    if (e.target.matches('[data-product]')) {
+      const product = e.target.dataset.product;
+      showToast(`Demonstração do produto: ${product}`, 'info');
+    }
+  });
+}
+
+// =========================
+// LAZY LOADING DE IMAGENS
+// =========================
+function initLazyLoading() {
+  const images = document.querySelectorAll('img[data-src]');
   
-  // Aqui você pode adicionar lógica para abrir projetos específicos
-  if (project === 'ead-pwa') {
-    window.open('projetos-principais/projeto-pwa-educacao.html', '_blank');
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+          imageObserver.unobserve(img);
+        }
+      });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+  } else {
+    // Fallback para navegadores antigos
+    images.forEach(img => {
+      img.src = img.dataset.src;
+      img.removeAttribute('data-src');
+    });
   }
-};
-
-window.openCase = (caseName) => {
-  const message = currentLang === 'en'
-    ? `Opening case study: ${caseName}`
-    : currentLang === 'es'
-      ? `Abriendo caso de estudio: ${caseName}`
-      : `Abrindo case: ${caseName}`;
-  showToast(message);
-};
-
-window.openCode = (project) => {
-  showToast(`Código do projeto ${project}`, 'success');
-};
+}
 
 // =========================
-// INICIALIZAÇÃO GERAL
+// SMOOTH SCROLL
 // =========================
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 MakerAI Studio inicializando...');
-  
-  // Inicializa módulos
-  initTheme();
-  initLang();
-  initInfoCards();
-  initMainCarousel();
-  initCardCarousels();
-  initAssistant();
-  initFormValidation();
-  initAnimations();
-  initAdSense();
-  
-  // Smooth scroll para links âncora
-  $$('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+function initSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
       const href = this.getAttribute('href');
-      if (href === '#' || href === '#0') return;
       
-      const target = $(href);
+      if (href === '#') return;
+      
+      const target = document.querySelector(href);
       if (target) {
         e.preventDefault();
         target.scrollIntoView({
           behavior: 'smooth',
           block: 'start'
         });
-        
-        // Atualiza URL sem recarregar a página
-        history.pushState(null, null, href);
       }
     });
   });
+}
+
+// =========================
+// DEBOUNCE PARA PERFORMANCE
+// =========================
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// =========================
+// INICIALIZAÇÃO COMPLETA
+// =========================
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 MakerAI Studio inicializando...');
   
-  // Adiciona classe para dispositivos touch
-  if ('ontouchstart' in window || navigator.maxTouchPoints) {
-    document.body.classList.add('touch-device');
-  }
+  // Inicializa todos os módulos
+  initMobileMenu();
+  initThemeToggle();
+  initLanguageSwitcher();
+  initCardDetails();
+  initCarousel();
+  initFAQ();
+  initContactForm();
+  initAssistant();
+  initNumberAnimation();
+  initDynamicButtons();
+  initLazyLoading();
+  initSmoothScroll();
   
-  console.log('✅ MakerAI Studio inicializado com sucesso!');
+  // Performance: debounce no resize
+  window.addEventListener('resize', debounce(() => {
+    // Atualizações responsivas podem ir aqui
+  }, 250));
+  
+  console.log('✅ MakerAI Studio carregado com sucesso!');
 });
 
 // =========================
-// UTILITÁRIOS DE DEBUG
+// FUNÇÕES GLOBAIS
 // =========================
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  console.log('🔧 Modo desenvolvimento ativo');
-  
-  // Log de eventos úteis
-  window.addEventListener('error', (e) => {
-    console.error('❌ Erro capturado:', e.error);
-  });
-}
+window.showToast = showToast;
+
+// Função para demonstrar interações
+window.demoInteraction = (type, name) => {
+  showToast(`${type}: ${name}`, 'info');
+};

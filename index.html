@@ -1,194 +1,677 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>MakerAI Studio — Agência de IA e Experiências Digitais</title>
-  <meta name="description" content="MakerAI Studio — soluções inteligentes em IA, web development, 3D e automações para educação, saúde e e-commerce. Protótipo profissional." />
-  <meta name="theme-color" content="#0d0d0f" />
-
+  <meta name="description" content="MakerAI Studio — soluções inteligentes em IA, web development, 3D e automações para educação, saúde e e-commerce. Protótipo profissional.">
+  <meta name="theme-color" content="#0d0d0f">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="MakerAI Studio — Agência de IA e Experiências Digitais">
+  <meta property="og:description" content="Soluções inteligentes em IA, web development, 3D e automações. Protótipo profissional.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=1200&q=80&auto=format&fit=crop">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://makeraistudio.com">
+  
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Google AdSense - COLOQUE SEU ID AQUI -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-SEU_ID_AQUI" crossorigin="anonymous"></script>
-
-  <meta property="og:title" content="MakerAI Studio — Agência de IA e Experiências Digitais" />
-  <meta property="og:description" content="Soluções inteligentes em IA, web development, 3D e automações. Protótipo profissional." />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=1200&q=80&auto=format&fit=crop" />
   
-  <!-- CSS otimizado -->
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
 </head>
-
 <body>
   <div class="page-wrapper">
-    <!-- Header fixo com hamburger -->
-    <header aria-label="Cabeçalho principal">
-      <div class="brand">
-        <h1>MakerAI Studio</h1>
-        <span class="badge">IA • 3D • PWAs</span>
+    
+    <!-- HEADER UNIFICADO -->
+    <header class="header">
+      <div class="container header-container">
+        <div class="brand">
+          <h1 class="logo">MakerAI Studio</h1>
+          <span class="badge">IA • 3D • PWAs</span>
+        </div>
+        
+        <!-- Navegação Desktop (oculta em mobile) -->
+        <nav class="desktop-nav">
+          <ul>
+            <li><a href="#servicos">Serviços</a></li>
+            <li><a href="#portfolio">Portfólio</a></li>
+            <li><a href="#cases">Cases</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#contato" class="btn primary">Contato</a></li>
+            <li>
+              <div class="controls-desktop">
+                <div class="lang-switch">
+                  <button class="lang-btn" data-lang="pt" aria-label="Português">🇧🇷</button>
+                  <button class="lang-btn" data-lang="en" aria-label="Inglês">🇺🇸</button>
+                  <button class="lang-btn" data-lang="es" aria-label="Espanhol">🇪🇸</button>
+                </div>
+                <button id="themeToggle" class="theme-toggle" aria-label="Alternar tema">🌙</button>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        
+        <!-- Botão Hamburger (Mobile) -->
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
-
-      <nav aria-label="Navegação principal">
+    </header>
+    
+    <!-- MENU MOBILE -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-header">
+        <div class="brand">
+          <h2>MakerAI Studio</h2>
+        </div>
+        <button class="close-menu" id="closeMenu" aria-label="Fechar menu">✕</button>
+      </div>
+      
+      <nav class="mobile-nav">
         <ul>
-          <li><a href="#servicos" data-i18n="nav_servicos">Serviços</a></li>
-          <li><a href="#portfolio" data-i18n="nav_portfolio">Portfólio</a></li>
-          <li><a href="#cases" data-i18n="nav_cases">Cases</a></li>
-          <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
-          <li><a href="#sobre" data-i18n="nav_sobre">Sobre</a></li>
-          <li><a href="#contato" class="cta-primary" data-i18n="nav_contato">Contato</a></li>
-          <li><a href="login.html" class="cta-primary">Login</a></li>
+          <li><a href="#servicos"><span class="icon">⚙️</span> Serviços</a></li>
+          <li><a href="#portfolio"><span class="icon">🎨</span> Portfólio</a></li>
+          <li><a href="#cases"><span class="icon">📊</span> Cases</a></li>
+          <li><a href="#faq"><span class="icon">❓</span> FAQ</a></li>
+          <li><a href="#sobre"><span class="icon">👤</span> Sobre</a></li>
+          <li><a href="#assistentes"><span class="icon">🤖</span> Assistentes IA</a></li>
+          <li><a href="#tecnologias"><span class="icon">💻</span> Tecnologias</a></li>
+          <li><a href="#produtos"><span class="icon">📦</span> Produtos</a></li>
+          <li><a href="#blog"><span class="icon">📝</span> Blog</a></li>
+          <li><a href="login.html"><span class="icon">🔐</span> Login</a></li>
         </ul>
       </nav>
-
-      <!-- Controles desktop (somente em telas grandes) -->
-      <div class="header-controls-desktop">
-        <div class="lang-switch" aria-label="Selecionar idioma">
-          <button class="lang-btn" data-lang="pt" aria-label="Português" title="Português">🇧🇷</button>
-          <button class="lang-btn" data-lang="en" aria-label="Inglês" title="Inglês">🇺🇸</button>
-          <button class="lang-btn" data-lang="es" aria-label="Espanhol" title="Espanhol">🇪🇸</button>
+      
+      <div class="mobile-controls">
+        <h4>Preferências</h4>
+        <div class="mobile-controls-grid">
+          <button class="mobile-lang-btn" data-lang="pt">
+            <span class="flag">🇧🇷</span>
+            <span class="code">PT</span>
+          </button>
+          <button class="mobile-lang-btn" data-lang="en">
+            <span class="flag">🇺🇸</span>
+            <span class="code">EN</span>
+          </button>
+          <button class="mobile-lang-btn" data-lang="es">
+            <span class="flag">🇪🇸</span>
+            <span class="code">ES</span>
+          </button>
+          <button id="mobileThemeToggle" class="mobile-theme-btn">🌙</button>
         </div>
-
-        <button id="themeToggle" class="theme-toggle" title="Alternar tema" aria-label="Alternar tema claro/escuro" aria-pressed="false">🌙</button>
       </div>
-
-      <!-- Hamburger para mobile -->
-      <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menu mobile" title="Menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 6h18M3 12h18M3 18h18"></path>
-        </svg>
-      </button>
-    </header>
-
-    <!-- Menu mobile sidebar -->
-    <div class="mobile-nav" id="mobileNav" aria-hidden="true" role="dialog" aria-label="Menu mobile" aria-modal="true">
-      <div class="inner" role="document">
-        <div class="mobile-nav-header">
-          <div class="brand">
-            <h2>MakerAI Studio</h2>
-          </div>
-          <button id="closeMobileNav" type="button" aria-label="Fechar menu" class="close-mobile-nav">✕</button>
-        </div>
-
-        <ul class="mobile-nav-list">
-          <li><a href="#servicos"><span class="icon">⚙️</span><span>Serviços</span></a></li>
-          <li><a href="#portfolio"><span class="icon">🎨</span><span>Portfólio</span></a></li>
-          <li><a href="#cases"><span class="icon">📊</span><span>Cases</span></a></li>
-          <li><a href="#faq"><span class="icon">❓</span><span>FAQ</span></a></li>
-          <li><a href="#sobre"><span class="icon">👤</span><span>Sobre</span></a></li>
-          <li><a href="login.html"><span class="icon">🔐</span><span>Login</span></a></li>
-          <li><a href="#assistentes"><span class="icon">🤖</span><span>Assistentes IA</span></a></li>
-          <li><a href="#tecnologias"><span class="icon">💻</span><span>Tecnologias</span></a></li>
-          <li><a href="#produtos"><span class="icon">📦</span><span>Produtos</span></a></li>
-          <li><a href="#blog"><span class="icon">📝</span><span>Blog</span></a></li>
-        </ul>
-
-        <div class="mobile-nav-controls">
-          <h3>Preferências</h3>
-          <div class="mobile-controls-grid">
-            <button class="mobile-lang-btn" data-lang="pt" type="button">
-              <span class="flag">🇧🇷</span><span class="code">PT</span>
-            </button>
-            <button class="mobile-lang-btn" data-lang="en" type="button">
-              <span class="flag">🇺🇸</span><span class="code">EN</span>
-            </button>
-            <button class="mobile-lang-btn" data-lang="es" type="button">
-              <span class="flag">🇪🇸</span><span class="code">ES</span>
-            </button>
-            <button class="mobile-theme-toggle" id="mobileThemeToggle" type="button">🌙</button>
-          </div>
-        </div>
-
-        <div class="mobile-nav-footer">
-          <a href="#contato" class="cta-primary">Entrar em contato</a>
-          <p class="small">© 2026 MakerAI Studio</p>
-        </div>
+      
+      <div class="mobile-footer">
+        <a href="#contato" class="btn primary btn-full">Entrar em contato</a>
       </div>
     </div>
-
-    <div class="wrap">
-      <!-- AdSense Banner 1 - Topo (mobile: menor e mais discreto) -->
-      <div class="ads-container mobile-ads" role="complementary" aria-label="Publicidade">
-        <div class="adsense-ad">
-          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-SEU_ID_AQUI" data-ad-slot="1234567890" data-ad-format="horizontal" data-full-width-responsive="true" aria-hidden="true"></ins>
-        </div>
-      </div>
-
-      <!-- Hero Section -->
-      <section class="hero fade-up" aria-labelledby="hero-title">
-        <div class="hero-text">
-          <h2 id="hero-title" data-i18n="hero_title">Soluções Inteligentes para Negócios Modernos — <span>IA, Web e Experiências</span></h2>
-          <p data-i18n="hero_sub">Design, desenvolvimento e automações que transformam serviços em experiências rentáveis. Protótipos rápidos, produtos prontos e integração com IA para vendas, atendimento e retenção.</p>
-          <div class="hero-actions">
-            <a href="#contato" class="btn primary" data-i18n="cta_primary">Quero minha solução</a>
-            <a href="#portfolio" class="btn secondary" data-i18n="ver_portfolio">Ver portfólio →</a>
+    
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+      
+      <!-- HERO -->
+      <section class="hero">
+        <div class="container">
+          <div class="hero-container">
+            <div class="hero-content">
+              <h2>Soluções Inteligentes para Negócios Modernos — <span class="gradient-text">IA, Web e Experiências</span></h2>
+              <p class="subtitle">Design, desenvolvimento e automações que transformam serviços em experiências rentáveis.</p>
+              <div class="hero-actions">
+                <a href="#contato" class="btn primary large">Quero minha solução</a>
+                <a href="#portfolio" class="btn secondary">Ver portfólio →</a>
+              </div>
+              <div class="hero-stats">
+                <div class="stat">
+                  <strong>+300%</strong>
+                  <span>Engajamento</span>
+                </div>
+                <div class="stat">
+                  <strong>98%</strong>
+                  <span>Performance</span>
+                </div>
+                <div class="stat">
+                  <strong>12x</strong>
+                  <span>ROI</span>
+                </div>
+              </div>
+            </div>
+            <div class="hero-visual">
+              <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=687&auto=format&fit=crop" alt="Protótipo de IA">
+              <div class="caption">Design system proprietário com foco em performance e acessibilidade</div>
+            </div>
           </div>
-          <div class="kpis">
-            <div class="kpi"><strong>+300%</strong><span class="muted">Engajamento de Usuário</span></div>
-            <div class="kpi"><strong>98%</strong><span class="muted">Performance Score</span></div>
-            <div class="kpi"><strong>12x</strong><span class="muted">ROI em Automação</span></div>
-          </div>
-        </div>
-        <div class="hero-card">
-          <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Protótipo de aplicativo móvel com IA" loading="eager">
-          <p class="small">Design system proprietário com foco em performance e WCAG.</p>
         </div>
       </section>
-
-      <!-- AdSense Banner 2 -->
-      <div class="ads-container mobile-ads" role="complementary" aria-label="Publicidade">
-        <div class="adsense-ad">
-          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-SEU_ID_AQUI" data-ad-slot="2345678901" data-ad-format="auto" data-full-width-responsive="true" aria-hidden="true"></ins>
-        </div>
-      </div>
-
-      <!-- Seções subsequentes (mantenha todas as sections do original aqui) -->
-      <section id="servicos" class="section fade-up" aria-labelledby="servicos-title">
-        <!-- Conteúdo dos serviços -->
-      </section>
-
-      <!-- AdSense Banner 3 -->
-      <div class="ads-container mobile-ads" role="complementary" aria-label="Publicidade">
-        <div class="adsense-ad">
-          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-SEU_ID_AQUI" data-ad-slot="3456789012" data-ad-format="auto" data-full-width-responsive="true" aria-hidden="true"></ins>
-        </div>
-      </div>
-
-      <!-- Continue com todas as outras seções... -->
-      <!-- Portfolio, Cases, FAQ, Sobre, Tecnologias, Assistentes, Produtos, Blog, Contato -->
-
-      <!-- Footer idêntico -->
-      <footer>
-        <div class="footer-content">
-          <p>Desenvolvido com foco em performance e acessibilidade | © 2025 MakerAI Studio</p>
-          <div class="footer-links">
-            <a href="/politica-privacidade.html" data-i18n="footer_privacy">Política de Privacidade</a>
-            <span>•</span>
-            <a href="/termos-uso.html" data-i18n="footer_terms">Termos de Uso</a>
-            <span>•</span>
-            <a href="#contato" data-i18n="footer_contact">Contato</a>
+      
+      <!-- SERVIÇOS -->
+      <section id="servicos" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Serviços e Foco</h3>
+            <p class="subtitle">Ajudamos sua empresa a crescer com tecnologia inteligente.</p>
           </div>
-          <p class="small">Google AdSense ativo - Anúncios relevantes para desenvolvedores e empreendedores</p>
+          
+          <div class="cards-container">
+            <!-- Card 1 -->
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=870&auto=format&fit=crop" alt="Web Apps" class="card-img">
+              <h4>Web Apps e PWAs</h4>
+              <p>Sistemas web progressivos de alta performance e usabilidade.</p>
+              <div class="card-actions">
+                <button class="btn primary card-toggle" data-target="web-apps">Saiba mais</button>
+              </div>
+            </article>
+            
+            <!-- Card 2 -->
+            <article class="card">
+              <img src="https://plus.unsplash.com/premium_photo-1733266868412-cfc2ac17b497?q=80&w=1278&auto=format&fit=crop" alt="IA" class="card-img">
+              <h4>Avatares & Consultores IA</h4>
+              <p>Assistentes conversacionais para vendas e suporte 24/7.</p>
+              <div class="card-actions">
+                <button class="btn primary card-toggle" data-target="ia">Saiba mais</button>
+              </div>
+            </article>
+            
+            <!-- Card 3 -->
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=1176&auto=format&fit=crop" alt="RPA" class="card-img">
+              <h4>Automações RPA</h4>
+              <p>Otimização de rotinas com bots inteligentes.</p>
+              <div class="card-actions">
+                <button class="btn primary card-toggle" data-target="rpa">Saiba mais</button>
+              </div>
+            </article>
+            
+            <!-- Card 4 -->
+            <article class="card">
+              <img src="https://plus.unsplash.com/premium_photo-1718198501772-53cc7b846403?q=80&w=870&auto=format&fit=crop" alt="3D" class="card-img">
+              <h4>Modelagem 3D</h4>
+              <p>Visualizações interativas e realidade aumentada.</p>
+              <div class="card-actions">
+                <button class="btn primary card-toggle" data-target="3d">Saiba mais</button>
+              </div>
+            </article>
+            
+            <!-- Card 5 -->
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=806&auto=format&fit=crop" alt="Dashboards" class="card-img">
+              <h4>Sistemas e Dashboards</h4>
+              <p>Backends escaláveis, APIs robustas e painéis de análise.</p>
+              <div class="card-actions">
+                <button class="btn primary card-toggle" data-target="dashboards">Saiba mais</button>
+              </div>
+            </article>
+            
+            <!-- Card 6 -->
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=80&w=1200&auto=format&fit=crop" alt="SEO" class="card-img">
+              <h4>Conteúdo & SEO Técnico</h4>
+              <p>Estratégias de conteúdo para IA e SEO de alta performance.</p>
+              <div class="card-actions">
+                <button class="btn primary card-toggle" data-target="seo">Saiba mais</button>
+              </div>
+            </article>
+          </div>
+          
+          <!-- Overlay para detalhes -->
+          <div class="overlay" id="detailsOverlay">
+            <div class="overlay-content">
+              <button class="close-overlay" aria-label="Fechar">✕</button>
+              <div id="detailsContent"></div>
+            </div>
+          </div>
         </div>
-      </footer>
-    </div>
-
-    <!-- Botão do Assistente IA -->
-    <button class="assistant" id="assistantBtn" aria-label="Abrir assistente IA" title="Assistente IA" aria-expanded="false">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a10 10 0 0 0-9.8 11.6c.4 1.4 1.3 2.6 2.5 3.5.7.5 1.5.9 2.3 1.1h10a9.8 9.8 0 0 0 2.5-1.1 6 6 0 0 0 2.5-3.5A10 10 0 0 0 12 2zM12 17v2m0 0a1 1 0 0 1-1 1h2a1 1 0 0 1-1-1v-2"></path>
-      </svg>
+      </section>
+      
+      <!-- PORTFÓLIO -->
+      <section id="portfolio" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Portfólio em Destaque</h3>
+            <p class="subtitle">Uma amostra dos projetos que criamos.</p>
+          </div>
+          
+          <div class="carousel">
+            <div class="carousel-track" id="carouselTrack">
+              <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1763107228544-2ad5d71c21f0?w=600&auto=format&fit=crop" alt="PWA Educacional">
+                <div class="carousel-content">
+                  <h4>PWA Educacional com Gamificação</h4>
+                  <p>Plataforma de EAD de alta performance com sistema de recompensas.</p>
+                  <div class="carousel-actions">
+                    <button class="btn primary" data-project="pwa-edu">Ver projeto</button>
+                    <button class="btn secondary" data-case="pwa-edu">Ver Case</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop" alt="Dashboard IA">
+                <div class="carousel-content">
+                  <h4>Dashboard de Observabilidade</h4>
+                  <p>Painel analítico com visualizações 3D para monitoramento.</p>
+                  <div class="carousel-actions">
+                    <button class="btn primary" data-project="dashboard">Ver projeto</button>
+                    <button class="btn secondary" data-case="dashboard">Ver Case</button>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=600&auto=format&fit=crop" alt="Avatar 3D">
+                <div class="carousel-content">
+                  <h4>Consultor 3D de Vendas</h4>
+                  <p>Avatar interativo com IA generativa para suporte ao cliente.</p>
+                  <div class="carousel-actions">
+                    <button class="btn primary" data-project="avatar-3d">Ver projeto</button>
+                    <button class="btn secondary" data-case="avatar-3d">Ver Case</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="carousel-dots">
+              <button class="dot active" aria-label="Slide 1"></button>
+              <button class="dot" aria-label="Slide 2"></button>
+              <button class="dot" aria-label="Slide 3"></button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- CASES -->
+      <section id="cases" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Cases de Sucesso</h3>
+            <p class="subtitle">Como transformamos negócios com foco em resultados.</p>
+          </div>
+          
+          <div class="cards-container">
+            <article class="card">
+              <h4>AHA Academy</h4>
+              <p>Redesenho da plataforma educacional com gamificação, PWA e testes A/B. +300% de engajamento em 3 meses.</p>
+              <div class="card-actions">
+                <button class="btn secondary" data-case="aha">Ver case completo</button>
+              </div>
+            </article>
+            
+            <article class="card">
+              <h4>E-commerce Fashion</h4>
+              <p>Plataforma de moda com visualizador 3D de produtos. +40% em conversões em 2 meses.</p>
+              <div class="card-actions">
+                <button class="btn secondary" data-case="fashion">Ver case completo</button>
+              </div>
+            </article>
+            
+            <article class="card">
+              <h4>Santuário Emocional</h4>
+              <p>Aplicativo de bem-estar com diários e rituais. Uso de animações imersivas para retenção.</p>
+              <div class="card-actions">
+                <button class="btn secondary" data-case="santuario">Ver case completo</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <!-- FAQ -->
+      <section id="faq" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Perguntas Frequentes (FAQ)</h3>
+            <p class="subtitle">Tiramos as dúvidas mais comuns.</p>
+          </div>
+          
+          <div class="faq-container">
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Quanto tempo leva para desenvolver um site?
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>Depende do escopo. Protótipos: 1–2 semanas. Projeto completo: 4–8 semanas. Implementamos milestones e entregas parciais.</p>
+              </div>
+            </div>
+            
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Vocês oferecem suporte multilíngue?
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>Sim — PT, EN, ES com traduções integradas e content fallback.</p>
+              </div>
+            </div>
+            
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Qual é o custo médio de um projeto?
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>Variável. Sites básicos a partir de R$5.000; sistemas com IA e integrações complexas R$50.000+ (estimativa).</p>
+              </div>
+            </div>
+            
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Como integramos IA nos projetos?
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>Integramos APIs de ML para chat, recomendações e automação. Podemos usar endpoints próprios (FastAPI) ou serviços externos.</p>
+              </div>
+            </div>
+            
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Vocês garantem acessibilidade?
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>Sim — seguimento das recomendações WCAG, contraste, navegação por teclado e aria-attributes.</p>
+              </div>
+            </div>
+            
+            <div class="faq-item">
+              <button class="faq-question" aria-expanded="false">
+                Oferecem manutenção e suporte?
+                <span class="faq-icon">+</span>
+              </button>
+              <div class="faq-answer">
+                <p>Sim — planos mensais: correções, atualizações de segurança e monitoramento de performance.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- SOBRE -->
+      <section id="sobre" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Sobre a MakerAI Studio</h3>
+            <p class="subtitle">Nosso foco é na união entre criatividade e inteligência artificial.</p>
+          </div>
+          
+          <div class="about-container">
+            <div class="about-image">
+              <img src="https://images.unsplash.com/photo-1573821526049-6452c160be40?w=600&auto=format&fit=crop" alt="Equipe MakerAI">
+            </div>
+            <div class="about-content">
+              <h4>Nossa Missão</h4>
+              <p>Somos uma agência de soluções digitais especializada em Progressive Web Apps (PWAs) e integração de Modelos de Linguagem (LLMs) para otimizar a experiência do cliente e automatizar processos complexos.</p>
+              <p>Nossa missão é transformar ideias em produtos digitais de alto impacto, garantindo performance, escalabilidade e design centrado no usuário.</p>
+              <div class="about-stats">
+                <div class="stat-small">
+                  <strong>+50</strong>
+                  <span>Projetos</span>
+                </div>
+                <div class="stat-small">
+                  <strong>+3</strong>
+                  <span>Anos</span>
+                </div>
+                <div class="stat-small">
+                  <strong>100%</strong>
+                  <span>Satisfação</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- ASSISTENTES IA -->
+      <section id="assistentes" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Assistentes IA de Negócio</h3>
+            <p class="subtitle">Automação de tarefas de alto valor.</p>
+          </div>
+          
+          <div class="cards-container">
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1170&auto=format&fit=crop" alt="AI Marketing" class="card-img">
+              <h4>AI Marketing & Conteúdo</h4>
+              <p>Criação de copies e fluxos de email marketing otimizados por IA.</p>
+              <div class="card-actions">
+                <button class="btn primary" data-assistant="marketing">Ver demo</button>
+              </div>
+            </article>
+            
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1490818387583-1baba5e638af?q=80&w=1032&auto=format&fit=crop" alt="AI Nutrição" class="card-img">
+              <h4>AI Nutrição & Saúde</h4>
+              <p>Plano de refeições otimizado baseado em dados do cliente.</p>
+              <div class="card-actions">
+                <button class="btn primary" data-assistant="nutricao">Ver demo</button>
+              </div>
+            </article>
+            
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1551836026-d5c2c7675e32?q=80&w=1171&auto=format&fit=crop" alt="AI Finanças" class="card-img">
+              <h4>AI Finanças & Investimentos</h4>
+              <p>Análise de mercado e recomendações personalizadas.</p>
+              <div class="card-actions">
+                <button class="btn primary" data-assistant="financas">Ver demo</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <!-- TECNOLOGIAS -->
+      <section id="tecnologias" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Tecnologias Core</h3>
+            <p class="subtitle">O que usamos para construir o futuro do seu negócio.</p>
+          </div>
+          
+          <div class="tech-grid">
+            <div class="tech-item">
+              <div class="tech-icon">⚛️</div>
+              <h4>React / Next.js</h4>
+              <p>Frontend modular e performático com SSR e SSG.</p>
+            </div>
+            
+            <div class="tech-item">
+              <div class="tech-icon">🐍</div>
+              <h4>Python / FastAPI</h4>
+              <p>APIs rápidas e eficientes para serviços de IA.</p>
+            </div>
+            
+            <div class="tech-item">
+              <div class="tech-icon">🗄️</div>
+              <h4>Supabase / PostgreSQL</h4>
+              <p>Auth, realtime e banco relacional escalável.</p>
+            </div>
+            
+            <div class="tech-item">
+              <div class="tech-icon">🎨</div>
+              <h4>Tailwind / Design System</h4>
+              <p>Componentes reutilizáveis e temas customizáveis.</p>
+            </div>
+            
+            <div class="tech-item">
+              <div class="tech-icon">🤖</div>
+              <h4>OpenAI / LLMs</h4>
+              <p>Modelos de linguagem para soluções inteligentes.</p>
+            </div>
+            
+            <div class="tech-item">
+              <div class="tech-icon">🔧</div>
+              <h4>Three.js / WebGL</h4>
+              <p>Gráficos 3D e realidade aumentada na web.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- PRODUTOS -->
+      <section id="produtos" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Produtos Prontos</h3>
+            <p class="subtitle">Soluções white-label para kickstart rápido.</p>
+          </div>
+          
+          <div class="cards-container">
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1171&auto=format&fit=crop" alt="Template PWA" class="card-img">
+              <h4>Template PWA de Vendas</h4>
+              <p>PWA pronto para e-commerce ou catálogos digitais.</p>
+              <div class="card-actions">
+                <button class="btn primary" data-product="pwa-template">Ver demo</button>
+              </div>
+            </article>
+            
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1170&auto=format&fit=crop" alt="Dashboard 3D" class="card-img">
+              <h4>Dashboard 3D Analytics</h4>
+              <p>Visualizações interativas para decisões rápidas.</p>
+              <div class="card-actions">
+                <button class="btn primary" data-product="dashboard-3d">Ver demo</button>
+              </div>
+            </article>
+            
+            <article class="card">
+              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1170&auto=format&fit=crop" alt="AI Chat" class="card-img">
+              <h4>Chatbot IA Empresarial</h4>
+              <p>Assistente conversacional pronto para integração.</p>
+              <div class="card-actions">
+                <button class="btn primary" data-product="chatbot">Ver demo</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <!-- BLOG -->
+      <section id="blog" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Últimos Artigos</h3>
+            <p class="subtitle">Conteúdo sobre IA, desenvolvimento e tendências.</p>
+          </div>
+          
+          <div class="cards-container">
+            <article class="card">
+              <h4>Como migrar para FastAPI em 2025</h4>
+              <p>Guia prático — performance e async para APIs modernas.</p>
+              <div class="card-actions">
+                <a href="#blog-fastapi" class="btn secondary">Ler artigo →</a>
+              </div>
+            </article>
+            
+            <article class="card">
+              <h4>Design Systems: O que são e por que usar</h4>
+              <p>Consistência e escalabilidade visual em projetos complexos.</p>
+              <div class="card-actions">
+                <a href="#blog-design" class="btn secondary">Ler artigo →</a>
+              </div>
+            </article>
+            
+            <article class="card">
+              <h4>WCAG e Acessibilidade: Checklist para Devs</h4>
+              <p>Otimizando a experiência para todos os usuários.</p>
+              <div class="card-actions">
+                <a href="#blog-wcag" class="btn secondary">Ler artigo →</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <!-- CONTATO -->
+      <section id="contato" class="section">
+        <div class="container">
+          <div class="section-header">
+            <h3>Fale com a MakerAI Studio</h3>
+            <p class="subtitle">Quer transformar seu negócio com IA e criatividade?</p>
+          </div>
+          
+          <form class="contact-form" id="contactForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <input type="text" placeholder="Nome completo" required>
+              </div>
+              <div class="form-group">
+                <input type="email" placeholder="E-mail profissional" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <select required>
+                <option value="">Serviço de interesse...</option>
+                <option value="pwa">Web Apps e PWAs</option>
+                <option value="ai">Avatares & Consultores IA</option>
+                <option value="rpa">Automações RPA</option>
+                <option value="3d">Modelagem 3D</option>
+                <option value="dashboard">Sistemas e Dashboards</option>
+                <option value="seo">Conteúdo & SEO Técnico</option>
+                <option value="assistant">Assistentes IA</option>
+                <option value="product">Produtos Prontos</option>
+                <option value="consultoria">Consultoria</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <textarea placeholder="Sua mensagem e escopo do projeto" rows="5" required></textarea>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn primary large">Enviar mensagem</button>
+              <button type="reset" class="btn secondary">Limpar</button>
+            </div>
+            
+            <p class="form-note">Garantimos a privacidade dos seus dados e sigilo total sobre seu projeto.</p>
+          </form>
+        </div>
+      </section>
+      
+    </main>
+    
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer-container">
+        <p>© 2026 MakerAI Studio — Desenvolvido com foco em performance e acessibilidade</p>
+        <div class="footer-links">
+          <a href="/politica-privacidade.html">Política de Privacidade</a>
+          <span>•</span>
+          <a href="/termos-uso.html">Termos de Uso</a>
+          <span>•</span>
+          <a href="#contato">Contato</a>
+          <span>•</span>
+          <a href="mailto:contato@makeraistudio.com">Email</a>
+        </div>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn">🔗</a>
+          <a href="#" aria-label="GitHub">🐙</a>
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="Twitter">🐦</a>
+        </div>
+      </div>
+    </footer>
+    
+    <!-- BOTÃO ASSISTENTE IA -->
+    <button class="assistant-btn" id="assistantBtn" aria-label="Assistente IA">
+      🤖
     </button>
-
-    <!-- Painel do Assistente IA -->
-    <div class="assistant-panel" id="assistantPanel" aria-hidden="true">
-      <iframe src="widgets/assistant.html" id="assistantIframe" title="Assistente IA MakerAI" aria-label="Painel do Assistente IA" allow="microphone" loading="lazy"></iframe>
-    </div>
+    
   </div>
-
-  <!-- JavaScript modular -->
+  
+  <!-- JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
