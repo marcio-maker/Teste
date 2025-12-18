@@ -840,22 +840,6 @@ p {
   flex-shrink: 0;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg,
-      rgba(124, 58, 237, 0.1) 0%,
-      rgba(14, 165, 233, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 0;
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
 .card::after {
   content: '';
   position: absolute;
