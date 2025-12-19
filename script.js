@@ -1,16 +1,16 @@
 // script.js COMPLETO - VERSÃO REFATORADA
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // ============ MOBILE MENU ============
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const closeMenuBtn = document.getElementById('closeMenu');
   const mobileMenu = document.getElementById('mobileMenu');
-  
+
   function toggleMobileMenu() {
     mobileMenu.classList.toggle('active');
-    hamburgerBtn.setAttribute('aria-expanded', 
+    hamburgerBtn.setAttribute('aria-expanded',
       mobileMenu.classList.contains('active')
     );
-    
+
     // Impedir scroll quando menu aberto
     if (mobileMenu.classList.contains('active')) {
       document.body.style.overflow = 'hidden';
@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.style.overflow = 'auto';
     }
   }
-  
+
   hamburgerBtn.addEventListener('click', toggleMobileMenu);
   closeMenuBtn.addEventListener('click', toggleMobileMenu);
-  
+
   // Fechar menu ao clicar em links
   mobileMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', toggleMobileMenu);
@@ -30,20 +30,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // ============ SCROLL HORIZONTAL PARA TODAS AS SEÇÕES DE CARDS ============
   function initHorizontalScroll() {
     const cardsContainers = document.querySelectorAll('.cards-container');
-    
+
     cardsContainers.forEach(container => {
       const scrollWrapper = container.querySelector('.cards-scroll-wrapper');
       if (!scrollWrapper) return;
-      
+
       // Remover controles e indicadores anteriores
       const existingIndicator = container.querySelector('.scroll-indicator');
       const existingControls = container.querySelector('.scroll-controls');
       if (existingIndicator) existingIndicator.remove();
       if (existingControls) existingControls.remove();
-      
+
       // Configurar scroll horizontal para touch e mouse
       setupHorizontalScroll(scrollWrapper);
-      
+
       // Aplicar estilo para scroll horizontal
       scrollWrapper.style.cssText += `
         cursor: grab;
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollbar-width: thin;
         scrollbar-color: var(--primary) transparent;
       `;
-      
+
       // Adicionar indicador de scroll para mobile
       if (window.innerWidth <= 768) {
         const scrollIndicator = document.createElement('div');
@@ -63,39 +63,39 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollIndicator.innerHTML = 'Arraste para ver mais →';
         container.appendChild(scrollIndicator);
       }
-      
+
       // Adicionar botões de controle para desktop
       if (window.innerWidth > 768) {
         const prevBtn = document.createElement('button');
         prevBtn.className = 'scroll-btn';
         prevBtn.innerHTML = '←';
         prevBtn.setAttribute('aria-label', 'Rolar para esquerda');
-        
+
         const nextBtn = document.createElement('button');
         nextBtn.className = 'scroll-btn';
         nextBtn.innerHTML = '→';
         nextBtn.setAttribute('aria-label', 'Rolar para direita');
-        
+
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'scroll-controls';
         controlsDiv.appendChild(prevBtn);
         controlsDiv.appendChild(nextBtn);
-        
+
         container.appendChild(controlsDiv);
-        
+
         // Lógica dos botões
         updateScrollButtons(scrollWrapper, prevBtn, nextBtn);
-        
+
         prevBtn.addEventListener('click', () => {
           scrollWrapper.scrollBy({ left: -300, behavior: 'smooth' });
           setTimeout(() => updateScrollButtons(scrollWrapper, prevBtn, nextBtn), 300);
         });
-        
+
         nextBtn.addEventListener('click', () => {
           scrollWrapper.scrollBy({ left: 300, behavior: 'smooth' });
           setTimeout(() => updateScrollButtons(scrollWrapper, prevBtn, nextBtn), 300);
         });
-        
+
         scrollWrapper.addEventListener('scroll', () => {
           updateScrollButtons(scrollWrapper, prevBtn, nextBtn);
         });
@@ -107,24 +107,24 @@ document.addEventListener('DOMContentLoaded', function() {
     let isDown = false;
     let startX;
     let scrollLeft;
-    
+
     element.addEventListener('mousedown', (e) => {
       isDown = true;
       element.style.cursor = 'grabbing';
       startX = e.pageX - element.offsetLeft;
       scrollLeft = element.scrollLeft;
     });
-    
+
     element.addEventListener('mouseleave', () => {
       isDown = false;
       element.style.cursor = 'grab';
     });
-    
+
     element.addEventListener('mouseup', () => {
       isDown = false;
       element.style.cursor = 'grab';
     });
-    
+
     element.addEventListener('mousemove', (e) => {
       if (!isDown) return;
       e.preventDefault();
@@ -132,13 +132,13 @@ document.addEventListener('DOMContentLoaded', function() {
       const walk = (x - startX) * 2;
       element.scrollLeft = scrollLeft - walk;
     });
-    
+
     // Touch devices
     element.addEventListener('touchstart', (e) => {
       startX = e.touches[0].pageX - element.offsetLeft;
       scrollLeft = element.scrollLeft;
     });
-    
+
     element.addEventListener('touchmove', (e) => {
       if (!e.touches.length) return;
       e.preventDefault();
@@ -151,34 +151,34 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateScrollButtons(scrollWrapper, prevBtn, nextBtn) {
     const scrollLeft = scrollWrapper.scrollLeft;
     const maxScroll = scrollWrapper.scrollWidth - scrollWrapper.clientWidth;
-    
+
     prevBtn.disabled = scrollLeft <= 0;
     nextBtn.disabled = scrollLeft >= maxScroll - 1;
   }
-  
+
   // Inicializar scroll horizontal
   initHorizontalScroll();
   window.addEventListener('resize', initHorizontalScroll);
-  
+
   // ============ THEME TOGGLE ============
   const themeToggle = document.getElementById('themeToggle');
   const mobileThemeToggle = document.getElementById('mobileThemeToggle');
   const html = document.documentElement;
-  
+
   function toggleTheme() {
     const currentTheme = html.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+
     html.setAttribute('data-theme', newTheme);
     themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
     mobileThemeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
-    
+
     localStorage.setItem('theme', newTheme);
   }
-  
+
   themeToggle.addEventListener('click', toggleTheme);
   mobileThemeToggle.addEventListener('click', toggleTheme);
-  
+
   // Verificar tema salvo
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
@@ -186,19 +186,19 @@ document.addEventListener('DOMContentLoaded', function() {
     themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
     mobileThemeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
   }
-  
+
   // ============ LANGUAGE SWITCH ============
   const langButtons = document.querySelectorAll('.lang-btn, .mobile-lang-btn');
-  
+
   langButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
       const lang = this.dataset.lang;
-      
+
       langButtons.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
-      
+
       console.log('Idioma selecionado:', lang);
-      
+
       const translations = {
         pt: {
           heroTitle: 'Soluções Inteligentes para Negócios Modernos — IA, Web e Experiências',
@@ -219,13 +219,13 @@ document.addEventListener('DOMContentLoaded', function() {
           cta2: 'Ver portafolio →'
         }
       };
-      
+
       const heroSection = document.querySelector('.hero-content');
       if (heroSection) {
         const title = heroSection.querySelector('h2');
         const subtitle = heroSection.querySelector('.subtitle');
         const buttons = heroSection.querySelectorAll('.btn');
-        
+
         if (title) title.textContent = translations[lang].heroTitle;
         if (subtitle) subtitle.textContent = translations[lang].heroSubtitle;
         if (buttons[0]) buttons[0].textContent = translations[lang].cta1;
@@ -233,51 +233,51 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-  
+
   // ============ CAROUSEL ============
   const carouselTrack = document.getElementById('carouselTrack');
   const dots = document.querySelectorAll('.dot');
   let currentSlide = 0;
   const totalSlides = document.querySelectorAll('.carousel-slide').length;
-  
+
   function goToSlide(index) {
     if (index >= totalSlides) index = 0;
     if (index < 0) index = totalSlides - 1;
-    
+
     currentSlide = index;
     carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-    
+
     dots.forEach((dot, i) => {
       dot.classList.toggle('active', i === currentSlide);
     });
   }
-  
+
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => goToSlide(index));
   });
-  
+
   let carouselInterval = setInterval(() => {
     goToSlide(currentSlide + 1);
   }, 5000);
-  
+
   carouselTrack.parentElement.addEventListener('mouseenter', () => {
     clearInterval(carouselInterval);
   });
-  
+
   carouselTrack.parentElement.addEventListener('mouseleave', () => {
     carouselInterval = setInterval(() => {
       goToSlide(currentSlide + 1);
     }, 5000);
   });
-  
+
   // ============ FAQ ACCORDION ============
   const faqQuestions = document.querySelectorAll('.faq-question');
-  
+
   faqQuestions.forEach(question => {
-    question.addEventListener('click', function() {
+    question.addEventListener('click', function () {
       const isExpanded = this.getAttribute('aria-expanded') === 'true';
       const answer = this.nextElementSibling;
-      
+
       faqQuestions.forEach(q => {
         if (q !== this) {
           q.setAttribute('aria-expanded', 'false');
@@ -285,9 +285,9 @@ document.addEventListener('DOMContentLoaded', function() {
           q.nextElementSibling.style.paddingTop = null;
         }
       });
-      
+
       this.setAttribute('aria-expanded', !isExpanded);
-      
+
       if (isExpanded) {
         answer.style.maxHeight = null;
         answer.style.paddingTop = null;
@@ -297,13 +297,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-  
+
   // ============ SERVICE CARDS DETAILS ============
   const serviceCards = document.querySelectorAll('.card-toggle');
   const detailsOverlay = document.getElementById('detailsOverlay');
   const closeOverlay = document.querySelector('.close-overlay');
   const detailsContent = document.getElementById('detailsContent');
-  
+
   const serviceDetails = {
     'web-apps': {
       title: 'Web Apps e PWAs',
@@ -378,12 +378,12 @@ document.addEventListener('DOMContentLoaded', function() {
       technologies: ['Next.js SEO', 'Schema.org', 'AI Content Tools', 'Analytics']
     }
   };
-  
+
   serviceCards.forEach(card => {
-    card.addEventListener('click', function() {
+    card.addEventListener('click', function () {
       const target = this.dataset.target;
       const details = serviceDetails[target];
-      
+
       if (details) {
         detailsContent.innerHTML = `
           <h3>${details.title}</h3>
@@ -396,171 +396,99 @@ document.addEventListener('DOMContentLoaded', function() {
           
           <h4>Tecnologias Utilizadas:</h4>
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0 2rem 0;">
-            ${details.technologies.map(tech => 
-              `<span style="background: var(--gradient-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.875rem;">${tech}</span>`
-            ).join('')}
+            ${details.technologies.map(tech =>
+          `<span style="background: var(--gradient-primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.875rem;">${tech}</span>`
+        ).join('')}
           </div>
           
           <div style="text-align: center;">
             <a href="#contato" class="btn primary">Solicitar Orçamento</a>
           </div>
         `;
-        
+
         detailsOverlay.classList.add('active');
         document.body.style.overflow = 'hidden';
       }
     });
   });
-  
+
   closeOverlay.addEventListener('click', () => {
     detailsOverlay.classList.remove('active');
     document.body.style.overflow = 'auto';
   });
-  
+
   detailsOverlay.addEventListener('click', (e) => {
     if (e.target === detailsOverlay) {
       detailsOverlay.classList.remove('active');
       document.body.style.overflow = 'auto';
     }
   });
-  
-  // ============ ASSISTENTE IA ============
+
+  // ============ ASSISTENTE IA AVANÇADO (IFRAME) ============
   const assistantBtn = document.getElementById('assistantBtn');
-  
-  assistantBtn.addEventListener('click', function() {
-    const messages = [
-      "Olá! Sou o assistente IA da MakerAI Studio. Como posso ajudar você hoje?",
-      "Posso explicar sobre nossos serviços de IA, desenvolvimento web ou automações.",
-      "Gostaria de saber mais sobre nossos cases de sucesso?",
-      "Posso ajudar com um orçamento personalizado para seu projeto."
-    ];
-    
-    let chatWindow = document.querySelector('.assistant-chat');
-    
-    if (!chatWindow) {
-      chatWindow = document.createElement('div');
-      chatWindow.className = 'assistant-chat';
-      chatWindow.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        right: 30px;
-        width: 350px;
-        max-width: 90vw;
-        background: var(--surface);
-        border-radius: var(--radius);
-        padding: 1.5rem;
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow);
-        z-index: 1000;
-      `;
-      
-      chatWindow.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h4 style="margin: 0; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Assistente IA</h4>
-          <button class="close-chat" style="background: none; border: none; font-size: 1.5rem; color: var(--text); cursor: pointer;">×</button>
-        </div>
-        <div class="chat-messages" style="height: 200px; overflow-y: auto; margin-bottom: 1rem; padding: 1rem; background: var(--surface-light); border-radius: var(--radius-sm);">
-          <div class="message ai">
-            <p style="background: rgba(124, 58, 237, 0.1); padding: 0.75rem; border-radius: var(--radius-sm); margin: 0; border-left: 3px solid var(--primary);">
-              ${messages[0]}
-            </p>
-          </div>
-        </div>
-        <div class="quick-questions" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <button class="quick-btn" data-question="servicos" style="text-align: left; background: var(--surface-light); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--radius-sm); color: var(--text); cursor: pointer; transition: all 0.3s;">
-            Quais serviços vocês oferecem?
-          </button>
-          <button class="quick-btn" data-question="orcamento" style="text-align: left; background: var(--surface-light); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--radius-sm); color: var(--text); cursor: pointer; transition: all 0.3s;">
-            Como funciona o orçamento?
-          </button>
-          <button class="quick-btn" data-question="contato" style="text-align: left; background: var(--surface-light); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--radius-sm); color: var(--text); cursor: pointer; transition: all 0.3s;">
-            Quero falar com um consultor
-          </button>
-        </div>
-      `;
-      
-      document.body.appendChild(chatWindow);
-      
-      chatWindow.querySelector('.close-chat').addEventListener('click', () => {
-        chatWindow.remove();
-      });
-      
-      chatWindow.querySelectorAll('.quick-btn').forEach(btn => {
-        btn.addEventListener('mouseenter', function() {
-          this.style.background = 'rgba(124, 58, 237, 0.1)';
-          this.style.transform = 'translateX(5px)';
-        });
-        
-        btn.addEventListener('mouseleave', function() {
-          this.style.background = 'var(--surface-light)';
-          this.style.transform = 'translateX(0)';
-        });
-        
-        btn.addEventListener('click', function() {
-          const question = this.dataset.question;
-          const chatMessages = chatWindow.querySelector('.chat-messages');
-          
-          // User message
-          const userMessage = document.createElement('div');
-          userMessage.className = 'message user';
-          userMessage.style.cssText = 'text-align: right; margin: 0.5rem 0;';
-          userMessage.innerHTML = `
-            <p style="background: var(--gradient-primary); color: white; padding: 0.75rem; border-radius: var(--radius-sm); margin: 0; display: inline-block;">
-              ${this.textContent}
-            </p>
-          `;
-          chatMessages.appendChild(userMessage);
-          
-          // AI response
-          setTimeout(() => {
-            const aiMessage = document.createElement('div');
-            aiMessage.className = 'message ai';
-            aiMessage.style.cssText = 'margin: 0.5rem 0;';
-            
-            let response = '';
-            switch(question) {
-              case 'servicos':
-                response = 'Oferecemos: Web Apps & PWAs, Consultores IA, Automações RPA, Modelagem 3D, Sistemas & Dashboards, e Conteúdo & SEO Técnico. Qual te interessa mais?';
-                break;
-              case 'orcamento':
-                response = 'O orçamento é personalizado baseado no escopo do projeto. Sites básicos a partir de R$8.000, sistemas complexos com IA a partir de R$40.000. Podemos agendar uma call para detalhar?';
-                break;
-              case 'contato':
-                response = 'Excelente! Vou te redirecionar para o formulário de contato. Um consultor entrará em contato em até 24h.';
-                setTimeout(() => {
-                  window.location.href = '#contato';
-                }, 1500);
-                break;
-            }
-            
-            aiMessage.innerHTML = `
-              <p style="background: rgba(124, 58, 237, 0.1); padding: 0.75rem; border-radius: var(--radius-sm); margin: 0; border-left: 3px solid var(--primary);">
-                ${response}
-              </p>
-            `;
-            chatMessages.appendChild(aiMessage);
-            
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-          }, 500);
-        });
-      });
-    } else {
-      chatWindow.remove();
+  const assistantIframe = document.getElementById('assistantIframe');
+  const assistantCloseBtn = document.getElementById('assistantCloseBtn');
+
+  function openAssistant() {
+    assistantIframe.classList.add('open');
+    assistantBtn.style.opacity = '0';
+    assistantBtn.style.pointerEvents = 'none';
+    assistantCloseBtn.classList.add('visible'); // Mostra o X
+
+    setTimeout(() => {
+      assistantIframe.contentWindow.postMessage({ type: 'OPEN_ASSISTANT' }, '*');
+    }, 300);
+  }
+
+  function closeAssistant() {
+    assistantIframe.classList.remove('open');
+    assistantBtn.style.opacity = '1';
+    assistantBtn.style.pointerEvents = 'auto';
+    assistantCloseBtn.classList.remove('visible'); // Esconde o X
+
+    assistantIframe.contentWindow.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
+  }
+
+  // Abrir
+  assistantBtn.addEventListener('click', openAssistant);
+
+  // Fechar com o novo botão X
+  assistantCloseBtn.addEventListener('click', closeAssistant);
+
+  // Fechar com mensagem do iframe
+  window.addEventListener('message', (event) => {
+    if (event.data?.type === 'CLOSE_ASSISTANT') {
+      closeAssistant();
     }
   });
-  
+
+  // Fechar com ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && assistantIframe.classList.contains('open')) {
+      closeAssistant();
+    }
+  });
+
+  // Fechar com ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && assistantIframe.classList.contains('open')) {
+      closeAssistant();
+      assistantIframe.contentWindow.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
+    }
+  });
+
   // ============ FORM SUBMISSION ============
   const contactForm = document.getElementById('contactForm');
-  
-  contactForm.addEventListener('submit', function(e) {
+
+  contactForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    
+
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
-    
+
     submitBtn.textContent = 'Enviando...';
     submitBtn.disabled = true;
-    
+
     setTimeout(() => {
       const successMsg = document.createElement('div');
       successMsg.style.cssText = `
@@ -577,24 +505,24 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
       successMsg.textContent = '✓ Mensagem enviada com sucesso!';
       document.body.appendChild(successMsg);
-      
+
       setTimeout(() => {
         successMsg.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => successMsg.remove(), 300);
       }, 3000);
-      
+
       contactForm.reset();
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
     }, 2000);
   });
-  
+
   // ============ ANIMAÇÕES AO SCROLL ============
   const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -100px 0px'
   };
-  
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -604,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }, observerOptions);
-  
+
   document.querySelectorAll('.section, .card, .hero-content, .case-item, .process-step, .testimonial-card').forEach(element => {
     element.style.opacity = '0';
     element.style.transform = 'translateY(30px)';
@@ -612,26 +540,26 @@ document.addEventListener('DOMContentLoaded', function() {
     element.style.transition = 'opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease';
     observer.observe(element);
   });
-  
+
   // ============ SMOOTH SCROLL ============
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+    anchor.addEventListener('click', function (e) {
       const href = this.getAttribute('href');
-      
+
       if (href === '#') return;
-      
+
       e.preventDefault();
       const target = document.querySelector(href);
-      
+
       if (target) {
         const headerHeight = document.querySelector('.header').offsetHeight;
         const targetPosition = target.offsetTop - headerHeight - 20;
-        
+
         window.scrollTo({
           top: targetPosition,
           behavior: 'smooth'
         });
-        
+
         target.style.boxShadow = '0 0 0 2px rgba(124, 58, 237, 0.5)';
         setTimeout(() => {
           target.style.boxShadow = 'none';
@@ -639,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-  
+
   // ============ PARTÍCULAS ============
   function createParticles() {
     const particlesContainer = document.createElement('div');
@@ -655,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
       overflow: hidden;
     `;
     document.body.appendChild(particlesContainer);
-    
+
     for (let i = 0; i < 30; i++) {
       const particle = document.createElement('div');
       particle.style.cssText = `
@@ -664,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function() {
         border-radius: 50%;
         animation: float ${15 + Math.random() * 20}s infinite ease-in-out;
       `;
-      
+
       const size = Math.random() * 80 + 20;
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
@@ -672,10 +600,10 @@ document.addEventListener('DOMContentLoaded', function() {
       particle.style.top = `${Math.random() * 100}vh`;
       particle.style.opacity = `${0.05 + Math.random() * 0.1}`;
       particle.style.animationDelay = `${Math.random() * 5}s`;
-      
+
       particlesContainer.appendChild(particle);
     }
-    
+
     const style = document.createElement('style');
     style.textContent = `
       @keyframes float {
@@ -709,14 +637,38 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
   }
-  
+
   createParticles();
-  
+
   // ============ BOTÕES DEMO ============
   document.querySelectorAll('[data-assistant], [data-product]').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
       const type = this.dataset.assistant || this.dataset.product;
       alert(`Demonstração do ${type} será iniciada em breve!`);
     });
   });
+
+  // ============ LOADING SCREEN SIMPLES ============
+  const loadingScreen = document.getElementById('loadingScreen');
+
+  // Esconde o loading quando a página terminar de carregar
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      loadingScreen.classList.add('hidden');
+
+      // Remove completamente do DOM após a transição
+      setTimeout(function () {
+        loadingScreen.remove();
+      }, 600);
+    }, 800); // Tempo extra para dar um efeito bonito
+  });
+
+  // Fallback: remove após 4 segundos caso algo falhe
+  setTimeout(function () {
+    if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+      loadingScreen.classList.add('hidden');
+      setTimeout(() => loadingScreen.remove(), 600);
+    }
+  }, 4000);
+
 });
