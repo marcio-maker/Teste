@@ -1,276 +1,1936 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Assistente IA MakerAI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Assistente IA MakerAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #5f2eff, #8f6bff);
+            --secondary-gradient: linear-gradient(135deg, #8f6bff, #9d7aff);
+            --bg-primary: rgba(18, 18, 18, 0.98);
+            --bg-secondary: rgba(15, 15, 15, 0.95);
+            --bg-tertiary: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --accent-color: #8f6bff;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'SF Pro Display', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif}
-body{background:transparent;height:100vh;overflow:hidden}
-.assistant-panel{
-  position:fixed;inset:0;
-  background:linear-gradient(135deg,#0b0018,#000);
-  color:#fff;
-  display:flex;flex-direction:column;
-  border-radius:24px;overflow:hidden;
-}
-.chat-header{
-  padding:12px 16px;
-  background:linear-gradient(to right,rgba(124,58,237,.25),rgba(0,0,0,.6));
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid rgba(255,255,255,.1)
-}
-.chat-header h3{font-size:17px;display:flex;align-items:center;gap:10px}
-.chat-header i{color:#8b5cf6}
-.close-btn{
-  background:rgba(255,255,255,.1);border:none;color:#fff;
-  width:40px;height:40px;border-radius:50%;
-  cursor:pointer
-}
-.messages{
-  flex:1;overflow-y:auto;padding:16px;
-  display:flex;flex-direction:column;gap:12px;
-  scroll-behavior:smooth
-}
-.message{
-  max-width:88%;
-  padding:14px 18px;
-  border-radius:18px;
-  line-height:1.5;
-  font-size:15px;
-  animation:fade .25s ease
-}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
-.user{align-self:flex-end;background:linear-gradient(135deg,#7c3aed,#5b21b6);border-bottom-right-radius:6px}
-.ai{align-self:flex-start;background:rgba(255,255,255,.08);border-bottom-left-radius:6px}
-.typing{
-  display:flex;gap:6px;
-  padding:12px 16px;
-  background:rgba(255,255,255,.08);
-  border-radius:16px;width:fit-content
-}
-.typing span{
-  width:8px;height:8px;border-radius:50%;
-  background:#8b5cf6;
-  animation:blink 1.4s infinite both
-}
-.typing span:nth-child(2){animation-delay:.2s}
-.typing span:nth-child(3){animation-delay:.4s}
-@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+        body {
+            background: transparent;
+            overflow: hidden;
+            touch-action: manipulation;
+            height: 100vh;
+            width: 100vw;
+        }
 
-.quick-box{
-  padding:10px 14px;
-  border-top:1px solid rgba(255,255,255,.1);
-  background:rgba(0,0,0,.85)
-}
-.quick{
-  display:flex;gap:10px;overflow-x:auto
-}
-.quick button{
-  padding:10px 14px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-  color:#fff;border-radius:16px;
-  cursor:pointer;white-space:nowrap
-}
-.quick button:hover{background:rgba(124,58,237,.4)}
+        .assistant-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: var(--bg-primary);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            z-index: 9999;
+            overflow: hidden;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: panelIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            height: 100dvh;
+            width: 100dvw;
+        }
 
-.input-box{
-  display:flex;gap:10px;
-  padding:12px 16px;
-  border-top:1px solid rgba(255,255,255,.1);
-  background:rgba(0,0,0,.9)
-}
-input{
-  flex:1;padding:12px 16px;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.15);
-  background:rgba(255,255,255,.08);
-  color:#fff;outline:none
-}
-.send{
-  width:44px;height:44px;border-radius:50%;
-  border:none;
-  background:linear-gradient(135deg,#8b5cf6,#5b21b6);
-  color:#fff;cursor:pointer
-}
-</style>
+        @keyframes panelIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header melhorado */
+        .chat-header {
+            padding: 14px 18px;
+            background: linear-gradient(135deg, 
+                rgba(95, 46, 255, 0.25), 
+                rgba(143, 107, 255, 0.15));
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--accent-color), 
+                transparent);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .ai-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(95, 46, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-text h3 {
+            font-size: 17px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #d4c4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2px;
+        }
+
+        .header-text .status {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+            background: var(--success-color);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .icon-btn:active {
+            transform: translateY(0);
+            transition-duration: 0.1s;
+        }
+
+        .icon-btn[data-badge]::after {
+            content: attr(data-badge);
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: var(--accent-color);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: var(--radius-full);
+            min-width: 18px;
+            text-align: center;
+            border: 2px solid var(--bg-primary);
+        }
+
+        /* Container de mensagens melhorado */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            background: linear-gradient(
+                to bottom,
+                transparent,
+                rgba(95, 46, 255, 0.02) 10%,
+                transparent 90%
+            );
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-full);
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #5f2eff, #8f6bff);
+            border-radius: var(--radius-full);
+        }
+
+        /* Mensagens aprimoradas */
+        .message {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            line-height: 1.5;
+            word-wrap: break-word;
+            position: relative;
+            font-size: 15px;
+            box-shadow: var(--shadow-md);
+            animation: messageIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes messageIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            background: var(--primary-gradient);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: var(--radius-sm);
+            margin-left: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-message::before {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--primary-gradient);
+            clip-path: polygon(100% 50%, 0 0, 0 100%);
+        }
+
+        .ai-message {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .ai-message::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: var(--bg-tertiary);
+            clip-path: polygon(0 50%, 100% 0, 100% 100%);
+        }
+
+        .message-time {
+            display: block;
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 6px;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* Indicador de digitação melhorado */
+        .typing-indicator {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            align-self: flex-start;
+            border: 1px solid var(--border-color);
+            animation: typingIn 0.3s ease;
+            max-width: 120px;
+        }
+
+        @keyframes typingIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+            background: var(--accent-color);
+            opacity: 0.4;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { 
+                opacity: 0.4; 
+                transform: translateY(0px); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateY(-4px); 
+            }
+        }
+
+        /* Container de opções rápidas aprimorado */
+        .quick-options-container {
+            padding: 16px 18px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .quick-options-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--accent-color), 
+                transparent);
+        }
+
+        .quick-options-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-options-title i {
+            color: var(--accent-color);
+        }
+
+        .quick-options-carousel {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 12px;
+            scrollbar-width: none;
+        }
+
+        .quick-options-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .quick-option {
+            flex: 0 0 auto;
+            padding: 14px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            z-index: 0;
+        }
+
+        .quick-option > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-option:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-option:hover::before {
+            opacity: 0.1;
+        }
+
+        .quick-option:active {
+            transform: translateY(0);
+            transition-duration: 0.1s;
+        }
+
+        .quick-option i {
+            color: var(--accent-color);
+            font-size: 14px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .carousel-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.2);
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            padding: 0;
+        }
+
+        .carousel-indicator.active {
+            background: var(--accent-color);
+            transform: scale(1.4);
+            box-shadow: 0 0 8px rgba(143, 107, 255, 0.5);
+        }
+
+        /* Container de input aprimorado */
+        .input-container {
+            padding: 16px 18px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 12px;
+            background: var(--bg-secondary);
+            align-items: center;
+            position: relative;
+        }
+
+        .input-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--accent-color), 
+                transparent);
+        }
+
+        #assistantInput {
+            flex: 1;
+            padding: 16px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all var(--transition-normal);
+            font-weight: 500;
+        }
+
+        #assistantInput:focus {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(143, 107, 255, 0.1);
+        }
+
+        #assistantInput::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .send-btn {
+            background: var(--primary-gradient);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(95, 46, 255, 0.4);
+        }
+
+        .send-btn:hover::before {
+            opacity: 1;
+        }
+
+        .send-btn:active {
+            transform: scale(0.98);
+            transition-duration: 0.1s;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Botão de voltar */
+        .back-btn {
+            display: none;
+        }
+
+        /* Sugestões em tempo real */
+        .suggestions-container {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 18px;
+            right: 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+        }
+
+        .suggestion-item {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .suggestion-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Modal de confirmação */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes modalIn {
+            to { transform: scale(1); }
+        }
+
+        .modal-header {
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .modal-message {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn.secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Feedback visual */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all var(--transition-normal);
+            z-index: 10001;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* ============================================
+           RESPONSIVIDADE COMPLETA
+           ============================================ */
+
+        /* MOBILE (até 767px) - Mobile First */
+        @media (max-width: 767px) {
+            .assistant-panel {
+                border-radius: 0;
+                height: 100dvh;
+                width: 100dvw;
+            }
+
+            .back-btn {
+                display: flex;
+            }
+
+            .chat-header {
+                padding: 12px 16px;
+            }
+
+            .ai-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+
+            .header-text h3 {
+                font-size: 16px;
+            }
+
+            .header-actions .icon-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+
+            .messages-container {
+                padding: 16px;
+            }
+
+            .message {
+                max-width: 92%;
+                padding: 14px 18px;
+                font-size: 14px;
+            }
+
+            .quick-option {
+                padding: 12px 16px;
+                font-size: 12.5px;
+                flex: 0 0 auto;
+                width: calc(100vw - 100px); /* 1 por vez em mobile */
+            }
+
+            .input-container,
+            .quick-options-container {
+                padding-left: 16px;
+                padding-right: 16px;
+                padding-bottom: max(16px, env(safe-area-inset-bottom));
+            }
+
+            #assistantInput {
+                font-size: 16px; /* Evita zoom no iOS */
+                padding: 14px 18px;
+            }
+
+            .send-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            /* Ajuste específico para iPhones */
+            @supports (padding: max(0px)) {
+                .input-container {
+                    padding-bottom: max(16px, env(safe-area-inset-bottom));
+                }
+            }
+        }
+
+        /* TABLET (768px a 1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .assistant-panel {
+                max-width: 720px;
+                margin: 24px auto;
+                border-radius: 28px;
+                height: calc(100dvh - 48px);
+                width: calc(100vw - 48px);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            }
+
+            .chat-header {
+                padding: 16px 24px;
+                border-radius: 28px 28px 0 0;
+            }
+
+            .messages-container {
+                padding: 24px;
+            }
+
+            .message {
+                max-width: 80%;
+            }
+
+            .quick-option {
+                flex: 0 0 calc(50% - 10px); /* 2 por linha em tablet */
+                min-width: 200px;
+            }
+
+            .input-container {
+                padding: 20px 24px;
+                border-radius: 0 0 28px 28px;
+            }
+
+            #assistantInput {
+                padding: 16px 22px;
+                font-size: 15px;
+            }
+        }
+
+        /* DESKTOP (1024px e acima) */
+        @media (min-width: 1024px) {
+            .assistant-panel {
+                max-width: 480px;
+                margin: 24px auto;
+                border-radius: 28px;
+                height: calc(100dvh - 48px);
+                width: calc(100vw - 48px);
+                box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+            }
+
+            .chat-header {
+                padding: 18px 24px;
+                border-radius: 28px 28px 0 0;
+            }
+
+            .messages-container {
+                padding: 28px 24px;
+            }
+
+            .message {
+                max-width: 75%;
+            }
+
+            .quick-option {
+                flex: 0 0 calc(25% - 12px); /* 4 por linha em desktop */
+                min-width: 150px;
+            }
+
+            .input-container {
+                padding: 20px 24px;
+                border-radius: 0 0 28px 28px;
+            }
+
+            #assistantInput {
+                padding: 16px 24px;
+                font-size: 15px;
+            }
+
+            .send-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 17px;
+            }
+        }
+
+        /* DISPOSITIVOS GRANDES (1440px+) */
+        @media (min-width: 1440px) {
+            .assistant-panel {
+                max-width: 520px;
+            }
+
+            .message {
+                max-width: 70%;
+            }
+        }
+
+        /* AJUSTES PARA TELAS MUITO ALTAS */
+        @media (min-height: 900px) and (min-width: 1024px) {
+            .assistant-panel {
+                height: 85dvh;
+                margin-top: 7.5dvh;
+                margin-bottom: 7.5dvh;
+            }
+        }
+
+        /* AJUSTES PARA TELAS MUITO BAIXAS */
+        @media (max-height: 600px) {
+            .assistant-panel {
+                border-radius: 0;
+            }
+
+            .messages-container {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+
+            .message {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .quick-options-container {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+
+            .quick-option {
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+        }
+
+        /* ROTAÇÃO (LANDSCAPE) EM MOBILE */
+        @media (max-width: 767px) and (orientation: landscape) {
+            .assistant-panel {
+                border-radius: 0;
+            }
+
+            .chat-header {
+                padding: 10px 14px;
+            }
+
+            .ai-avatar {
+                width: 30px;
+                height: 30px;
+            }
+
+            .header-text h3 {
+                font-size: 15px;
+            }
+
+            .messages-container {
+                padding: 12px 14px;
+                max-height: 50vh;
+            }
+
+            .message {
+                max-width: 85%;
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+
+            .quick-option {
+                padding: 10px 14px;
+                font-size: 12px;
+                min-width: 180px;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-primary: rgba(255, 255, 255, 0.98);
+                --bg-secondary: rgba(250, 250, 250, 0.95);
+                --bg-tertiary: rgba(0, 0, 0, 0.05);
+                --text-primary: #1a1a1a;
+                --text-secondary: rgba(0, 0, 0, 0.6);
+                --text-tertiary: rgba(0, 0, 0, 0.4);
+                --border-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* Animações de entrada */
+        .message:nth-child(odd) {
+            animation-delay: 0.1s;
+        }
+
+        .message:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+
+        /* Performance: Desativa animações para histórico carregado */
+        .messages-container:has(.message:nth-child(30)) .message {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+    </style>
 </head>
-
 <body>
-<div class="assistant-panel">
+    <div class="assistant-panel" id="assistantPanel">
+        <!-- Header aprimorado -->
+        <div class="chat-header">
+            <div class="header-content">
+                <div class="ai-avatar">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="header-text">
+                    <h3>Assistente MakerAI</h3>
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        <span id="statusText">Online • IA Generativa</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="historyBtn" aria-label="Histórico" data-badge="0">
+                    <i class="fas fa-history"></i>
+                </button>
+                <button class="icon-btn" id="clearBtn" aria-label="Limpar conversa">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="icon-btn back-btn" id="backBtn" aria-label="Voltar">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <button class="icon-btn" id="closeAssistant" aria-label="Fechar assistente">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
 
-  <div class="chat-header">
-    <h3><i class="fas fa-robot"></i> Assistente MakerAI</h3>
-    <button class="close-btn" onclick="window.parent.postMessage({type:'CLOSE_ASSISTANT'},'*')">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
+        <!-- Container de mensagens -->
+        <div class="messages-container" id="messagesContainer">
+            <!-- Mensagens serão inseridas aqui dinamicamente -->
+        </div>
 
-  <div class="messages" id="messages"></div>
+        <!-- Sugestões em tempo real -->
+        <div class="suggestions-container" id="suggestionsContainer"></div>
 
-  <div class="quick-box">
-    <div class="quick" id="quick"></div>
-  </div>
+        <!-- Container de opções rápidas -->
+        <div class="quick-options-container" id="quickOptionsContainer">
+            <div class="quick-options-title">
+                <i class="fas fa-bolt"></i> Perguntas frequentes
+            </div>
+            <div class="quick-options-carousel" id="quickOptionsCarousel"></div>
+            <div class="carousel-indicators" id="carouselIndicators"></div>
+        </div>
 
-  <div class="input-box">
-    <input id="input" placeholder="Digite sua mensagem..." />
-    <button class="send" id="send"><i class="fas fa-paper-plane"></i></button>
-  </div>
+        <!-- Container de input -->
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="assistantInput" 
+                placeholder="Digite sua pergunta..." 
+                aria-label="Mensagem para o assistente"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+            >
+            <button class="send-btn" id="sendAssistantBtn" aria-label="Enviar mensagem">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
 
-</div>
+    <!-- Modal de confirmação -->
+    <div class="confirmation-modal" id="confirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Limpar conversa</h3>
+                <p class="modal-message" id="modalMessage">Tem certeza que deseja limpar toda a conversa? Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="modalCancel">Cancelar</button>
+                <button class="modal-btn primary" id="modalConfirm">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
-<script>
-const messages=document.getElementById("messages");
-const input=document.getElementById("input");
-const quick=document.getElementById("quick");
+    <!-- Notificação -->
+    <div class="notification" id="notification"></div>
 
-let history=JSON.parse(localStorage.getItem("makerai_chat")||"[]");
-let busy=false;
+    <script>
+        // ============================================
+        // ELEMENTOS E VARIÁVEIS GLOBAIS
+        // ============================================
+        const elements = {
+            panel: document.getElementById('assistantPanel'),
+            messagesContainer: document.getElementById('messagesContainer'),
+            assistantInput: document.getElementById('assistantInput'),
+            sendAssistantBtn: document.getElementById('sendAssistantBtn'),
+            quickOptionsCarousel: document.getElementById('quickOptionsCarousel'),
+            carouselIndicators: document.getElementById('carouselIndicators'),
+            closeAssistant: document.getElementById('closeAssistant'),
+            backBtn: document.getElementById('backBtn'),
+            historyBtn: document.getElementById('historyBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            statusText: document.getElementById('statusText'),
+            suggestionsContainer: document.getElementById('suggestionsContainer'),
+            confirmationModal: document.getElementById('confirmationModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalMessage: document.getElementById('modalMessage'),
+            modalCancel: document.getElementById('modalCancel'),
+            modalConfirm: document.getElementById('modalConfirm'),
+            notification: document.getElementById('notification')
+        };
 
-const intros=[
- "Boa pergunta!",
- "Perfeito.",
- "Ótimo ponto.",
- "Vamos lá.",
- "Te explico agora."
-];
+        // Estado da aplicação
+        const state = {
+            conversationHistory: [],
+            isProcessing: false,
+            carouselInterval: null,
+            currentSlide: 0,
+            messageCount: 0,
+            typingTimeout: null,
+            suggestions: [],
+            isOnline: true,
+            sessionId: generateSessionId(),
+            lastMessages: [], // Para memória contextual
+            isLandscape: window.innerWidth > window.innerHeight
+        };
 
-const responses={
- servicos:`Criamos soluções modernas 🚀
+        // ============================================
+        // CONFIGURAÇÕES RESPONSIVAS
+        // ============================================
+        const CONFIG = {
+            TYPING_DELAY: 800,
+            CAROUSEL_INTERVAL: 5000,
+            SESSION_TIMEOUT: 30 * 60 * 1000,
+            MAX_MESSAGES: 100,
+            SUGGESTIONS_LIMIT: 3,
+            ITEMS_PER_VIEW: calculateItemsPerView()
+        };
 
-• Sites e PWAs premium  
-• Sistemas com IA  
-• Chatbots e assistentes  
-• Automações inteligentes  
-• Apps mobile  
+        function calculateItemsPerView() {
+            const width = window.innerWidth;
+            if (width < 768) return 1; // Mobile: 1 item
+            if (width < 1024) return 2; // Tablet: 2 items
+            return 4; // Desktop: 4 items
+        }
 
-O que você quer explorar primeiro?`,
- preco:`Os valores variam conforme escopo 💰
+        // ============================================
+        // FUNÇÕES UTILITÁRIAS
+        // ============================================
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
 
-Sites/PWAs → a partir de R$ 8k  
-Sistemas com IA → a partir de R$ 40k  
-Automações → a partir de R$ 12k  
-Apps → a partir de R$ 30k  
+        function formatTime(date = new Date()) {
+            return date.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
 
-Quer uma estimativa mais precisa?`,
- prazo:`Os prazos médios são:
+        function showNotification(message, type = 'info') {
+            const notification = elements.notification;
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (type === 'success') {
+                notification.style.borderLeft = '4px solid var(--success-color)';
+            } else if (type === 'error') {
+                notification.style.borderLeft = '4px solid var(--error-color)';
+            } else if (type === 'warning') {
+                notification.style.borderLeft = '4px solid var(--warning-color)';
+            } else {
+                notification.style.borderLeft = '4px solid var(--accent-color)';
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
 
-Protótipo → 1–2 semanas  
-Projeto completo → 4–8 semanas  
-IA avançada → até 12 semanas  
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
-Tem alguma data em mente?`,
- portfolio:`Temos projetos com:
+        function sanitizeHTML(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-• IA conversacional  
-• Dashboards em tempo real  
-• Apps e plataformas educacionais  
-• Automações corporativas  
+        // ============================================
+        // GERENCIAMENTO DE MENSAGENS
+        // ============================================
+        function addMessage(text, sender, timestamp = new Date()) {
+            // Limita o número de mensagens no DOM para performance
+            if (state.messageCount > 50) {
+                const messages = elements.messagesContainer.querySelectorAll('.message');
+                if (messages.length > 50) {
+                    messages[0].remove();
+                }
+            }
 
-Quer ver algo mais técnico ou visual?`,
- contato:`Perfeito 😄  
+            const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const div = document.createElement('div');
+            div.className = `message ${sender}-message`;
+            div.dataset.messageId = messageId;
+            
+            const formattedTime = formatTime(timestamp);
+            
+            // Sanitiza e processa markdown básico
+            let processedText = sanitizeHTML(text)
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+            
+            div.innerHTML = processedText + `<span class="message-time">${formattedTime}</span>`;
+            
+            // Aplica animação apenas para novas mensagens
+            if (state.messageCount < 30) {
+                const delay = state.messageCount * 0.1;
+                div.style.animationDelay = `${delay}s`;
+            } else {
+                div.style.animation = 'none';
+                div.style.opacity = '1';
+                div.style.transform = 'none';
+            }
+            
+            elements.messagesContainer.appendChild(div);
+            
+            // Scroll suave com requestAnimationFrame
+            requestAnimationFrame(() => {
+                elements.messagesContainer.scrollTo({
+                    top: elements.messagesContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
+            
+            state.messageCount++;
+            state.lastMessages.push({ sender, content: text });
+            
+            // Mantém apenas as últimas 6 mensagens para contexto
+            if (state.lastMessages.length > 6) {
+                state.lastMessages.shift();
+            }
+            
+            return messageId;
+        }
 
-Posso te direcionar para contato agora ou coletar algumas infos antes.
+        function showTyping() {
+            if (document.getElementById('typingIndicator')) return;
+            
+            const typing = document.createElement('div');
+            typing.className = 'typing-indicator';
+            typing.id = 'typingIndicator';
+            typing.innerHTML = '<span></span><span></span><span></span>';
+            elements.messagesContainer.appendChild(typing);
+            
+            requestAnimationFrame(() => {
+                elements.messagesContainer.scrollTo({
+                    top: elements.messagesContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
+        }
 
-Como prefere seguir?`
-};
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
 
-function addMessage(text,type,typing=false){
- const div=document.createElement("div");
- div.className=`message ${type}`;
- messages.appendChild(div);
- messages.scrollTop=messages.scrollHeight;
+        // ============================================
+        // GERENCIAMENTO DE HISTÓRICO
+        // ============================================
+        function saveHistory() {
+            const history = {
+                sessionId: state.sessionId,
+                messages: state.conversationHistory,
+                lastUpdated: new Date().toISOString(),
+                messageCount: state.messageCount
+            };
+            try {
+                localStorage.setItem('makerai_chat_history', JSON.stringify(history));
+                updateHistoryBadge();
+            } catch (e) {
+                console.warn('Não foi possível salvar histórico:', e);
+            }
+        }
 
- if(type==="ai" && typing){
-   typeEffect(div,text);
- }else{
-   div.innerHTML=text.replace(/\n/g,"<br>");
- }
-}
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem('makerai_chat_history');
+                if (saved) {
+                    const history = JSON.parse(saved);
+                    
+                    // Verifica se a sessão é muito antiga
+                    const lastUpdated = new Date(history.lastUpdated);
+                    const now = new Date();
+                    const diffHours = (now - lastUpdated) / (1000 * 60 * 60);
+                    
+                    if (diffHours < 24) { // Mantém histórico por 24 horas
+                        state.conversationHistory = history.messages || [];
+                        state.messageCount = history.messageCount || 0;
+                        
+                        // Renderiza histórico (sem animações para performance)
+                        state.conversationHistory.forEach(msg => {
+                            const timestamp = msg.timestamp ? new Date(msg.timestamp) : new Date();
+                            addMessage(msg.content, msg.role, timestamp);
+                        });
+                        
+                        updateHistoryBadge();
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+            return false;
+        }
 
-function typeEffect(el,text){
- let i=0;
- el.innerHTML="";
- const t=setInterval(()=>{
-   el.innerHTML+=text.charAt(i)==="\n"?"<br>":text.charAt(i);
-   i++;messages.scrollTop=messages.scrollHeight;
-   if(i>=text.length)clearInterval(t);
- },14);
-}
+        function clearHistory() {
+            state.conversationHistory = [];
+            state.messageCount = 0;
+            state.lastMessages = [];
+            elements.messagesContainer.innerHTML = '';
+            localStorage.removeItem('makerai_chat_history');
+            updateHistoryBadge();
+            showNotification('Histórico limpo com sucesso!', 'success');
+            
+            // Adiciona mensagem inicial
+            setTimeout(() => {
+                addMessage(getInitialGreeting(), 'ai');
+            }, 500);
+        }
 
-function typingOn(){
- const t=document.createElement("div");
- t.className="typing";t.id="typing";
- t.innerHTML="<span></span><span></span><span></span>";
- messages.appendChild(t);
- messages.scrollTop=messages.scrollHeight;
-}
-function typingOff(){
- const t=document.getElementById("typing");
- if(t)t.remove();
-}
+        function updateHistoryBadge() {
+            const badge = elements.historyBtn;
+            const count = state.conversationHistory.length;
+            badge.dataset.badge = count > 0 ? count : '';
+        }
 
-function showQuick(opts){
- quick.innerHTML="";
- opts.forEach(o=>{
-   const b=document.createElement("button");
-   b.textContent=o;
-   b.onclick=()=>send(o);
-   quick.appendChild(b);
- });
-}
+        // ============================================
+        // SISTEMA DE RESPOSTAS INTELIGENTES
+        // ============================================
+        function getInitialGreeting() {
+            const hour = new Date().getHours();
+            let greeting;
+            
+            if (hour < 12) greeting = "Bom dia";
+            else if (hour < 18) greeting = "Boa tarde";
+            else greeting = "Boa noite";
+            
+            const greetings = [
+                `${greeting}! 👋 Sou o assistente da MakerAI. Como posso te ajudar hoje?`,
+                `${greeting}! 😊 Aqui é o assistente da MakerAI. Pronto para criar algo incrível juntos?`,
+                `${greeting}! 🚀 Eu sou o assistente da MakerAI. Vamos transformar sua ideia em realidade?`
+            ];
+            
+            return greetings[Math.floor(Math.random() * greetings.length)];
+        }
 
-function getResponse(msg){
- const t=msg.toLowerCase();
- if(/serv/i.test(t))return responses.servicos;
- if(/pre|valor|custo|orç/i.test(t))return responses.preco;
- if(/prazo|tempo|entrega/i.test(t))return responses.prazo;
- if(/port|case|exemplo/i.test(t))return responses.portfolio;
- if(/cont|whats|email/i.test(t))return responses.contato;
- if(/oi|olá|bom dia|boa/i.test(t))
-   return "Oi! 😊 Posso te ajudar com serviços, valores, prazos ou portfólio. O que você quer ver?";
- return "Entendi 👍 Me explica só um pouco mais pra eu te ajudar melhor.";
-}
+        function analyzeMessage(message) {
+            const lowerMsg = message.toLowerCase().trim();
+            const words = lowerMsg.split(/\s+/);
+            
+            // Análise de intenção com pesos
+            const intents = {
+                greeting: /^(oi|olá|ola|e aí|bom dia|boa tarde|boa noite|hello|hi|hey)/i.test(lowerMsg) ? 1.0 : 0,
+                services: /servi[çc]os|desenvolvimento|site|app|sistema|programa[çc]|software/i.test(lowerMsg) ? 0.9 : 0,
+                pricing: /pre[çc]o|valor|custo|or[çc]amento|quanto custa|investimento/i.test(lowerMsg) ? 0.8 : 0,
+                portfolio: /portf[óo]lio|cases|projetos|trabalhos|exemplos|j[aá] fez/i.test(lowerMsg) ? 0.7 : 0,
+                contact: /contato|whatsapp|email|telefone|falar|conversar|agendar|reuni[aã]o/i.test(lowerMsg) ? 0.6 : 0,
+                help: /ajuda|como funciona|duvida|d[uú]vida|informa[çc][ãa]o/i.test(lowerMsg) ? 0.5 : 0,
+                urgent: /urgente|r[aá]pido|imediat[ao]|hoje|agora|j[aá]/i.test(lowerMsg) ? 1.0 : 0
+            };
+            
+            // Verifica contexto anterior
+            const lastUserMessage = state.lastMessages.filter(m => m.sender === 'user').pop();
+            if (lastUserMessage) {
+                const lastLower = lastUserMessage.content.toLowerCase();
+                if (lastLower.includes('preço') || lastLower.includes('valor')) {
+                    intents.pricing += 0.2;
+                }
+                if (lastLower.includes('serviço') || lastLower.includes('desenvolvimento')) {
+                    intents.services += 0.2;
+                }
+            }
+            
+            // Análise de sentimento
+            let sentiment = 'neutral';
+            const positiveWords = ['ótimo', 'excelente', 'perfeito', 'bom', 'legal', 'incrível', 'maravilhoso'];
+            const negativeWords = ['ruim', 'péssimo', 'horrível', 'problema', 'erro', 'bug', 'não funciona'];
+            
+            if (positiveWords.some(word => lowerMsg.includes(word))) sentiment = 'positive';
+            if (negativeWords.some(word => lowerMsg.includes(word))) sentiment = 'negative';
+            
+            // Encontra intenção principal
+            let mainIntent = 'generic';
+            let highestScore = 0;
+            
+            for (const [intent, score] of Object.entries(intents)) {
+                if (score > highestScore) {
+                    highestScore = score;
+                    mainIntent = intent;
+                }
+            }
+            
+            return {
+                intents,
+                mainIntent,
+                sentiment,
+                words: words.length,
+                hasQuestion: /\?$/.test(message),
+                isUrgent: intents.urgent > 0,
+                score: highestScore
+            };
+        }
 
-function send(text){
- if(busy)return;
- busy=true;
- addMessage(text,"user");
- history.push({r:"u",t:text});
- localStorage.setItem("makerai_chat",JSON.stringify(history));
- input.value="";
- typingOn();
+        function generateResponse(message) {
+            try {
+                const analysis = analyzeMessage(message);
+                
+                // Atualiza status no header
+                elements.statusText.textContent = 'Analisando sua pergunta...';
+                
+                // Respostas para saudações
+                if (analysis.mainIntent === 'greeting') {
+                    const hour = new Date().getHours();
+                    let timeGreeting;
+                    
+                    if (hour < 12) timeGreeting = "Bom dia";
+                    else if (hour < 18) timeGreeting = "Boa tarde";
+                    else timeGreeting = "Boa noite";
+                    
+                    return `${timeGreeting}! 😊\n\nSou o assistente da MakerAI Studio, especializado em transformar ideias em soluções digitais incríveis.\n\nNo que posso te ajudar hoje? Pode me contar sobre seu projeto, tirar dúvidas sobre orçamentos ou conhecer nossos cases de sucesso!`;
+                }
+                
+                // Mapeamento de intenções para respostas
+                const intentResponses = {
+                    services: `🚀 **Soluções Completas em Tecnologia**\n\n**💻 Desenvolvimento Web & Mobile**\n• Sites institucionais e corporativos\n• PWAs (Progressive Web Apps)\n• E-commerce e marketplaces\n• Aplicativos nativos (React Native/Flutter)\n• Sistemas web complexos\n\n**🤖 Inteligência Artificial**\n• Assistentes virtuais e chatbots\n• Análise preditiva de dados\n• Processamento de linguagem natural\n• Visão computacional\n• Automação com IA\n\n**🎨 Design & Experiência**\n• UI/UX Design premium\n• Identidade visual\n• Prototipagem interativa\n• Design System\n• Microinterações\n\n**⚡ Otimização & Performance**\n• SEO técnico\n• Performance web\n• Segurança digital\n• DevOps & CI/CD\n• Monitoramento\n\n*Qual área você gostaria de explorar?* 😊`,
+                    pricing: `💰 **Transparência Total nos Valores**\n\n**📊 Modelos de Preço**\n1. **Projeto Fixo** - Escopo definido, prazo fechado\n   • Sites: R$ 8.000 - R$ 25.000\n   • Apps: R$ 30.000 - R$ 80.000\n   • Sistemas: R$ 40.000 - R$ 150.000\n\n2. **Horas Avulsas** - R$ 120/hora\n   • Para ajustes e melhorias\n   • Manutenção contínua\n   • Consultorias técnicas\n\n3. **Assinatura Mensal** - A partir de R$ 1.500/mês\n   • Suporte prioritário\n   • Atualizações constantes\n   • Monitoramento 24/7\n\n**🎯 Fatores que Influenciam:**\n• Complexidade do projeto\n• Prazo de entrega\n• Integrações necessárias\n• Nível de design\n• Recursos de IA incluídos\n\n*Posso te passar uma estimativa mais precisa se você me contar sobre seu projeto!* ✨`,
+                    portfolio: `🎨 **Cases de Sucesso**\n\n**🏥 Saúde & Bem-estar**\n• App de telemedicina com IA\n• Sistema de gestão para clínicas\n• Plataforma de wellness corporativo\n\n**🏢 Empresarial**\n• Dashboard de BI em tempo real\n• Sistema de automação de processos\n• CRM personalizado com IA\n\n**🛒 E-commerce**\n• Marketplace com recomendação IA\n• E-commerce com realidade aumentada\n• Sistema de logística integrado\n\n**🎓 Educação**\n• Plataforma E-learning gamificada\n• App de cursos com tutoria IA\n• Sistema de gestão escolar\n\n**🔗 Tecnologia**\n• API Gateway para fintech\n• Sistema de monitoramento IoT\n• Plataforma de análise de dados\n\n*Tem algum setor específico que te interessa? Posso detalhar cases similares!* 📊`,
+                    contact: `📞 **Vamos Conversar!**\n\n**📱 Canais Diretos**\n• WhatsApp: (11) 99999-9999\n• Email: contato@makerai.com.br\n• LinkedIn: /makerai-studio\n\n**📍 Endereço**\n• São Paulo - SP\n• Atendimento remoto em todo Brasil\n\n**⏰ Horário de Atendimento**\n• Segunda a Sexta: 9h às 18h\n• Sábado: 9h às 12h\n• Plantão técnico: 24/7\n\n**🎯 Próximos Passos:**\n1. Agendamos uma call exploratória\n2. Analisamos suas necessidades\n3. Criamos uma proposta personalizada\n4. Iniciamos o projeto!\n\n*Prefere que eu te direcione para o formulário ou já quer marcar uma call?* 🚀`,
+                    help: `🤝 **Como Posso Ajudar?**\n\nPosso te auxiliar com:\n\n• Informações sobre nossos serviços\n• Estimativas de orçamento\n• Exemplos de projetos realizados\n• Processo de trabalho\n• Agendamento de reuniões\n\n**Dica:** Use os botões rápidos abaixo para navegar pelos tópicos principais! 🚀`,
+                    urgent: `⚡ **Entendi que é urgente!**\n\nVamos acelerar o processo:\n\n1. Me conte rapidamente sobre o projeto\n2. Posso conectar você diretamente com nossa equipe\n3. Priorizamos atendimento imediato\n\n*Qual é a situação?* 🚨`
+                };
+                
+                if (intentResponses[analysis.mainIntent]) {
+                    return intentResponses[analysis.mainIntent];
+                }
+                
+                // Resposta baseada no sentimento
+                if (analysis.sentiment === 'negative') {
+                    return `Entendi que você pode estar com alguma dificuldade. 😔\n\nPosso te ajudar a resolver isso! Me conte mais detalhes sobre o que está acontecendo ou que tipo de solução você está procurando.\n\nJuntos vamos encontrar a melhor opção! 🤝`;
+                }
+                
+                if (analysis.hasQuestion) {
+                    return `Ótima pergunta! 🤔\n\nPara te dar uma resposta precisa, me conta um pouco mais sobre:\n\n• O contexto do projeto\n• Prazo que você tem em mente\n• Orçamento disponível\n• Funcionalidades principais\n\nAssim posso te orientar da melhor forma possível! 📋`;
+                }
+                
+                // Resposta generica com variação
+                const genericResponses = [
+                    `Interessante! 🧐\n\nNo que mais posso te ajudar sobre isso? Se for sobre desenvolvimento, IA, design ou qualquer outra área da tecnologia, estou aqui para esclarecer!`,
+                    `Show! ✨\n\nVamos explorar isso juntos! Me conta qual o objetivo principal do seu projeto ou que problema você quer resolver com a tecnologia.`,
+                    `Perfeito! 🎯\n\nPara te dar as melhores opções, você poderia me falar:\n\n1. Qual é o seu setor/niche?\n2. Tem algum prazo específico?\n3. Já tem alguma ideia de funcionalidades?\n\nAssim posso te ajudar de forma personalizada!`,
+                    `Entendi! 🤝\n\nPara me ajudar a entender melhor, você está pensando em algo mais técnico ou mais focado na experiência do usuário?`,
+                    `Certo! 📝\n\nVamos por partes: me conta primeiro qual é o principal objetivo do seu projeto, depois detalhamos as funcionalidades.`
+                ];
+                
+                return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+                
+            } catch (error) {
+                console.error('Erro ao gerar resposta:', error);
+                return `Desculpe, tive um pequeno atraso no processamento. 😅\n\nPode repetir sua pergunta ou reformular de outra forma? Estou aqui para ajudar!`;
+            }
+        }
 
- setTimeout(()=>{
-   typingOff();
-   const intro=intros[Math.floor(Math.random()*intros.length)];
-   const reply=intro+"\n\n"+getResponse(text);
-   addMessage(reply,"ai",true);
-   history.push({r:"a",t:reply});
-   localStorage.setItem("makerai_chat",JSON.stringify(history));
-   showQuick(["Serviços","Orçamento","Prazos","Portfólio","Contato"]);
-   busy=false;
- },900+Math.random()*600);
-}
+        // ============================================
+        // SUGESTÕES EM TEMPO REAL
+        // ============================================
+        const updateSuggestions = debounce(function() {
+            const query = elements.assistantInput.value.trim().toLowerCase();
+            if (!query || query.length < 2) {
+                elements.suggestionsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Conhecimento base para sugestões
+            const knowledge = [
+                { text: 'Serviços', tags: ['serviço', 'desenvolvimento', 'site', 'app', 'sistema', 'web', 'mobile'] },
+                { text: 'Orçamento', tags: ['preço', 'valor', 'custo', 'orçamento', 'quanto custa', 'investimento'] },
+                { text: 'Portfólio', tags: ['portfolio', 'cases', 'projetos', 'trabalhos', 'exemplos'] },
+                { text: 'Contato', tags: ['contato', 'whatsapp', 'email', 'telefone', 'agendar', 'reunião'] }
+            ];
+            
+            // Filtra sugestões baseadas na query
+            const allSuggestions = knowledge.flatMap(item => 
+                item.tags.filter(tag => tag.includes(query)).map(() => ({
+                    text: `${item.text}`,
+                    action: () => {
+                        elements.assistantInput.value = item.text;
+                        sendMessage();
+                    }
+                }))
+            );
+            
+            // Remove duplicatas
+            const uniqueSuggestions = Array.from(
+                new Map(allSuggestions.map(s => [s.text, s])).values()
+            ).slice(0, CONFIG.SUGGESTIONS_LIMIT);
+            
+            if (uniqueSuggestions.length === 0) {
+                elements.suggestionsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Atualiza UI
+            elements.suggestionsContainer.innerHTML = '';
+            uniqueSuggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.textContent = suggestion.text;
+                item.onclick = suggestion.action;
+                elements.suggestionsContainer.appendChild(item);
+            });
+            
+            elements.suggestionsContainer.style.display = 'block';
+        }, 300);
 
-document.getElementById("send").onclick=()=>{if(input.value.trim())send(input.value)};
-input.addEventListener("keypress",e=>{if(e.key==="Enter"&&input.value.trim())send(input.value)});
+        // ============================================
+        // CARROSSEL DE OPÇÕES (RESPONSIVO)
+        // ============================================
+        function initQuickOptions() {
+            elements.quickOptionsCarousel.innerHTML = '';
+            
+            const options = [
+                { icon: 'fas fa-cogs', title: 'Serviços' },
+                { icon: 'fas fa-money-bill-wave', title: 'Orçamento' },
+                { icon: 'fas fa-images', title: 'Portfólio' },
+                { icon: 'fas fa-envelope', title: 'Contato' }
+            ];
+            
+            options.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'quick-option';
+                btn.innerHTML = `<i class="${item.icon}"></i> ${item.title}`;
+                btn.onclick = () => {
+                    elements.assistantInput.value = item.title;
+                    sendMessage();
+                };
+                elements.quickOptionsCarousel.appendChild(btn);
+            });
+            
+            updateIndicators();
+            startCarousel();
+        }
 
-window.addEventListener("load",()=>{
- if(history.length){
-   history.forEach(m=>addMessage(m.t,m.r==="u"?"user":"ai"));
- }else{
-   addMessage(
-     "Oi! 👋 Sou o assistente da MakerAI.\n\nPosso te ajudar com ideias, projetos, valores ou IA.",
-     "ai"
-   );
- }
- showQuick(["Serviços","Portfólio","Orçamento"]);
-});
-</script>
+        function updateIndicators() {
+            CONFIG.ITEMS_PER_VIEW = calculateItemsPerView();
+            const total = Math.ceil(4 / CONFIG.ITEMS_PER_VIEW);
+            elements.carouselIndicators.innerHTML = '';
+            
+            for (let i = 0; i < total; i++) {
+                const dot = document.createElement('button');
+                dot.className = `carousel-indicator ${i === state.currentSlide ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(i);
+                elements.carouselIndicators.appendChild(dot);
+            }
+        }
+
+        function goToSlide(index) {
+            const totalSlides = Math.ceil(4 / CONFIG.ITEMS_PER_VIEW);
+            
+            if (index < 0) index = totalSlides - 1;
+            if (index >= totalSlides) index = 0;
+            
+            state.currentSlide = index;
+            const options = elements.quickOptionsCarousel.children;
+            if (options.length > 0) {
+                const optionWidth = options[0].offsetWidth + 10;
+                const offset = index * CONFIG.ITEMS_PER_VIEW * optionWidth;
+                elements.quickOptionsCarousel.scrollTo({ left: offset, behavior: 'smooth' });
+            }
+            updateIndicators();
+            
+            clearInterval(state.carouselInterval);
+            startCarousel();
+        }
+
+        function startCarousel() {
+            state.carouselInterval = setInterval(() => {
+                goToSlide(state.currentSlide + 1);
+            }, CONFIG.CAROUSEL_INTERVAL);
+        }
+
+        // ============================================
+        // PROCESSAMENTO DE MENSAGENS
+        // ============================================
+        function sendMessage() {
+            const message = elements.assistantInput.value.trim();
+            if (!message || state.isProcessing) return;
+            
+            // Esconde sugestões
+            elements.suggestionsContainer.style.display = 'none';
+            
+            // Atualiza estado
+            state.isProcessing = true;
+            elements.assistantInput.value = '';
+            elements.assistantInput.disabled = true;
+            elements.sendAssistantBtn.disabled = true;
+            
+            // Adiciona mensagem do usuário
+            const timestamp = new Date();
+            addMessage(message, 'user', timestamp);
+            
+            // Salva no histórico
+            state.conversationHistory.push({
+                role: 'user',
+                content: message,
+                timestamp: timestamp.toISOString()
+            });
+            saveHistory();
+            
+            // Mostra indicador de digitação
+            showTyping();
+            
+            // Timeout de segurança
+            const safetyTimeout = setTimeout(() => {
+                hideTyping();
+                elements.statusText.textContent = 'Online • IA Generativa';
+                state.isProcessing = false;
+                elements.assistantInput.disabled = false;
+                elements.sendAssistantBtn.disabled = false;
+                elements.assistantInput.focus();
+                showNotification('Tempo esgotado. Por favor, tente novamente.', 'error');
+            }, 10000);
+            
+            // Simula processamento com IA
+            setTimeout(() => {
+                clearTimeout(safetyTimeout);
+                hideTyping();
+                
+                try {
+                    // Gera resposta
+                    const response = generateResponse(message);
+                    
+                    // Atraso de digitação realista
+                    setTimeout(() => {
+                        const responseTimestamp = new Date();
+                        addMessage(response, 'ai', responseTimestamp);
+                        
+                        // Atualiza histórico
+                        state.conversationHistory.push({
+                            role: 'assistant',
+                            content: response,
+                            timestamp: responseTimestamp.toISOString()
+                        });
+                        saveHistory();
+                        
+                        // Restaura status
+                        elements.statusText.textContent = 'Online • IA Generativa';
+                        
+                        // Habilita input novamente
+                        state.isProcessing = false;
+                        elements.assistantInput.disabled = false;
+                        elements.sendAssistantBtn.disabled = false;
+                        elements.assistantInput.focus();
+                        
+                        // Notificação para urgência
+                        const analysis = analyzeMessage(message);
+                        if (analysis.isUrgent) {
+                            showNotification('⚡ Atendimento prioritário ativado', 'warning');
+                        }
+                        
+                    }, Math.min(message.length * 10, 1500));
+                    
+                } catch (error) {
+                    console.error('Erro no processamento:', error);
+                    hideTyping();
+                    addMessage('Desculpe, ocorreu um erro no processamento. Pode tentar novamente?', 'ai');
+                    elements.statusText.textContent = 'Online • IA Generativa';
+                    state.isProcessing = false;
+                    elements.assistantInput.disabled = false;
+                    elements.sendAssistantBtn.disabled = false;
+                    elements.assistantInput.focus();
+                }
+                
+            }, Math.min(message.length * 20, 2000));
+        }
+
+        // ============================================
+        // MODAL DE CONFIRMAÇÃO
+        // ============================================
+        function showConfirmation(type, message, onConfirm) {
+            const modal = elements.confirmationModal;
+            
+            switch(type) {
+                case 'clear':
+                    elements.modalTitle.textContent = 'Limpar Conversa';
+                    elements.modalMessage.textContent = message;
+                    break;
+                case 'close':
+                    elements.modalTitle.textContent = 'Fechar Assistente';
+                    elements.modalMessage.textContent = message;
+                    break;
+            }
+            
+            elements.modalConfirm.onclick = () => {
+                onConfirm();
+                modal.style.display = 'none';
+            };
+            
+            elements.modalCancel.onclick = () => {
+                modal.style.display = 'none';
+            };
+            
+            modal.style.display = 'flex';
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        function setupEventListeners() {
+            // Input principal
+            elements.assistantInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            elements.assistantInput.addEventListener('input', updateSuggestions);
+            
+            // Botão enviar
+            elements.sendAssistantBtn.addEventListener('click', sendMessage);
+            
+            // Botão fechar
+            elements.closeAssistant.addEventListener('click', () => {
+                if (state.conversationHistory.length > 0) {
+                    showConfirmation(
+                        'close',
+                        'Tem certeza que deseja fechar o assistente? Seu progresso será salvo automaticamente.',
+                        () => window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*')
+                    );
+                } else {
+                    window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
+                }
+            });
+            
+            // Botão voltar
+            elements.backBtn.addEventListener('click', () => {
+                window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
+            });
+            
+            // Botão histórico
+            elements.historyBtn.addEventListener('click', () => {
+                showNotification(`Você tem ${state.conversationHistory.length} mensagens nesta conversa.`, 'info');
+            });
+            
+            // Botão limpar
+            elements.clearBtn.addEventListener('click', () => {
+                showConfirmation(
+                    'clear',
+                    'Tem certeza que deseja limpar toda a conversa? Esta ação não pode ser desfeita.',
+                    clearHistory
+                );
+            });
+            
+            // Fechar sugestões ao clicar fora
+            document.addEventListener('click', (e) => {
+                if (!elements.suggestionsContainer.contains(e.target) && 
+                    !elements.assistantInput.contains(e.target)) {
+                    elements.suggestionsContainer.style.display = 'none';
+                }
+            });
+            
+            // Comunicação com o iframe pai
+            window.addEventListener('message', (e) => {
+                if (e.data?.type === 'OPEN_ASSISTANT') {
+                    elements.panel.style.display = 'flex';
+                    setTimeout(() => elements.assistantInput.focus(), 500);
+                }
+                
+                if (e.data?.type === 'SET_INITIAL_MESSAGE') {
+                    const msg = e.data.message || getInitialGreeting();
+                    addMessage(msg, 'ai');
+                    state.conversationHistory.push({
+                        role: 'assistant',
+                        content: msg,
+                        timestamp: new Date().toISOString()
+                    });
+                    saveHistory();
+                }
+                
+                if (e.data?.type === 'GET_HISTORY') {
+                    window.parent.postMessage({
+                        type: 'HISTORY_DATA',
+                        data: state.conversationHistory
+                    }, '*');
+                }
+            });
+            
+            // Redimensionamento responsivo
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    state.isLandscape = window.innerWidth > window.innerHeight;
+                    CONFIG.ITEMS_PER_VIEW = calculateItemsPerView();
+                    updateIndicators();
+                    goToSlide(state.currentSlide);
+                }, 250);
+            });
+            
+            // Pausa carrossel durante interações
+            elements.quickOptionsCarousel.addEventListener('mouseenter', () => {
+                clearInterval(state.carouselInterval);
+            });
+            
+            elements.quickOptionsCarousel.addEventListener('mouseleave', startCarousel);
+            
+            elements.quickOptionsCarousel.addEventListener('touchstart', () => {
+                clearInterval(state.carouselInterval);
+            });
+            
+            elements.quickOptionsCarousel.addEventListener('touchend', () => {
+                setTimeout(startCarousel, 3000);
+            });
+            
+            // Verificação de conexão
+            window.addEventListener('online', () => {
+                state.isOnline = true;
+                elements.statusText.textContent = 'Online • IA Generativa';
+                showNotification('Conexão restabelecida!', 'success');
+            });
+            
+            window.addEventListener('offline', () => {
+                state.isOnline = false;
+                elements.statusText.textContent = 'Offline • Modo Limitado';
+                showNotification('Conexão perdida - algumas funcionalidades podem não estar disponíveis', 'warning');
+            });
+            
+            // Touch optimization para mobile
+            document.addEventListener('touchstart', function() {}, {passive: true});
+            
+            // Previne zoom no iOS
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Detecta dispositivo inicial
+            CONFIG.ITEMS_PER_VIEW = calculateItemsPerView();
+            state.isLandscape = window.innerWidth > window.innerHeight;
+            
+            // Inicializa componentes
+            initQuickOptions();
+            setupEventListeners();
+            
+            // Carrega histórico ou inicia nova conversa
+            const hasHistory = loadHistory();
+            if (!hasHistory) {
+                setTimeout(() => {
+                    addMessage(getInitialGreeting(), 'ai');
+                }, 800);
+            }
+            
+            // Foco automático com delay
+            setTimeout(() => {
+                elements.assistantInput.focus();
+            }, 1200);
+            
+            // Notifica que está pronto
+            setTimeout(() => {
+                window.parent.postMessage({ type: 'ASSISTANT_READY' }, '*');
+            }, 1000);
+            
+            // Status inicial
+            if (!navigator.onLine) {
+                state.isOnline = false;
+                elements.statusText.textContent = 'Offline • Modo Limitado';
+            }
+        });
+
+        // Limpeza
+        window.addEventListener('beforeunload', () => {
+            clearInterval(state.carouselInterval);
+            saveHistory();
+        });
+    </script>
 </body>
 </html>
