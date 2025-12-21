@@ -1,6 +1,6 @@
 // script.js - VERSÃO COMPLETA E ROBUSTA PARA MAKERAI STUDIO
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('MakerAI Studio v3.0 - Inicializando...');
+  console.log('MakerAI Studio - Inicializando v2.0...');
 
   // ============ CONFIGURAÇÕES GLOBAIS ============
   const config = {
@@ -58,43 +58,36 @@ document.addEventListener('DOMContentLoaded', function () {
     return notification;
   }
 
-  // ============ INICIALIZAÇÃO SEGURA ============
-  function initComponent(initFunction, componentName) {
-    try {
-      initFunction();
-      log(`${componentName} inicializado`);
-      return true;
-    } catch (error) {
-      console.warn(`Erro ao inicializar ${componentName}:`, error);
-      return false;
-    }
-  }
-
   // ============ LOADING SCREEN ============
   function initLoadingScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     if (!loadingScreen) return;
 
     // Esconde o loading quando a página carrega
-    const hideLoading = () => {
-      loadingScreen.classList.add('hidden');
-      setTimeout(() => {
-        if (loadingScreen.parentNode) {
-          loadingScreen.style.display = 'none';
-        }
-      }, 1000);
-    };
-
     window.addEventListener('load', function () {
-      setTimeout(hideLoading, 800);
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          if (loadingScreen.parentNode) {
+            loadingScreen.style.display = 'none';
+          }
+        }, 1000);
+      }, 800);
     });
 
     // Fallback após timeout
     setTimeout(() => {
       if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-        hideLoading();
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          if (loadingScreen.parentNode) {
+            loadingScreen.style.display = 'none';
+          }
+        }, 1000);
       }
     }, config.loadingTimeout);
+
+    log('Loading screen inicializado');
   }
 
   // ============ MOBILE MENU ============
@@ -118,9 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isOpening) {
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', handleEscapeKey);
-        hamburgerBtn.focus();
       } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto';
         document.removeEventListener('keydown', handleEscapeKey);
       }
     }
@@ -132,13 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     hamburgerBtn.addEventListener('click', toggleMobileMenu);
-    hamburgerBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleMobileMenu();
-      }
-    });
-
     closeMenuBtn.addEventListener('click', toggleMobileMenu);
 
     // Fechar menu ao clicar em links
@@ -152,6 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
         toggleMobileMenu();
       }
     });
+
+    log('Menu mobile inicializado');
   }
 
   // ============ THEME TOGGLE ============
@@ -194,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     mobileThemeToggle.addEventListener('click', toggleTheme);
     
     setSavedTheme();
+    log('Controle de tema inicializado');
   }
 
   // ============ SCROLL HORIZONTAL ============
@@ -357,15 +345,6 @@ document.addEventListener('DOMContentLoaded', function () {
         goToSlide(index);
         startAutoSlide();
       });
-      
-      dot.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          stopAutoSlide();
-          goToSlide(index);
-          startAutoSlide();
-        }
-      });
     });
 
     // Pause no hover
@@ -375,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicializar
     startAutoSlide();
+    log('Carousel inicializado com', totalSlides, 'slides');
   }
 
   // ============ FAQ ACCORDION ============
@@ -410,15 +390,12 @@ document.addEventListener('DOMContentLoaded', function () {
           answer.style.maxHeight = answer.scrollHeight + 'px';
           answer.style.paddingTop = '1rem';
         }
-      });
 
-      question.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          question.click();
-        }
+        log('FAQ toggled:', this.textContent);
       });
     });
+
+    log('FAQ inicializado');
   }
 
   // ============ SERVICE CARDS DETAILS ============
@@ -538,7 +515,6 @@ document.addEventListener('DOMContentLoaded', function () {
           detailsOverlay.classList.add('active');
           document.body.style.overflow = 'hidden';
           document.addEventListener('keydown', handleOverlayEscape);
-          closeOverlay.focus();
 
           log('Detalhes do serviço abertos:', details.title);
         }
@@ -553,22 +529,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function closeDetailsOverlay() {
       detailsOverlay.classList.remove('active');
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'auto';
       document.removeEventListener('keydown', handleOverlayEscape);
     }
 
     closeOverlay.addEventListener('click', closeDetailsOverlay);
-    closeOverlay.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        closeDetailsOverlay();
-      }
-    });
-
     detailsOverlay.addEventListener('click', (e) => {
       if (e.target === detailsOverlay) {
         closeDetailsOverlay();
       }
     });
+
+    log('Cartões de serviço inicializados');
   }
 
   // ============ ASSISTENTE IA (IFRAME RESPONSIVO) ============
@@ -605,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeAssistant() {
       if (!isOpen) return;
       assistantOverlay.classList.remove('active');
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'auto';
       isOpen = false;
 
       // Notificar iframe que foi fechado
@@ -618,12 +590,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Abrir com botão flutuante
     assistantBtn.addEventListener('click', openAssistant);
-    assistantBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openAssistant();
-      }
-    });
 
     // Fechar ao clicar fora
     assistantOverlay.addEventListener('click', (e) => {
@@ -674,6 +640,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 600);
       });
     });
+
+    log('Assistente IA inicializado com iframe responsivo');
   }
 
   // ============ FORMULÁRIO DE CONTATO ============
@@ -757,6 +725,8 @@ document.addEventListener('DOMContentLoaded', function () {
         showNotification('Formulário limpo', 'info', 2000);
       });
     }
+
+    log('Formulário de contato inicializado');
   }
 
   // ============ CASES MODAL ============
@@ -851,68 +821,29 @@ document.addEventListener('DOMContentLoaded', function () {
     if (modalClose) {
       modalClose.addEventListener('click', () => {
         caseModal.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-      
-      modalClose.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          caseModal.classList.remove('active');
-          document.body.style.overflow = '';
-        }
+        document.body.style.overflow = 'auto';
       });
     }
 
     caseModal.addEventListener('click', (e) => {
       if (e.target === caseModal) {
         caseModal.classList.remove('active');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto';
       }
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && caseModal.classList.contains('active')) {
         caseModal.classList.remove('active');
-        document.body.style.overflow = '';
+        document.body.style.overflow = 'auto';
       }
     });
-  }
 
-  // ============ BOTÕES DEMO ============
-  function initDemoButtons() {
-    const demoButtons = document.querySelectorAll('[data-assistant], [data-product]');
-    
-    demoButtons.forEach(btn => {
-      btn.addEventListener('click', function (e) {
-        if (this.getAttribute('href') === '#') {
-          e.preventDefault();
-        }
-        
-        const type = this.dataset.assistant || this.dataset.product;
-        
-        const demos = {
-          'marketing': 'Assistente de Marketing IA',
-          'nutricao': 'Assistente de Nutrição IA',
-          'financas': 'Assistente Financeiro IA',
-          'pwa-template': 'Template PWA de Vendas',
-          'dashboard-3d': 'Dashboard 3D Analytics',
-          'chatbot': 'Chatbot Empresarial IA'
-        };
-
-        const demoName = demos[type] || type;
-        showNotification(`🚀 Demo "${demoName}" será exibida em breve!`, 'info');
-        
-        log('Demo solicitada:', demoName);
-      });
-    });
+    log('Modal de cases inicializado');
   }
 
   // ============ ANIMAÇÕES AO SCROLL ============
   function initScrollAnimations() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      log('Animações reduzidas por preferência do usuário');
-      return;
-    }
-
     const observerOptions = {
       threshold: 0.1,
       rootMargin: '0px 0px -100px 0px'
@@ -941,6 +872,8 @@ document.addEventListener('DOMContentLoaded', function () {
       element.style.transition = 'opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease';
       observer.observe(element);
     });
+
+    log('Animações de scroll inicializadas');
   }
 
   // ============ SMOOTH SCROLL ============
@@ -949,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function () {
       anchor.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
         
-        if (href === '#' || href === '#!') return;
+        if (href === '#') return;
         
         e.preventDefault();
         const target = document.querySelector(href);
@@ -968,9 +901,6 @@ document.addEventListener('DOMContentLoaded', function () {
           setTimeout(() => {
             target.style.boxShadow = 'none';
           }, 1500);
-          
-          // Atualizar URL sem recarregar
-          history.pushState(null, null, href);
         }
       });
     });
@@ -982,7 +912,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const footerSocialDesktop = document.querySelector('.footer-social-desktop');
     
     function updateFooterSocial() {
-      if (window.innerWidth <= 1024) {
+      if (window.innerWidth <= 768) {
         if (footerSocialMobile) footerSocialMobile.style.display = 'block';
         if (footerSocialDesktop) footerSocialDesktop.style.display = 'none';
       } else {
@@ -995,42 +925,66 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', debounce(updateFooterSocial, 250));
   }
 
+  // ============ BOTÕES DEMO ============
+  function initDemoButtons() {
+    const demoButtons = document.querySelectorAll('[data-assistant], [data-product]');
+    
+    demoButtons.forEach(btn => {
+      btn.addEventListener('click', function () {
+        const type = this.dataset.assistant || this.dataset.product;
+        
+        const demos = {
+          'marketing': 'Assistente de Marketing IA',
+          'nutricao': 'Assistente de Nutrição IA',
+          'financas': 'Assistente Financeiro IA',
+          'pwa-template': 'Template PWA de Vendas',
+          'dashboard-3d': 'Dashboard 3D Analytics',
+          'chatbot': 'Chatbot Empresarial IA'
+        };
+
+        const demoName = demos[type] || type;
+        showNotification(`🚀 Demo "${demoName}" será exibida em breve!`, 'info');
+        
+        log('Demo solicitada:', demoName);
+      });
+    });
+  }
+
   // ============ INICIALIZAÇÃO COMPLETA ============
   function initAll() {
-    // Ordem de inicialização otimizada
-    const components = [
-      { fn: initLoadingScreen, name: 'Loading Screen' },
-      { fn: initMobileMenu, name: 'Menu Mobile' },
-      { fn: initThemeToggle, name: 'Tema' },
-      { fn: initHorizontalScroll, name: 'Scroll Horizontal' },
-      { fn: initCarousel, name: 'Carousel' },
-      { fn: initFAQ, name: 'FAQ' },
-      { fn: initServiceCards, name: 'Cartões de Serviço' },
-      { fn: initAssistant, name: 'Assistente IA' },
-      { fn: initContactForm, name: 'Formulário de Contato' },
-      { fn: initCasesModal, name: 'Modal de Cases' },
-      { fn: initDemoButtons, name: 'Botões Demo' },
-      { fn: initScrollAnimations, name: 'Animações Scroll' },
-      { fn: initSmoothScroll, name: 'Scroll Suave' },
-      { fn: initFooterSocial, name: 'Social Footer' }
-    ];
-
-    components.forEach(component => {
-      initComponent(component.fn, component.name);
-    });
-
-    // Re-inicializar scroll horizontal no resize
-    window.addEventListener('resize', debounce(() => {
+    try {
+      // Ordem de inicialização otimizada
+      initLoadingScreen();
+      initMobileMenu();
+      initThemeToggle();
       initHorizontalScroll();
+      initCarousel();
+      initFAQ();
+      initServiceCards();
+      initAssistant();
+      initContactForm();
+      initCasesModal();
+      initDemoButtons();
+      initScrollAnimations();
+      initSmoothScroll();
       initFooterSocial();
-    }, 250));
 
-    // Otimização para performance
-    window.addEventListener('load', () => {
-      log('Página completamente carregada');
-    });
+      // Re-inicializar scroll horizontal no resize
+      window.addEventListener('resize', debounce(() => {
+        initHorizontalScroll();
+        initFooterSocial();
+      }, 250));
 
-    log('Todas as funcionalidades inicializadas com sucesso!');
+      // Otimização para performance
+      window.addEventListener('load', () => {
+        log('Página completamente carregada');
+      });
+
+      log('Todas as funcionalidades inicializadas com sucesso!');
+    } catch (error) {
+      console.error('Erro durante a inicialização:', error);
+      showNotification('Erro ao inicializar a página. Por favor, recarregue.', 'error');
+    }
   }
 
   // ============ EXECUÇÃO ============
