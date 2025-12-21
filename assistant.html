@@ -796,7 +796,7 @@
                 padding: 12px 16px;
                 font-size: 12.5px;
                 flex: 0 0 auto;
-                width: calc(100vw - 100px); /* 1 por vez em mobile */
+                width: calc(100vw - 100px);
             }
 
             .input-container,
@@ -807,7 +807,7 @@
             }
 
             #assistantInput {
-                font-size: 16px; /* Evita zoom no iOS */
+                font-size: 16px;
                 padding: 14px 18px;
             }
 
@@ -816,7 +816,6 @@
                 height: 44px;
             }
 
-            /* Ajuste específico para iPhones */
             @supports (padding: max(0px)) {
                 .input-container {
                     padding-bottom: max(16px, env(safe-area-inset-bottom));
@@ -849,7 +848,7 @@
             }
 
             .quick-option {
-                flex: 0 0 calc(50% - 10px); /* 2 por linha em tablet */
+                flex: 0 0 calc(50% - 10px);
                 min-width: 200px;
             }
 
@@ -889,7 +888,7 @@
             }
 
             .quick-option {
-                flex: 0 0 calc(25% - 12px); /* 4 por linha em desktop */
+                flex: 0 0 calc(25% - 12px);
                 min-width: 150px;
             }
 
@@ -1053,6 +1052,9 @@
                 <button class="icon-btn" id="clearBtn" aria-label="Limpar conversa">
                     <i class="fas fa-trash-alt"></i>
                 </button>
+                <button class="icon-btn" id="apiKeyBtn" aria-label="Configurar DeepSeek">
+                    <i class="fas fa-key"></i>
+                </button>
                 <button class="icon-btn back-btn" id="backBtn" aria-label="Voltar">
                     <i class="fas fa-arrow-left"></i>
                 </button>
@@ -1111,6 +1113,39 @@
         </div>
     </div>
 
+    <!-- Modal para chave DeepSeek -->
+    <div class="confirmation-modal" id="apiKeyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🔑 Configurar DeepSeek API</h3>
+                <p class="modal-message">
+                    Para respostas mais avançadas, insira sua chave da DeepSeek API.<br>
+                    <small style="color: var(--text-tertiary); font-size: 12px;">
+                        A chave fica armazenada apenas no seu navegador.
+                    </small>
+                </p>
+            </div>
+            <div class="modal-actions">
+                <input 
+                    type="password" 
+                    id="deepseekApiKeyInput" 
+                    placeholder="sk-..." 
+                    autocomplete="off"
+                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 16px; font-size: 14px;"
+                >
+                <button class="modal-btn secondary" id="apiKeyCancel">Cancelar</button>
+                <button class="modal-btn primary" id="apiKeySave">Salvar</button>
+            </div>
+            <div style="margin-top: 12px; text-align: center;">
+                <small style="color: var(--text-tertiary); font-size: 11px;">
+                    <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: var(--accent-color); text-decoration: none;">
+                        Obter chave API ↗
+                    </a>
+                </small>
+            </div>
+        </div>
+    </div>
+
     <!-- Notificação -->
     <div class="notification" id="notification"></div>
 
@@ -1129,6 +1164,7 @@
             backBtn: document.getElementById('backBtn'),
             historyBtn: document.getElementById('historyBtn'),
             clearBtn: document.getElementById('clearBtn'),
+            apiKeyBtn: document.getElementById('apiKeyBtn'),
             statusText: document.getElementById('statusText'),
             suggestionsContainer: document.getElementById('suggestionsContainer'),
             confirmationModal: document.getElementById('confirmationModal'),
@@ -1136,6 +1172,10 @@
             modalMessage: document.getElementById('modalMessage'),
             modalCancel: document.getElementById('modalCancel'),
             modalConfirm: document.getElementById('modalConfirm'),
+            apiKeyModal: document.getElementById('apiKeyModal'),
+            apiKeyInput: document.getElementById('deepseekApiKeyInput'),
+            apiKeyCancel: document.getElementById('apiKeyCancel'),
+            apiKeySave: document.getElementById('apiKeySave'),
             notification: document.getElementById('notification')
         };
 
@@ -1151,8 +1191,20 @@
             isOnline: true,
             sessionId: generateSessionId(),
             lastMessages: [], // Para memória contextual
-            isLandscape: window.innerWidth > window.innerHeight
+            isLandscape: window.innerWidth > window.innerHeight,
+            useDeepSeek: false
         };
+
+        // Configuração DeepSeek
+        const DEEPSEEK_CONFIG = {
+            API_URL: "https://api.deepseek.com/v1/chat/completions",
+            MODEL: "deepseek-chat",
+            MAX_TOKENS: 1000,
+            TEMPERATURE: 0.7
+        };
+
+        // Carrega chave do localStorage
+        let DEEPSEEK_API_KEY = localStorage.getItem('makerai_deepseek_key') || '';
 
         // ============================================
         // CONFIGURAÇÕES RESPONSIVAS
@@ -1317,7 +1369,8 @@
                 sessionId: state.sessionId,
                 messages: state.conversationHistory,
                 lastUpdated: new Date().toISOString(),
-                messageCount: state.messageCount
+                messageCount: state.messageCount,
+                deepSeekKey: DEEPSEEK_API_KEY
             };
             try {
                 localStorage.setItem('makerai_chat_history', JSON.stringify(history));
@@ -1341,6 +1394,7 @@
                     if (diffHours < 24) { // Mantém histórico por 24 horas
                         state.conversationHistory = history.messages || [];
                         state.messageCount = history.messageCount || 0;
+                        DEEPSEEK_API_KEY = history.deepSeekKey || '';
                         
                         // Renderiza histórico (sem animações para performance)
                         state.conversationHistory.forEach(msg => {
@@ -1348,6 +1402,7 @@
                             addMessage(msg.content, msg.role, timestamp);
                         });
                         
+                        updateStatus();
                         updateHistoryBadge();
                         return true;
                     }
@@ -1379,8 +1434,18 @@
             badge.dataset.badge = count > 0 ? count : '';
         }
 
+        function updateStatus() {
+            if (DEEPSEEK_API_KEY) {
+                elements.statusText.textContent = 'Online • DeepSeek Ativo';
+                state.useDeepSeek = true;
+            } else {
+                elements.statusText.textContent = 'Online • IA Generativa';
+                state.useDeepSeek = false;
+            }
+        }
+
         // ============================================
-        // SISTEMA DE RESPOSTAS INTELIGENTES
+        // SISTEMA DE RESPOSTAS HÍBRIDO
         // ============================================
         function getInitialGreeting() {
             const hour = new Date().getHours();
@@ -1411,7 +1476,8 @@
                 portfolio: /portf[óo]lio|cases|projetos|trabalhos|exemplos|j[aá] fez/i.test(lowerMsg) ? 0.7 : 0,
                 contact: /contato|whatsapp|email|telefone|falar|conversar|agendar|reuni[aã]o/i.test(lowerMsg) ? 0.6 : 0,
                 help: /ajuda|como funciona|duvida|d[uú]vida|informa[çc][ãa]o/i.test(lowerMsg) ? 0.5 : 0,
-                urgent: /urgente|r[aá]pido|imediat[ao]|hoje|agora|j[aá]/i.test(lowerMsg) ? 1.0 : 0
+                urgent: /urgente|r[aá]pido|imediat[ao]|hoje|agora|j[aá]/i.test(lowerMsg) ? 1.0 : 0,
+                technical: /tecn[íi]|c[óo]digo|programa[çc]|api|integracao|banco de dados|frontend|backend/i.test(lowerMsg) ? 0.9 : 0
             };
             
             // Verifica contexto anterior
@@ -1423,6 +1489,9 @@
                 }
                 if (lastLower.includes('serviço') || lastLower.includes('desenvolvimento')) {
                     intents.services += 0.2;
+                }
+                if (lastLower.includes('tecnico') || lastLower.includes('codigo')) {
+                    intents.technical += 0.2;
                 }
             }
             
@@ -1452,62 +1521,128 @@
                 words: words.length,
                 hasQuestion: /\?$/.test(message),
                 isUrgent: intents.urgent > 0,
-                score: highestScore
+                score: highestScore,
+                isTechnical: intents.technical > 0.5
             };
         }
 
-        function generateResponse(message) {
+        async function callDeepSeekAPI(message) {
+            try {
+                if (!DEEPSEEK_API_KEY) throw new Error('No API key');
+                
+                const response = await fetch(DEEPSEEK_CONFIG.API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: DEEPSEEK_CONFIG.MODEL,
+                        messages: [
+                            { 
+                                role: "system", 
+                                content: "Você é um assistente especialista da MakerAI Studio, uma empresa brasileira de desenvolvimento web, mobile, sistemas e inteligência artificial. Seja profissional, amigável e detalhista. Use emojis quando apropriado. Responda sempre em português brasileiro."
+                            },
+                            ...state.conversationHistory.slice(-8).map(m => ({
+                                role: m.role === 'user' ? 'user' : 'assistant',
+                                content: m.content
+                            })),
+                            { role: "user", content: message }
+                        ],
+                        temperature: DEEPSEEK_CONFIG.TEMPERATURE,
+                        max_tokens: DEEPSEEK_CONFIG.MAX_TOKENS,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0]?.message?.content?.trim() || null;
+                
+            } catch (error) {
+                console.error('Erro DeepSeek:', error);
+                return null;
+            }
+        }
+
+        function getLocalResponse(analysis) {
+            // Respostas para saudações
+            if (analysis.mainIntent === 'greeting') {
+                const hour = new Date().getHours();
+                let timeGreeting;
+                
+                if (hour < 12) timeGreeting = "Bom dia";
+                else if (hour < 18) timeGreeting = "Boa tarde";
+                else timeGreeting = "Boa noite";
+                
+                return `${timeGreeting}! 😊\n\nSou o assistente da MakerAI Studio, especializado em transformar ideias em soluções digitais incríveis.\n\nNo que posso te ajudar hoje? Pode me contar sobre seu projeto, tirar dúvidas sobre orçamentos ou conhecer nossos cases de sucesso!`;
+            }
+            
+            // Mapeamento de intenções para respostas locais
+            const intentResponses = {
+                services: `🚀 **Soluções Completas em Tecnologia**\n\n**💻 Desenvolvimento Web & Mobile**\n• Sites institucionais e corporativos\n• PWAs (Progressive Web Apps)\n• E-commerce e marketplaces\n• Aplicativos nativos (React Native/Flutter)\n• Sistemas web complexos\n\n**🤖 Inteligência Artificial**\n• Assistentes virtuais e chatbots\n• Análise preditiva de dados\n• Processamento de linguagem natural\n• Visão computacional\n• Automação com IA\n\n**🎨 Design & Experiência**\n• UI/UX Design premium\n• Identidade visual\n• Prototipagem interativa\n• Design System\n• Microinterações\n\n**⚡ Otimização & Performance**\n• SEO técnico\n• Performance web\n• Segurança digital\n• DevOps & CI/CD\n• Monitoramento\n\n*Qual área você gostaria de explorar?* 😊`,
+                pricing: `💰 **Transparência Total nos Valores**\n\n**📊 Modelos de Preço**\n1. **Projeto Fixo** - Escopo definido, prazo fechado\n   • Sites: R$ 8.000 - R$ 25.000\n   • Apps: R$ 30.000 - R$ 80.000\n   • Sistemas: R$ 40.000 - R$ 150.000\n\n2. **Horas Avulsas** - R$ 120/hora\n   • Para ajustes e melhorias\n   • Manutenção contínua\n   • Consultorias técnicas\n\n3. **Assinatura Mensal** - A partir de R$ 1.500/mês\n   • Suporte prioritário\n   • Atualizações constantes\n   • Monitoramento 24/7\n\n**🎯 Fatores que Influenciam:**\n• Complexidade do projeto\n• Prazo de entrega\n• Integrações necessárias\n• Nível de design\n• Recursos de IA incluídos\n\n*Posso te passar uma estimativa mais precisa se você me contar sobre seu projeto!* ✨`,
+                portfolio: `🎨 **Cases de Sucesso**\n\n**🏥 Saúde & Bem-estar**\n• App de telemedicina com IA\n• Sistema de gestão para clínicas\n• Plataforma de wellness corporativo\n\n**🏢 Empresarial**\n• Dashboard de BI em tempo real\n• Sistema de automação de processos\n• CRM personalizado com IA\n\n**🛒 E-commerce**\n• Marketplace com recomendação IA\n• E-commerce com realidade aumentada\n• Sistema de logística integrado\n\n**🎓 Educação**\n• Plataforma E-learning gamificada\n• App de cursos com tutoria IA\n• Sistema de gestão escolar\n\n**🔗 Tecnologia**\n• API Gateway para fintech\n• Sistema de monitoramento IoT\n• Plataforma de análise de dados\n\n*Tem algum setor específico que te interessa? Posso detalhar cases similares!* 📊`,
+                contact: `📞 **Vamos Conversar!**\n\n**📱 Canais Diretos**\n• WhatsApp: (11) 99999-9999\n• Email: contato@makerai.com.br\n• LinkedIn: /makerai-studio\n\n**📍 Endereço**\n• São Paulo - SP\n• Atendimento remoto em todo Brasil\n\n**⏰ Horário de Atendimento**\n• Segunda a Sexta: 9h às 18h\n• Sábado: 9h às 12h\n• Plantão técnico: 24/7\n\n**🎯 Próximos Passos:**\n1. Agendamos uma call exploratória\n2. Analisamos suas necessidades\n3. Criamos uma proposta personalizada\n4. Iniciamos o projeto!\n\n*Prefere que eu te direcione para o formulário ou já quer marcar uma call?* 🚀`,
+                help: `🤝 **Como Posso Ajudar?**\n\nPosso te auxiliar com:\n\n• Informações sobre nossos serviços\n• Estimativas de orçamento\n• Exemplos de projetos realizados\n• Processo de trabalho\n• Agendamento de reuniões\n\n**Dica:** Use os botões rápidos abaixo para navegar pelos tópicos principais! 🚀`,
+                urgent: `⚡ **Entendi que é urgente!**\n\nVamos acelerar o processo:\n\n1. Me conte rapidamente sobre o projeto\n2. Posso conectar você diretamente com nossa equipe\n3. Priorizamos atendimento imediato\n\n*Qual é a situação?* 🚨`,
+                technical: `🔧 **Suporte Técnico Especializado**\n\nPosso te ajudar com:\n\n• Arquitetura de sistemas\n• Escolha de tecnologias\n• Melhores práticas de desenvolvimento\n• Otimização de performance\n• Integrações de API\n• Problemas de código\n\n*Qual aspecto técnico você gostaria de discutir?* 💻`
+            };
+            
+            if (intentResponses[analysis.mainIntent]) {
+                return intentResponses[analysis.mainIntent];
+            }
+            
+            // Resposta baseada no sentimento
+            if (analysis.sentiment === 'negative') {
+                return `Entendi que você pode estar com alguma dificuldade. 😔\n\nPosso te ajudar a resolver isso! Me conte mais detalhes sobre o que está acontecendo ou que tipo de solução você está procurando.\n\nJuntos vamos encontrar a melhor opção! 🤝`;
+            }
+            
+            if (analysis.hasQuestion) {
+                return `Ótima pergunta! 🤔\n\nPara te dar uma resposta precisa, me conta um pouco mais sobre:\n\n• O contexto do projeto\n• Prazo que você tem em mente\n• Orçamento disponível\n• Funcionalidades principais\n\nAssim posso te orientar da melhor forma possível! 📋`;
+            }
+            
+            // Resposta generica com variação
+            const genericResponses = [
+                `Interessante! 🧐\n\nNo que mais posso te ajudar sobre isso? Se for sobre desenvolvimento, IA, design ou qualquer outra área da tecnologia, estou aqui para esclarecer!`,
+                `Show! ✨\n\nVamos explorar isso juntos! Me conta qual o objetivo principal do seu projeto ou que problema você quer resolver com a tecnologia.`,
+                `Perfeito! 🎯\n\nPara te dar as melhores opções, você poderia me falar:\n\n1. Qual é o seu setor/niche?\n2. Tem algum prazo específico?\n3. Já tem alguma ideia de funcionalidades?\n\nAssim posso te ajudar de forma personalizada!`,
+                `Entendi! 🤝\n\nPara me ajudar a entender melhor, você está pensando em algo mais técnico ou mais focado na experiência do usuário?`,
+                `Certo! 📝\n\nVamos por partes: me conta primeiro qual é o principal objetivo do seu projeto, depois detalhamos as funcionalidades.`
+            ];
+            
+            return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+        }
+
+        async function generateResponse(message) {
             try {
                 const analysis = analyzeMessage(message);
                 
                 // Atualiza status no header
-                elements.statusText.textContent = 'Analisando sua pergunta...';
+                elements.statusText.textContent = DEEPSEEK_API_KEY ? 'Consultando DeepSeek...' : 'Analisando sua pergunta...';
                 
-                // Respostas para saudações
-                if (analysis.mainIntent === 'greeting') {
-                    const hour = new Date().getHours();
-                    let timeGreeting;
-                    
-                    if (hour < 12) timeGreeting = "Bom dia";
-                    else if (hour < 18) timeGreeting = "Boa tarde";
-                    else timeGreeting = "Boa noite";
-                    
-                    return `${timeGreeting}! 😊\n\nSou o assistente da MakerAI Studio, especializado em transformar ideias em soluções digitais incríveis.\n\nNo que posso te ajudar hoje? Pode me contar sobre seu projeto, tirar dúvidas sobre orçamentos ou conhecer nossos cases de sucesso!`;
+                // Decide se usa DeepSeek ou resposta local
+                const useDeepSeek = DEEPSEEK_API_KEY && (
+                    analysis.isTechnical || 
+                    analysis.score < 0.7 || // Perguntas fora do escopo padrão
+                    analysis.words > 15 || // Perguntas longas/complexas
+                    state.conversationHistory.length > 3 // Conversa já estabelecida
+                );
+                
+                if (useDeepSeek) {
+                    const deepSeekResponse = await callDeepSeekAPI(message);
+                    if (deepSeekResponse) {
+                        return deepSeekResponse;
+                    }
+                    // Se falhar, usa resposta local
+                    showNotification('Usando respostas locais', 'info');
                 }
                 
-                // Mapeamento de intenções para respostas
-                const intentResponses = {
-                    services: `🚀 **Soluções Completas em Tecnologia**\n\n**💻 Desenvolvimento Web & Mobile**\n• Sites institucionais e corporativos\n• PWAs (Progressive Web Apps)\n• E-commerce e marketplaces\n• Aplicativos nativos (React Native/Flutter)\n• Sistemas web complexos\n\n**🤖 Inteligência Artificial**\n• Assistentes virtuais e chatbots\n• Análise preditiva de dados\n• Processamento de linguagem natural\n• Visão computacional\n• Automação com IA\n\n**🎨 Design & Experiência**\n• UI/UX Design premium\n• Identidade visual\n• Prototipagem interativa\n• Design System\n• Microinterações\n\n**⚡ Otimização & Performance**\n• SEO técnico\n• Performance web\n• Segurança digital\n• DevOps & CI/CD\n• Monitoramento\n\n*Qual área você gostaria de explorar?* 😊`,
-                    pricing: `💰 **Transparência Total nos Valores**\n\n**📊 Modelos de Preço**\n1. **Projeto Fixo** - Escopo definido, prazo fechado\n   • Sites: R$ 8.000 - R$ 25.000\n   • Apps: R$ 30.000 - R$ 80.000\n   • Sistemas: R$ 40.000 - R$ 150.000\n\n2. **Horas Avulsas** - R$ 120/hora\n   • Para ajustes e melhorias\n   • Manutenção contínua\n   • Consultorias técnicas\n\n3. **Assinatura Mensal** - A partir de R$ 1.500/mês\n   • Suporte prioritário\n   • Atualizações constantes\n   • Monitoramento 24/7\n\n**🎯 Fatores que Influenciam:**\n• Complexidade do projeto\n• Prazo de entrega\n• Integrações necessárias\n• Nível de design\n• Recursos de IA incluídos\n\n*Posso te passar uma estimativa mais precisa se você me contar sobre seu projeto!* ✨`,
-                    portfolio: `🎨 **Cases de Sucesso**\n\n**🏥 Saúde & Bem-estar**\n• App de telemedicina com IA\n• Sistema de gestão para clínicas\n• Plataforma de wellness corporativo\n\n**🏢 Empresarial**\n• Dashboard de BI em tempo real\n• Sistema de automação de processos\n• CRM personalizado com IA\n\n**🛒 E-commerce**\n• Marketplace com recomendação IA\n• E-commerce com realidade aumentada\n• Sistema de logística integrado\n\n**🎓 Educação**\n• Plataforma E-learning gamificada\n• App de cursos com tutoria IA\n• Sistema de gestão escolar\n\n**🔗 Tecnologia**\n• API Gateway para fintech\n• Sistema de monitoramento IoT\n• Plataforma de análise de dados\n\n*Tem algum setor específico que te interessa? Posso detalhar cases similares!* 📊`,
-                    contact: `📞 **Vamos Conversar!**\n\n**📱 Canais Diretos**\n• WhatsApp: (11) 99999-9999\n• Email: contato@makerai.com.br\n• LinkedIn: /makerai-studio\n\n**📍 Endereço**\n• São Paulo - SP\n• Atendimento remoto em todo Brasil\n\n**⏰ Horário de Atendimento**\n• Segunda a Sexta: 9h às 18h\n• Sábado: 9h às 12h\n• Plantão técnico: 24/7\n\n**🎯 Próximos Passos:**\n1. Agendamos uma call exploratória\n2. Analisamos suas necessidades\n3. Criamos uma proposta personalizada\n4. Iniciamos o projeto!\n\n*Prefere que eu te direcione para o formulário ou já quer marcar uma call?* 🚀`,
-                    help: `🤝 **Como Posso Ajudar?**\n\nPosso te auxiliar com:\n\n• Informações sobre nossos serviços\n• Estimativas de orçamento\n• Exemplos de projetos realizados\n• Processo de trabalho\n• Agendamento de reuniões\n\n**Dica:** Use os botões rápidos abaixo para navegar pelos tópicos principais! 🚀`,
-                    urgent: `⚡ **Entendi que é urgente!**\n\nVamos acelerar o processo:\n\n1. Me conte rapidamente sobre o projeto\n2. Posso conectar você diretamente com nossa equipe\n3. Priorizamos atendimento imediato\n\n*Qual é a situação?* 🚨`
-                };
-                
-                if (intentResponses[analysis.mainIntent]) {
-                    return intentResponses[analysis.mainIntent];
-                }
-                
-                // Resposta baseada no sentimento
-                if (analysis.sentiment === 'negative') {
-                    return `Entendi que você pode estar com alguma dificuldade. 😔\n\nPosso te ajudar a resolver isso! Me conte mais detalhes sobre o que está acontecendo ou que tipo de solução você está procurando.\n\nJuntos vamos encontrar a melhor opção! 🤝`;
-                }
-                
-                if (analysis.hasQuestion) {
-                    return `Ótima pergunta! 🤔\n\nPara te dar uma resposta precisa, me conta um pouco mais sobre:\n\n• O contexto do projeto\n• Prazo que você tem em mente\n• Orçamento disponível\n• Funcionalidades principais\n\nAssim posso te orientar da melhor forma possível! 📋`;
-                }
-                
-                // Resposta generica com variação
-                const genericResponses = [
-                    `Interessante! 🧐\n\nNo que mais posso te ajudar sobre isso? Se for sobre desenvolvimento, IA, design ou qualquer outra área da tecnologia, estou aqui para esclarecer!`,
-                    `Show! ✨\n\nVamos explorar isso juntos! Me conta qual o objetivo principal do seu projeto ou que problema você quer resolver com a tecnologia.`,
-                    `Perfeito! 🎯\n\nPara te dar as melhores opções, você poderia me falar:\n\n1. Qual é o seu setor/niche?\n2. Tem algum prazo específico?\n3. Já tem alguma ideia de funcionalidades?\n\nAssim posso te ajudar de forma personalizada!`,
-                    `Entendi! 🤝\n\nPara me ajudar a entender melhor, você está pensando em algo mais técnico ou mais focado na experiência do usuário?`,
-                    `Certo! 📝\n\nVamos por partes: me conta primeiro qual é o principal objetivo do seu projeto, depois detalhamos as funcionalidades.`
-                ];
-                
-                return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+                // Usa resposta local
+                return getLocalResponse(analysis);
                 
             } catch (error) {
                 console.error('Erro ao gerar resposta:', error);
@@ -1530,7 +1665,9 @@
                 { text: 'Serviços', tags: ['serviço', 'desenvolvimento', 'site', 'app', 'sistema', 'web', 'mobile'] },
                 { text: 'Orçamento', tags: ['preço', 'valor', 'custo', 'orçamento', 'quanto custa', 'investimento'] },
                 { text: 'Portfólio', tags: ['portfolio', 'cases', 'projetos', 'trabalhos', 'exemplos'] },
-                { text: 'Contato', tags: ['contato', 'whatsapp', 'email', 'telefone', 'agendar', 'reunião'] }
+                { text: 'Contato', tags: ['contato', 'whatsapp', 'email', 'telefone', 'agendar', 'reunião'] },
+                { text: 'Suporte Técnico', tags: ['tecnico', 'codigo', 'programação', 'api', 'bug', 'erro'] },
+                { text: 'IA & Machine Learning', tags: ['inteligência artificial', 'machine learning', 'deep learning', 'chatbot'] }
             ];
             
             // Filtra sugestões baseadas na query
@@ -1636,7 +1773,7 @@
         // ============================================
         // PROCESSAMENTO DE MENSAGENS
         // ============================================
-        function sendMessage() {
+        async function sendMessage() {
             const message = elements.assistantInput.value.trim();
             if (!message || state.isProcessing) return;
             
@@ -1667,65 +1804,58 @@
             // Timeout de segurança
             const safetyTimeout = setTimeout(() => {
                 hideTyping();
-                elements.statusText.textContent = 'Online • IA Generativa';
+                updateStatus();
                 state.isProcessing = false;
                 elements.assistantInput.disabled = false;
                 elements.sendAssistantBtn.disabled = false;
                 elements.assistantInput.focus();
                 showNotification('Tempo esgotado. Por favor, tente novamente.', 'error');
-            }, 10000);
+            }, 15000);
             
-            // Simula processamento com IA
-            setTimeout(() => {
+            try {
+                // Gera resposta
+                const response = await generateResponse(message);
+                
                 clearTimeout(safetyTimeout);
                 hideTyping();
                 
-                try {
-                    // Gera resposta
-                    const response = generateResponse(message);
-                    
-                    // Atraso de digitação realista
-                    setTimeout(() => {
-                        const responseTimestamp = new Date();
-                        addMessage(response, 'ai', responseTimestamp);
-                        
-                        // Atualiza histórico
-                        state.conversationHistory.push({
-                            role: 'assistant',
-                            content: response,
-                            timestamp: responseTimestamp.toISOString()
-                        });
-                        saveHistory();
-                        
-                        // Restaura status
-                        elements.statusText.textContent = 'Online • IA Generativa';
-                        
-                        // Habilita input novamente
-                        state.isProcessing = false;
-                        elements.assistantInput.disabled = false;
-                        elements.sendAssistantBtn.disabled = false;
-                        elements.assistantInput.focus();
-                        
-                        // Notificação para urgência
-                        const analysis = analyzeMessage(message);
-                        if (analysis.isUrgent) {
-                            showNotification('⚡ Atendimento prioritário ativado', 'warning');
-                        }
-                        
-                    }, Math.min(message.length * 10, 1500));
-                    
-                } catch (error) {
-                    console.error('Erro no processamento:', error);
-                    hideTyping();
-                    addMessage('Desculpe, ocorreu um erro no processamento. Pode tentar novamente?', 'ai');
-                    elements.statusText.textContent = 'Online • IA Generativa';
-                    state.isProcessing = false;
-                    elements.assistantInput.disabled = false;
-                    elements.sendAssistantBtn.disabled = false;
-                    elements.assistantInput.focus();
+                const responseTimestamp = new Date();
+                addMessage(response, 'ai', responseTimestamp);
+                
+                // Atualiza histórico
+                state.conversationHistory.push({
+                    role: 'assistant',
+                    content: response,
+                    timestamp: responseTimestamp.toISOString()
+                });
+                saveHistory();
+                
+                // Restaura status
+                updateStatus();
+                
+                // Habilita input novamente
+                state.isProcessing = false;
+                elements.assistantInput.disabled = false;
+                elements.sendAssistantBtn.disabled = false;
+                elements.assistantInput.focus();
+                
+                // Notificação para urgência
+                const analysis = analyzeMessage(message);
+                if (analysis.isUrgent) {
+                    showNotification('⚡ Atendimento prioritário ativado', 'warning');
                 }
                 
-            }, Math.min(message.length * 20, 2000));
+            } catch (error) {
+                clearTimeout(safetyTimeout);
+                console.error('Erro no processamento:', error);
+                hideTyping();
+                addMessage('Desculpe, ocorreu um erro no processamento. Pode tentar novamente?', 'ai');
+                updateStatus();
+                state.isProcessing = false;
+                elements.assistantInput.disabled = false;
+                elements.sendAssistantBtn.disabled = false;
+                elements.assistantInput.focus();
+            }
         }
 
         // ============================================
@@ -1755,6 +1885,32 @@
             };
             
             modal.style.display = 'flex';
+        }
+
+        function showApiKeyModal() {
+            elements.apiKeyInput.value = DEEPSEEK_API_KEY || '';
+            elements.apiKeyModal.style.display = 'flex';
+        }
+
+        function saveApiKey() {
+            const key = elements.apiKeyInput.value.trim();
+            
+            if (key === '') {
+                DEEPSEEK_API_KEY = '';
+                localStorage.removeItem('makerai_deepseek_key');
+                showNotification('DeepSeek desativado. Usando respostas locais.', 'info');
+            } else if (key.startsWith('sk-')) {
+                DEEPSEEK_API_KEY = key;
+                localStorage.setItem('makerai_deepseek_key', key);
+                showNotification('Chave DeepSeek salva com sucesso! ✅', 'success');
+            } else {
+                showNotification('Chave inválida. Deve começar com "sk-"', 'error');
+                return;
+            }
+            
+            updateStatus();
+            elements.apiKeyModal.style.display = 'none';
+            saveHistory();
         }
 
         // ============================================
@@ -1806,6 +1962,27 @@
                 );
             });
             
+            // Botão API Key
+            elements.apiKeyBtn.addEventListener('click', showApiKeyModal);
+            
+            // Botões do modal API Key
+            elements.apiKeySave.addEventListener('click', saveApiKey);
+            elements.apiKeyCancel.addEventListener('click', () => {
+                elements.apiKeyModal.style.display = 'none';
+            });
+            
+            // Fechar modal com ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (elements.confirmationModal.style.display === 'flex') {
+                        elements.confirmationModal.style.display = 'none';
+                    }
+                    if (elements.apiKeyModal.style.display === 'flex') {
+                        elements.apiKeyModal.style.display = 'none';
+                    }
+                }
+            });
+            
             // Fechar sugestões ao clicar fora
             document.addEventListener('click', (e) => {
                 if (!elements.suggestionsContainer.contains(e.target) && 
@@ -1837,6 +2014,16 @@
                         type: 'HISTORY_DATA',
                         data: state.conversationHistory
                     }, '*');
+                }
+                
+                if (e.data?.type === 'SET_API_KEY') {
+                    DEEPSEEK_API_KEY = e.data.key || '';
+                    if (DEEPSEEK_API_KEY) {
+                        localStorage.setItem('makerai_deepseek_key', DEEPSEEK_API_KEY);
+                    } else {
+                        localStorage.removeItem('makerai_deepseek_key');
+                    }
+                    updateStatus();
                 }
             });
             
@@ -1870,14 +2057,14 @@
             // Verificação de conexão
             window.addEventListener('online', () => {
                 state.isOnline = true;
-                elements.statusText.textContent = 'Online • IA Generativa';
+                updateStatus();
                 showNotification('Conexão restabelecida!', 'success');
             });
             
             window.addEventListener('offline', () => {
                 state.isOnline = false;
                 elements.statusText.textContent = 'Offline • Modo Limitado';
-                showNotification('Conexão perdida - algumas funcionalidades podem não estar disponíveis', 'warning');
+                showNotification('Conexão perdida - usando respostas locais', 'warning');
             });
             
             // Touch optimization para mobile
@@ -1900,6 +2087,7 @@
             // Inicializa componentes
             initQuickOptions();
             setupEventListeners();
+            updateStatus();
             
             // Carrega histórico ou inicia nova conversa
             const hasHistory = loadHistory();
@@ -1918,12 +2106,6 @@
             setTimeout(() => {
                 window.parent.postMessage({ type: 'ASSISTANT_READY' }, '*');
             }, 1000);
-            
-            // Status inicial
-            if (!navigator.onLine) {
-                state.isOnline = false;
-                elements.statusText.textContent = 'Offline • Modo Limitado';
-            }
         });
 
         // Limpeza
