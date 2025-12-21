@@ -3309,3 +3309,41 @@ p {
     gap: 4rem;
   }
 }
+/* ============ DESKTOP NAV VISÍVEL ============ */
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: block !important;
+  }
+  
+  .hamburger-btn {
+    display: none !important;
+  }
+  
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+/* ============ MOBILE NAV ESCONDIDO POR PADRÃO ============ */
+@media (max-width: 767px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  
+  .hamburger-btn {
+    display: flex !important;
+  }
+  
+  .mobile-menu {
+    display: flex !important;
+  }
+}
+
+/* Garantir que o mobile menu fique escondido inicialmente */
+.mobile-menu {
+  display: none;
+}
+
+.mobile-menu.active {
+  display: flex;
+}
