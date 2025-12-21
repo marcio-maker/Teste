@@ -6,55 +6,99 @@
     <title>Assistente IA MakerAI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ============================================
+           VARIÁVEIS CSS RESPONSIVAS
+           ============================================ */
         :root {
-            --primary-gradient: linear-gradient(135deg, #5f2eff, #8f6bff);
-            --secondary-gradient: linear-gradient(135deg, #8f6bff, #9d7aff);
-            --bg-primary: rgba(18, 18, 18, 0.98);
-            --bg-secondary: rgba(15, 15, 15, 0.95);
-            --bg-tertiary: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-tertiary: rgba(255, 255, 255, 0.5);
-            --border-color: rgba(255, 255, 255, 0.12);
-            --accent-color: #8f6bff;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
-            --radius-sm: 8px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
+            /* Cores & Gradientes */
+            --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+            --secondary-gradient: linear-gradient(135deg, #5f2eff 0%, #8f6bff 100%);
+            --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%);
+            
+            /* Tema Escuro (Padrão) */
+            --bg-primary: rgba(3, 7, 18, 0.98);
+            --bg-secondary: rgba(15, 23, 42, 0.95);
+            --bg-tertiary: rgba(30, 41, 59, 0.8);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --border-color: rgba(148, 163, 184, 0.2);
+            
+            /* Cores de Status */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            
+            /* Sombras */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.35);
+            --shadow-accent: 0 8px 32px rgba(124, 58, 237, 0.25);
+            
+            /* Bordas */
+            --radius-xs: 6px;
+            --radius-sm: 12px;
+            --radius-md: 20px;
+            --radius-lg: 28px;
             --radius-full: 9999px;
+            
+            /* Transições */
             --transition-fast: 0.15s ease;
-            --transition-normal: 0.3s ease;
-            --transition-slow: 0.5s ease;
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dimensões Responsivas (VALORES INICIAIS - MOBILE FIRST) */
+            --header-height: 56px;
+            --input-height: 48px;
+            --quick-option-height: 48px;
         }
 
+        /* Tema Claro */
+        [data-theme="light"] {
+            --bg-primary: rgba(248, 250, 252, 0.98);
+            --bg-secondary: rgba(241, 245, 249, 0.95);
+            --bg-tertiary: rgba(226, 232, 240, 0.8);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --border-color: rgba(100, 116, 139, 0.15);
+        }
+
+        /* ============================================
+           RESET & BASE
+           ============================================ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'SF Pro Display', system-ui, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            touch-action: manipulation;
         }
 
         body {
             background: transparent;
             overflow: hidden;
-            touch-action: manipulation;
-            height: 100vh;
             width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
         }
 
-        .assistant-panel {
+        /* ============================================
+           CONTAINER PRINCIPAL
+           ============================================ */
+        .assistant-container {
             position: absolute;
             top: 0;
+            left: 0;
             right: 0;
             bottom: 0;
-            left: 0;
             background: var(--bg-primary);
             backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
@@ -62,56 +106,58 @@
             display: flex;
             flex-direction: column;
             z-index: 9999;
-            overflow: hidden;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
             opacity: 0;
-            transform: translateY(20px);
-            animation: panelIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            height: 100dvh;
-            width: 100dvw;
+            transform: translateY(20px) scale(0.98);
+            animation: containerIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            height: 100%;
         }
 
-        @keyframes panelIn {
+        @keyframes containerIn {
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
-        /* Header melhorado */
-        .chat-header {
-            padding: 14px 18px;
+        /* ============================================
+           HEADER OTIMIZADO
+           ============================================ */
+        .assistant-header {
+            padding: 0 16px;
             background: linear-gradient(135deg, 
-                rgba(95, 46, 255, 0.25), 
-                rgba(143, 107, 255, 0.15));
+                rgba(124, 58, 237, 0.2), 
+                rgba(139, 92, 246, 0.1));
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-shrink: 0;
             position: relative;
-            overflow: hidden;
+            height: var(--header-height);
+            min-height: var(--header-height);
         }
 
-        .chat-header::before {
+        .assistant-header::before {
             content: '';
             position: absolute;
-            top: 0;
+            top: -1px;
             left: 0;
             right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                var(--accent-color), 
-                transparent);
+            height: 2px;
+            background: var(--primary-gradient);
+            opacity: 0.5;
         }
 
-        .header-content {
+        .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
             flex: 1;
+            min-width: 0;
         }
 
         .ai-avatar {
@@ -124,7 +170,8 @@
             justify-content: center;
             font-size: 16px;
             color: white;
-            box-shadow: 0 4px 12px rgba(95, 46, 255, 0.3);
+            flex-shrink: 0;
+            box-shadow: var(--shadow-accent);
             animation: pulse 2s infinite;
         }
 
@@ -133,35 +180,43 @@
             50% { transform: scale(1.05); }
         }
 
-        .header-text {
+        .header-info {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
-        .header-text h3 {
-            font-size: 17px;
+        .assistant-title {
+            font-size: 16px;
             font-weight: 700;
-            background: linear-gradient(135deg, #ffffff, #d4c4ff);
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 2px;
         }
 
-        .header-text .status {
+        .status-indicator {
             font-size: 11px;
             color: var(--text-secondary);
             display: flex;
             align-items: center;
             gap: 4px;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .status-dot {
             width: 6px;
             height: 6px;
             border-radius: var(--radius-full);
-            background: var(--success-color);
+            background: var(--success);
             animation: blink 2s infinite;
+            flex-shrink: 0;
         }
 
         @keyframes blink {
@@ -173,14 +228,15 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .icon-btn {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: var(--radius-full);
             cursor: pointer;
             display: flex;
@@ -189,10 +245,11 @@
             transition: all var(--transition-fast);
             -webkit-tap-highlight-color: transparent;
             position: relative;
+            flex-shrink: 0;
         }
 
         .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(124, 58, 237, 0.15);
             transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
         }
@@ -207,7 +264,7 @@
             position: absolute;
             top: -2px;
             right: -2px;
-            background: var(--accent-color);
+            background: var(--error);
             color: white;
             font-size: 10px;
             font-weight: 700;
@@ -218,11 +275,13 @@
             border: 2px solid var(--bg-primary);
         }
 
-        /* Container de mensagens melhorado */
-        .messages-container {
+        /* ============================================
+           ÁREA DE MENSAGENS
+           ============================================ */
+        .messages-area {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 18px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -231,39 +290,43 @@
             background: linear-gradient(
                 to bottom,
                 transparent,
-                rgba(95, 46, 255, 0.02) 10%,
+                rgba(124, 58, 237, 0.02) 10%,
                 transparent 90%
             );
+            position: relative;
+            min-height: 0; /* Importante para flex */
         }
 
-        .messages-container::-webkit-scrollbar {
+        .messages-area::-webkit-scrollbar {
             width: 6px;
         }
 
-        .messages-container::-webkit-scrollbar-track {
+        .messages-area::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.03);
             border-radius: var(--radius-full);
         }
 
-        .messages-container::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #5f2eff, #8f6bff);
+        .messages-area::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
             border-radius: var(--radius-full);
         }
 
-        /* Mensagens aprimoradas */
+        /* Mensagens */
         .message {
             max-width: 85%;
-            padding: 16px 20px;
+            padding: 14px 18px;
             border-radius: var(--radius-md);
             line-height: 1.5;
             word-wrap: break-word;
             position: relative;
             font-size: 15px;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-sm);
             animation: messageIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             opacity: 0;
             transform: translateY(10px);
             backdrop-filter: blur(10px);
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         @keyframes messageIn {
@@ -273,45 +336,21 @@
             }
         }
 
-        .user-message {
+        .message-user {
             background: var(--primary-gradient);
             color: white;
             align-self: flex-end;
-            border-bottom-right-radius: var(--radius-sm);
+            border-bottom-right-radius: var(--radius-xs);
             margin-left: auto;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .user-message::before {
-            content: '';
-            position: absolute;
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            background: var(--primary-gradient);
-            clip-path: polygon(100% 50%, 0 0, 0 100%);
-        }
-
-        .ai-message {
+        .message-ai {
             background: var(--bg-tertiary);
             color: var(--text-primary);
             align-self: flex-start;
-            border-bottom-left-radius: var(--radius-sm);
+            border-bottom-left-radius: var(--radius-xs);
             border: 1px solid var(--border-color);
-        }
-
-        .ai-message::before {
-            content: '';
-            position: absolute;
-            left: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            background: var(--bg-tertiary);
-            clip-path: polygon(0 50%, 100% 0, 100% 100%);
         }
 
         .message-time {
@@ -323,11 +362,11 @@
             font-weight: 500;
         }
 
-        /* Indicador de digitação melhorado */
+        /* Indicador de digitação */
         .typing-indicator {
             display: flex;
             gap: 8px;
-            padding: 16px 20px;
+            padding: 14px 18px;
             background: var(--bg-tertiary);
             border-radius: var(--radius-md);
             align-self: flex-start;
@@ -351,7 +390,7 @@
             width: 8px;
             height: 8px;
             border-radius: var(--radius-full);
-            background: var(--accent-color);
+            background: var(--accent-gradient);
             opacity: 0.4;
             animation: typing 1.4s infinite ease-in-out;
         }
@@ -371,29 +410,29 @@
             }
         }
 
-        /* Container de opções rápidas aprimorado */
-        .quick-options-container {
-            padding: 16px 18px;
+        /* ============================================
+           CARROSSEL DE SUGESTÕES
+           ============================================ */
+        .suggestions-section {
+            padding: 16px;
             border-top: 1px solid var(--border-color);
             background: var(--bg-secondary);
             flex-shrink: 0;
             position: relative;
         }
 
-        .quick-options-container::before {
+        .suggestions-section::before {
             content: '';
             position: absolute;
             top: -1px;
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                var(--accent-color), 
-                transparent);
+            background: var(--primary-gradient);
+            opacity: 0.3;
         }
 
-        .quick-options-title {
+        .suggestions-title {
             font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 12px;
@@ -405,26 +444,28 @@
             letter-spacing: 0.5px;
         }
 
-        .quick-options-title i {
-            color: var(--accent-color);
+        .suggestions-title i {
+            color: #7c3aed;
         }
 
-        .quick-options-carousel {
+        .suggestions-carousel {
             display: flex;
             gap: 10px;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             padding-bottom: 12px;
             scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .quick-options-carousel::-webkit-scrollbar {
+        .suggestions-carousel::-webkit-scrollbar {
             display: none;
         }
 
-        .quick-option {
+        .suggestion-option {
             flex: 0 0 auto;
-            padding: 14px 18px;
+            padding: 12px 16px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
@@ -440,9 +481,11 @@
             scroll-snap-align: start;
             position: relative;
             overflow: hidden;
+            height: var(--quick-option-height);
+            min-width: 180px;
         }
 
-        .quick-option::before {
+        .suggestion-option::before {
             content: '';
             position: absolute;
             top: 0;
@@ -455,82 +498,84 @@
             z-index: 0;
         }
 
-        .quick-option > * {
+        .suggestion-option > * {
             position: relative;
             z-index: 1;
         }
 
-        .quick-option:hover {
-            border-color: var(--accent-color);
+        .suggestion-option:hover {
+            border-color: #7c3aed;
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
 
-        .quick-option:hover::before {
+        .suggestion-option:hover::before {
             opacity: 0.1;
         }
 
-        .quick-option:active {
+        .suggestion-option:active {
             transform: translateY(0);
             transition-duration: 0.1s;
         }
 
-        .quick-option i {
-            color: var(--accent-color);
+        .suggestion-option i {
+            color: #7c3aed;
             font-size: 14px;
         }
 
-        .carousel-indicators {
+        .carousel-dots {
             display: flex;
             justify-content: center;
             gap: 6px;
             margin-top: 12px;
         }
 
-        .carousel-indicator {
+        .carousel-dot {
             width: 6px;
             height: 6px;
             border-radius: var(--radius-full);
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(148, 163, 184, 0.2);
             transition: all var(--transition-normal);
             cursor: pointer;
             border: none;
             padding: 0;
+            flex-shrink: 0;
         }
 
-        .carousel-indicator.active {
-            background: var(--accent-color);
+        .carousel-dot.active {
+            background: var(--primary-gradient);
             transform: scale(1.4);
-            box-shadow: 0 0 8px rgba(143, 107, 255, 0.5);
+            box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
         }
 
-        /* Container de input aprimorado */
-        .input-container {
-            padding: 16px 18px;
+        /* ============================================
+           ÁREA DE INPUT
+           ============================================ */
+        .input-section {
+            padding: 16px;
             border-top: 1px solid var(--border-color);
             display: flex;
             gap: 12px;
             background: var(--bg-secondary);
             align-items: center;
+            flex-shrink: 0;
             position: relative;
         }
 
-        .input-container::before {
+        .input-section::before {
             content: '';
             position: absolute;
             top: -1px;
             left: 0;
             right: 0;
             height: 1px;
-            background: linear-gradient(90deg, 
-                transparent, 
-                var(--accent-color), 
-                transparent);
+            background: var(--primary-gradient);
+            opacity: 0.3;
         }
 
-        #assistantInput {
+        #userInput {
             flex: 1;
-            padding: 16px 20px;
+            padding: 14px 18px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-full);
             background: var(--bg-tertiary);
@@ -539,23 +584,25 @@
             outline: none;
             transition: all var(--transition-normal);
             font-weight: 500;
+            height: var(--input-height);
+            min-height: var(--input-height);
         }
 
-        #assistantInput:focus {
-            border-color: var(--accent-color);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 0 3px rgba(143, 107, 255, 0.1);
+        #userInput:focus {
+            border-color: #7c3aed;
+            background: rgba(124, 58, 237, 0.05);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
         }
 
-        #assistantInput::placeholder {
+        #userInput::placeholder {
             color: var(--text-tertiary);
         }
 
-        .send-btn {
+        .send-button {
             background: var(--primary-gradient);
             border: none;
-            width: 48px;
-            height: 48px;
+            width: var(--input-height);
+            height: var(--input-height);
             border-radius: var(--radius-full);
             color: white;
             cursor: pointer;
@@ -566,9 +613,10 @@
             font-size: 16px;
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
-        .send-btn::before {
+        .send-button::before {
             content: '';
             position: absolute;
             top: 0;
@@ -580,62 +628,31 @@
             transition: opacity var(--transition-fast);
         }
 
-        .send-btn:hover {
+        .send-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(95, 46, 255, 0.4);
+            box-shadow: var(--shadow-accent);
         }
 
-        .send-btn:hover::before {
+        .send-button:hover::before {
             opacity: 1;
         }
 
-        .send-btn:active {
+        .send-button:active {
             transform: scale(0.98);
             transition-duration: 0.1s;
         }
 
-        .send-btn:disabled {
+        .send-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
         }
 
-        /* Botão de voltar */
-        .back-btn {
-            display: none;
-        }
-
-        /* Sugestões em tempo real */
-        .suggestions-container {
-            display: none;
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 18px;
-            right: 18px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 8px;
-            box-shadow: var(--shadow-lg);
-            z-index: 100;
-        }
-
-        .suggestion-item {
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
-        .suggestion-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        /* Modal de confirmação */
-        .confirmation-modal {
+        /* ============================================
+           MODAIS
+           ============================================ */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -680,10 +697,10 @@
             font-size: 18px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
-        .modal-message {
+        .modal-description {
             color: var(--text-secondary);
             font-size: 14px;
             line-height: 1.5;
@@ -704,6 +721,8 @@
             transition: all var(--transition-fast);
             font-size: 14px;
             border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
         .modal-btn.primary {
@@ -712,334 +731,445 @@
             border: none;
         }
 
-        .modal-btn.secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
         .modal-btn:hover {
             transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
         }
 
-        /* Feedback visual */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 12px 16px;
-            color: var(--text-primary);
-            font-size: 14px;
-            box-shadow: var(--shadow-lg);
-            transform: translateX(100%);
-            opacity: 0;
-            transition: all var(--transition-normal);
-            z-index: 10001;
-            max-width: 300px;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
         /* ============================================
-           RESPONSIVIDADE COMPLETA
+           RESPONSIVIDADE COMPLETA E MELHORADA
            ============================================ */
 
-        /* MOBILE (até 767px) - Mobile First */
-        @media (max-width: 767px) {
-            .assistant-panel {
-                border-radius: 0;
-                height: 100dvh;
-                width: 100dvw;
+        /* Mobile (480px e abaixo) - Mobile First */
+        @media (max-width: 480px) {
+            :root {
+                --header-height: 56px;
+                --input-height: 48px;
+                --quick-option-height: 48px;
             }
-
-            .back-btn {
-                display: flex;
+            
+            .assistant-header {
+                padding: 0 12px;
             }
-
-            .chat-header {
-                padding: 12px 16px;
-            }
-
+            
             .ai-avatar {
                 width: 32px;
                 height: 32px;
                 font-size: 14px;
             }
-
-            .header-text h3 {
-                font-size: 16px;
+            
+            .assistant-title {
+                font-size: 15px;
             }
-
-            .header-actions .icon-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 14px;
+            
+            .icon-btn {
+                width: 32px;
+                height: 32px;
             }
-
-            .messages-container {
-                padding: 16px;
+            
+            .messages-area {
+                padding: 12px;
+                gap: 12px;
             }
-
+            
             .message {
                 max-width: 92%;
-                padding: 14px 18px;
+                padding: 12px 16px;
                 font-size: 14px;
             }
-
-            .quick-option {
-                padding: 12px 16px;
+            
+            .suggestion-option {
+                padding: 10px 14px;
                 font-size: 12.5px;
-                flex: 0 0 auto;
-                width: calc(100vw - 100px);
+                min-width: calc(100vw - 100px);
             }
-
-            .input-container,
-            .quick-options-container {
-                padding-left: 16px;
-                padding-right: 16px;
-                padding-bottom: max(16px, env(safe-area-inset-bottom));
-            }
-
-            #assistantInput {
+            
+            #userInput {
+                padding: 12px 16px;
                 font-size: 16px;
-                padding: 14px 18px;
             }
-
-            .send-btn {
+            
+            .send-button {
                 width: 44px;
                 height: 44px;
             }
-
-            @supports (padding: max(0px)) {
-                .input-container {
-                    padding-bottom: max(16px, env(safe-area-inset-bottom));
-                }
+            
+            /* Safe area para dispositivos móveis */
+            .input-section,
+            .suggestions-section {
+                padding-left: max(12px, env(safe-area-inset-left));
+                padding-right: max(12px, env(safe-area-inset-right));
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
+            }
+            
+            .messages-area {
+                padding-left: max(12px, env(safe-area-inset-left));
+                padding-right: max(12px, env(safe-area-inset-right));
             }
         }
 
-        /* TABLET (768px a 1023px) */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .assistant-panel {
-                max-width: 720px;
-                margin: 24px auto;
-                border-radius: 28px;
-                height: calc(100dvh - 48px);
-                width: calc(100vw - 48px);
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        /* Mobile Médio (481px a 767px) */
+        @media (min-width: 481px) and (max-width: 767px) {
+            :root {
+                --header-height: 60px;
+                --input-height: 52px;
+                --quick-option-height: 52px;
             }
-
-            .chat-header {
-                padding: 16px 24px;
-                border-radius: 28px 28px 0 0;
+            
+            .assistant-header {
+                padding: 0 16px;
             }
-
-            .messages-container {
-                padding: 24px;
-            }
-
-            .message {
-                max-width: 80%;
-            }
-
-            .quick-option {
-                flex: 0 0 calc(50% - 10px);
-                min-width: 200px;
-            }
-
-            .input-container {
-                padding: 20px 24px;
-                border-radius: 0 0 28px 28px;
-            }
-
-            #assistantInput {
-                padding: 16px 22px;
+            
+            .ai-avatar {
+                width: 34px;
+                height: 34px;
                 font-size: 15px;
             }
+            
+            .assistant-title {
+                font-size: 16px;
+            }
+            
+            .messages-area {
+                padding: 16px;
+            }
+            
+            .message {
+                max-width: 90%;
+                font-size: 14.5px;
+            }
+            
+            .suggestion-option {
+                min-width: 200px;
+            }
         }
 
-        /* DESKTOP (1024px e acima) */
-        @media (min-width: 1024px) {
-            .assistant-panel {
+        /* Tablet (768px a 1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            :root {
+                --header-height: 64px;
+                --input-height: 56px;
+                --quick-option-height: 56px;
+            }
+            
+            .assistant-container {
+                max-width: 600px;
+                max-height: 85vh;
+                margin: auto;
+                border-radius: var(--radius-lg);
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.98);
+                animation: containerIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            }
+            
+            @keyframes containerIn {
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+            
+            .assistant-header {
+                padding: 0 24px;
+            }
+            
+            .ai-avatar {
+                width: 38px;
+                height: 38px;
+                font-size: 17px;
+            }
+            
+            .assistant-title {
+                font-size: 17px;
+            }
+            
+            .messages-area {
+                padding: 24px;
+                gap: 20px;
+            }
+            
+            .message {
+                max-width: 80%;
+                font-size: 16px;
+                padding: 16px 20px;
+            }
+            
+            .suggestion-option {
+                padding: 14px 20px;
+                font-size: 14px;
+                min-width: 180px;
+                flex: 0 0 calc(50% - 10px);
+            }
+            
+            #userInput {
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+            
+            .send-button {
+                width: 56px;
+                height: 56px;
+            }
+        }
+
+        /* Desktop (1024px a 1439px) */
+        @media (min-width: 1024px) and (max-width: 1439px) {
+            :root {
+                --header-height: 68px;
+                --input-height: 56px;
+                --quick-option-height: 56px;
+            }
+            
+            .assistant-container {
                 max-width: 480px;
-                margin: 24px auto;
-                border-radius: 28px;
-                height: calc(100dvh - 48px);
-                width: calc(100vw - 48px);
-                box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+                max-height: 85vh;
+                margin: auto;
+                border-radius: var(--radius-lg);
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.98);
+                animation: containerIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             }
-
-            .chat-header {
-                padding: 18px 24px;
-                border-radius: 28px 28px 0 0;
+            
+            @keyframes containerIn {
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
             }
-
-            .messages-container {
-                padding: 28px 24px;
+            
+            .assistant-header {
+                padding: 0 24px;
             }
-
+            
+            .ai-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .assistant-title {
+                font-size: 17px;
+            }
+            
+            .messages-area {
+                padding: 24px;
+            }
+            
             .message {
                 max-width: 75%;
             }
-
-            .quick-option {
-                flex: 0 0 calc(25% - 12px);
+            
+            .suggestion-option {
+                flex: 0 0 calc(33.333% - 12px);
                 min-width: 150px;
             }
-
-            .input-container {
-                padding: 20px 24px;
-                border-radius: 0 0 28px 28px;
-            }
-
-            #assistantInput {
-                padding: 16px 24px;
+            
+            #userInput {
                 font-size: 15px;
-            }
-
-            .send-btn {
-                width: 48px;
-                height: 48px;
-                font-size: 17px;
             }
         }
 
-        /* DISPOSITIVOS GRANDES (1440px+) */
+        /* Desktop Grande (1440px e acima) */
         @media (min-width: 1440px) {
-            .assistant-panel {
-                max-width: 520px;
+            :root {
+                --header-height: 72px;
+                --input-height: 60px;
+                --quick-option-height: 60px;
             }
-
+            
+            .assistant-container {
+                max-width: 520px;
+                max-height: 85vh;
+                margin: auto;
+                border-radius: var(--radius-lg);
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.98);
+                animation: containerIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            }
+            
+            @keyframes containerIn {
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1);
+                }
+            }
+            
+            .assistant-header {
+                padding: 0 28px;
+            }
+            
+            .ai-avatar {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+            
+            .assistant-title {
+                font-size: 18px;
+            }
+            
+            .messages-area {
+                padding: 28px;
+            }
+            
             .message {
                 max-width: 70%;
             }
-        }
-
-        /* AJUSTES PARA TELAS MUITO ALTAS */
-        @media (min-height: 900px) and (min-width: 1024px) {
-            .assistant-panel {
-                height: 85dvh;
-                margin-top: 7.5dvh;
-                margin-bottom: 7.5dvh;
+            
+            .suggestion-option {
+                flex: 0 0 calc(25% - 12px);
+                min-width: 140px;
+                padding: 16px 20px;
+                font-size: 14.5px;
+            }
+            
+            #userInput {
+                padding: 18px 22px;
+                font-size: 16px;
             }
         }
 
-        /* AJUSTES PARA TELAS MUITO BAIXAS */
-        @media (max-height: 600px) {
-            .assistant-panel {
-                border-radius: 0;
-            }
-
-            .messages-container {
-                padding-top: 12px;
-                padding-bottom: 12px;
-            }
-
-            .message {
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-
-            .quick-options-container {
-                padding-top: 12px;
-                padding-bottom: 12px;
-            }
-
-            .quick-option {
-                padding: 10px 14px;
-                font-size: 12px;
-            }
-        }
-
-        /* ROTAÇÃO (LANDSCAPE) EM MOBILE */
+        /* Modo paisagem em mobile */
         @media (max-width: 767px) and (orientation: landscape) {
-            .assistant-panel {
-                border-radius: 0;
+            :root {
+                --header-height: 48px;
+                --input-height: 44px;
+                --quick-option-height: 44px;
             }
-
-            .chat-header {
-                padding: 10px 14px;
+            
+            .assistant-header {
+                padding: 0 10px;
             }
-
+            
             .ai-avatar {
                 width: 30px;
                 height: 30px;
-            }
-
-            .header-text h3 {
-                font-size: 15px;
-            }
-
-            .messages-container {
-                padding: 12px 14px;
-                max-height: 50vh;
-            }
-
-            .message {
-                max-width: 85%;
-                padding: 12px 14px;
                 font-size: 13px;
             }
-
-            .quick-option {
+            
+            .assistant-title {
+                font-size: 14px;
+            }
+            
+            .messages-area {
+                padding: 10px;
+                max-height: 50vh;
+            }
+            
+            .message {
+                max-width: 85%;
                 padding: 10px 14px;
+                font-size: 13px;
+            }
+            
+            .suggestion-option {
+                padding: 8px 12px;
                 font-size: 12px;
-                min-width: 180px;
+                min-width: 160px;
+            }
+            
+            #userInput {
+                padding: 10px 14px;
             }
         }
 
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg-primary: rgba(255, 255, 255, 0.98);
-                --bg-secondary: rgba(250, 250, 250, 0.95);
-                --bg-tertiary: rgba(0, 0, 0, 0.05);
-                --text-primary: #1a1a1a;
-                --text-secondary: rgba(0, 0, 0, 0.6);
-                --text-tertiary: rgba(0, 0, 0, 0.4);
-                --border-color: rgba(0, 0, 0, 0.1);
+        /* Altura limitada */
+        @media (max-height: 600px) {
+            .assistant-container {
+                border-radius: 0;
+            }
+            
+            .messages-area {
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+            
+            .message {
+                padding: 10px 14px;
+                font-size: 13.5px;
+            }
+            
+            .suggestions-section,
+            .input-section {
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+            
+            .suggestion-option {
+                padding: 8px 12px;
+                height: 44px;
+            }
+            
+            #userInput {
+                padding: 10px 14px;
+                height: 44px;
+            }
+            
+            .send-button {
+                width: 44px;
+                height: 44px;
             }
         }
 
+        /* Ajustes para redução de movimento */
         @media (prefers-reduced-motion: reduce) {
             * {
                 transition: none !important;
                 animation: none !important;
             }
+            
+            .assistant-container {
+                opacity: 1;
+                transform: none;
+                animation: none;
+            }
+            
+            .message {
+                opacity: 1;
+                transform: none;
+                animation: none;
+            }
+            
+            .typing-indicator span {
+                animation: none;
+            }
         }
 
-        /* Animações de entrada */
-        .message:nth-child(odd) {
-            animation-delay: 0.1s;
+        /* Otimização para telas de alta densidade */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .assistant-container {
+                -webkit-backdrop-filter: blur(40px) saturate(200%);
+                backdrop-filter: blur(40px) saturate(200%);
+            }
         }
 
-        .message:nth-child(even) {
-            animation-delay: 0.2s;
-        }
-
-        /* Performance: Desativa animações para histórico carregado */
-        .messages-container:has(.message:nth-child(30)) .message {
-            animation: none !important;
-            opacity: 1 !important;
-            transform: none !important;
+        /* Suporte para navegadores antigos */
+        @supports not (backdrop-filter: blur(10px)) {
+            .assistant-container {
+                background: rgba(3, 7, 18, 0.98);
+            }
+            
+            .messages-area {
+                background: transparent;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="assistant-panel" id="assistantPanel">
-        <!-- Header aprimorado -->
-        <div class="chat-header">
-            <div class="header-content">
+    <!-- Container Principal -->
+    <div class="assistant-container" id="assistantContainer">
+        <!-- Header -->
+        <div class="assistant-header">
+            <div class="header-left">
                 <div class="ai-avatar">
                     <i class="fas fa-brain"></i>
                 </div>
-                <div class="header-text">
-                    <h3>Assistente MakerAI</h3>
-                    <div class="status">
+                <div class="header-info">
+                    <div class="assistant-title">Assistente MakerAI</div>
+                    <div class="status-indicator">
                         <span class="status-dot"></span>
                         <span id="statusText">Online • IA Generativa</span>
                     </div>
@@ -1052,178 +1182,314 @@
                 <button class="icon-btn" id="clearBtn" aria-label="Limpar conversa">
                     <i class="fas fa-trash-alt"></i>
                 </button>
-                <button class="icon-btn" id="apiKeyBtn" aria-label="Configurar DeepSeek">
-                    <i class="fas fa-key"></i>
+                <button class="icon-btn" id="settingsBtn" aria-label="Configurações">
+                    <i class="fas fa-cog"></i>
                 </button>
-                <button class="icon-btn back-btn" id="backBtn" aria-label="Voltar">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <button class="icon-btn" id="closeAssistant" aria-label="Fechar assistente">
+                <button class="icon-btn" id="closeBtn" aria-label="Fechar assistente">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Container de mensagens -->
-        <div class="messages-container" id="messagesContainer">
-            <!-- Mensagens serão inseridas aqui dinamicamente -->
+        <!-- Área de Mensagens -->
+        <div class="messages-area" id="messagesArea">
+            <!-- Mensagens serão inseridas aqui -->
         </div>
 
-        <!-- Sugestões em tempo real -->
-        <div class="suggestions-container" id="suggestionsContainer"></div>
-
-        <!-- Container de opções rápidas -->
-        <div class="quick-options-container" id="quickOptionsContainer">
-            <div class="quick-options-title">
-                <i class="fas fa-bolt"></i> Perguntas frequentes
+        <!-- Sugestões em Carrossel -->
+        <div class="suggestions-section" id="suggestionsSection">
+            <div class="suggestions-title">
+                <i class="fas fa-bolt"></i> Perguntas rápidas
             </div>
-            <div class="quick-options-carousel" id="quickOptionsCarousel"></div>
-            <div class="carousel-indicators" id="carouselIndicators"></div>
+            <div class="suggestions-carousel" id="suggestionsCarousel">
+                <!-- Opções serão geradas dinamicamente -->
+            </div>
+            <div class="carousel-dots" id="carouselDots">
+                <!-- Pontos serão gerados dinamicamente -->
+            </div>
         </div>
 
-        <!-- Container de input -->
-        <div class="input-container">
+        <!-- Área de Input -->
+        <div class="input-section">
             <input 
                 type="text" 
-                id="assistantInput" 
-                placeholder="Digite sua pergunta..." 
+                id="userInput" 
+                placeholder="Digite sua mensagem..." 
                 aria-label="Mensagem para o assistente"
                 autocomplete="off"
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
+                maxlength="500"
             >
-            <button class="send-btn" id="sendAssistantBtn" aria-label="Enviar mensagem">
+            <button class="send-button" id="sendButton" aria-label="Enviar mensagem">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
     </div>
 
-    <!-- Modal de confirmação -->
-    <div class="confirmation-modal" id="confirmationModal">
+    <!-- Modal de Confirmação -->
+    <div class="modal-overlay" id="confirmationModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle">Limpar conversa</h3>
-                <p class="modal-message" id="modalMessage">Tem certeza que deseja limpar toda a conversa? Esta ação não pode ser desfeita.</p>
+                <p class="modal-description" id="modalDescription">
+                    Tem certeza que deseja limpar toda a conversa? Esta ação não pode ser desfeita.
+                </p>
             </div>
             <div class="modal-actions">
-                <button class="modal-btn secondary" id="modalCancel">Cancelar</button>
+                <button class="modal-btn" id="modalCancel">Cancelar</button>
                 <button class="modal-btn primary" id="modalConfirm">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal para chave DeepSeek -->
-    <div class="confirmation-modal" id="apiKeyModal">
+    <!-- Modal de Configuração da API -->
+    <div class="modal-overlay" id="apiConfigModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">🔑 Configurar DeepSeek API</h3>
-                <p class="modal-message">
-                    Para respostas mais avançadas, insira sua chave da DeepSeek API.<br>
-                    <small style="color: var(--text-tertiary); font-size: 12px;">
+                <p class="modal-description">
+                    Para respostas mais avançadas, insira sua chave da DeepSeek API.
+                    <br><br>
+                    <small style="color: var(--text-tertiary);">
                         A chave fica armazenada apenas no seu navegador.
                     </small>
                 </p>
             </div>
-            <div class="modal-actions">
+            <div style="margin: 20px 0;">
                 <input 
                     type="password" 
-                    id="deepseekApiKeyInput" 
-                    placeholder="sk-..." 
+                    id="apiKeyInput" 
+                    placeholder="Cole sua chave API (sk-...)" 
                     autocomplete="off"
-                    style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 16px; font-size: 14px;"
+                    style="
+                        width: 100%;
+                        padding: 12px 16px;
+                        border-radius: var(--radius-md);
+                        border: 1px solid var(--border-color);
+                        background: var(--bg-tertiary);
+                        color: var(--text-primary);
+                        font-size: 14px;
+                        outline: none;
+                    "
                 >
-                <button class="modal-btn secondary" id="apiKeyCancel">Cancelar</button>
-                <button class="modal-btn primary" id="apiKeySave">Salvar</button>
-            </div>
-            <div style="margin-top: 12px; text-align: center;">
-                <small style="color: var(--text-tertiary); font-size: 11px;">
-                    <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color: var(--accent-color); text-decoration: none;">
-                        Obter chave API ↗
+                <small style="display: block; margin-top: 8px; color: var(--text-tertiary); font-size: 12px;">
+                    Obtenha sua chave em: 
+                    <a href="https://platform.deepseek.com/api_keys" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       style="color: #7c3aed; text-decoration: none;">
+                        platform.deepseek.com/api_keys
                     </a>
                 </small>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn" id="apiConfigCancel">Cancelar</button>
+                <button class="modal-btn primary" id="apiConfigSave">Salvar Chave</button>
             </div>
         </div>
     </div>
 
-    <!-- Notificação -->
-    <div class="notification" id="notification"></div>
-
     <script>
         // ============================================
-        // ELEMENTOS E VARIÁVEIS GLOBAIS
-        // ============================================
-        const elements = {
-            panel: document.getElementById('assistantPanel'),
-            messagesContainer: document.getElementById('messagesContainer'),
-            assistantInput: document.getElementById('assistantInput'),
-            sendAssistantBtn: document.getElementById('sendAssistantBtn'),
-            quickOptionsCarousel: document.getElementById('quickOptionsCarousel'),
-            carouselIndicators: document.getElementById('carouselIndicators'),
-            closeAssistant: document.getElementById('closeAssistant'),
-            backBtn: document.getElementById('backBtn'),
-            historyBtn: document.getElementById('historyBtn'),
-            clearBtn: document.getElementById('clearBtn'),
-            apiKeyBtn: document.getElementById('apiKeyBtn'),
-            statusText: document.getElementById('statusText'),
-            suggestionsContainer: document.getElementById('suggestionsContainer'),
-            confirmationModal: document.getElementById('confirmationModal'),
-            modalTitle: document.getElementById('modalTitle'),
-            modalMessage: document.getElementById('modalMessage'),
-            modalCancel: document.getElementById('modalCancel'),
-            modalConfirm: document.getElementById('modalConfirm'),
-            apiKeyModal: document.getElementById('apiKeyModal'),
-            apiKeyInput: document.getElementById('deepseekApiKeyInput'),
-            apiKeyCancel: document.getElementById('apiKeyCancel'),
-            apiKeySave: document.getElementById('apiKeySave'),
-            notification: document.getElementById('notification')
-        };
-
-        // Estado da aplicação
-        const state = {
-            conversationHistory: [],
-            isProcessing: false,
-            carouselInterval: null,
-            currentSlide: 0,
-            messageCount: 0,
-            typingTimeout: null,
-            suggestions: [],
-            isOnline: true,
-            sessionId: generateSessionId(),
-            lastMessages: [], // Para memória contextual
-            isLandscape: window.innerWidth > window.innerHeight,
-            useDeepSeek: false
-        };
-
-        // Configuração DeepSeek
-        const DEEPSEEK_CONFIG = {
-            API_URL: "https://api.deepseek.com/v1/chat/completions",
-            MODEL: "deepseek-chat",
-            MAX_TOKENS: 1000,
-            TEMPERATURE: 0.7
-        };
-
-        // Carrega chave do localStorage
-        let DEEPSEEK_API_KEY = localStorage.getItem('makerai_deepseek_key') || '';
-
-        // ============================================
-        // CONFIGURAÇÕES RESPONSIVAS
+        // CONFIGURAÇÕES E CONSTANTES
         // ============================================
         const CONFIG = {
-            TYPING_DELAY: 800,
-            CAROUSEL_INTERVAL: 5000,
-            SESSION_TIMEOUT: 30 * 60 * 1000,
+            // API Configuration
+            DEEPSEEK_API_URL: "https://api.deepseek.com/v1/chat/completions",
+            DEEPSEEK_MODEL: "deepseek-chat",
+            MAX_TOKENS: 1000,
+            TEMPERATURE: 0.7,
+            
+            // UI Configuration
+            CAROUSEL_INTERVAL: 5000, // 5 seconds
+            TYPING_DELAY: 800, // milliseconds
+            SESSION_TIMEOUT: 30 * 60 * 1000, // 30 minutes
             MAX_MESSAGES: 100,
-            SUGGESTIONS_LIMIT: 3,
-            ITEMS_PER_VIEW: calculateItemsPerView()
+            SUGGESTIONS_LIMIT: 8,
+            
+            // Storage Keys
+            STORAGE_KEYS: {
+                HISTORY: 'makerai_assistant_history',
+                API_KEY: 'makerai_deepseek_api_key',
+                SETTINGS: 'makerai_assistant_settings'
+            }
         };
 
-        function calculateItemsPerView() {
-            const width = window.innerWidth;
-            if (width < 768) return 1; // Mobile: 1 item
-            if (width < 1024) return 2; // Tablet: 2 items
-            return 4; // Desktop: 4 items
-        }
+        // ============================================
+        // DADOS DA AGÊNCIA (Conteúdo Local)
+        // ============================================
+        const AGENCY_KNOWLEDGE = {
+            services: {
+                web: {
+                    title: "Desenvolvimento Web",
+                    items: [
+                        "Sites institucionais e corporativos",
+                        "Progressive Web Apps (PWAs)",
+                        "Landing pages otimizadas",
+                        "Sistemas web complexos"
+                    ],
+                    pricing: {
+                        basic: "R$ 8.000 - R$ 25.000",
+                        advanced: "R$ 40.000 - R$ 150.000"
+                    }
+                },
+                mobile: {
+                    title: "Aplicativos Mobile",
+                    items: [
+                        "Apps nativos (iOS/Android)",
+                        "React Native & Flutter",
+                        "Apps híbridos",
+                        "Integração com APIs"
+                    ],
+                    pricing: {
+                        basic: "R$ 30.000 - R$ 80.000",
+                        enterprise: "R$ 80.000+"
+                    }
+                },
+                ai: {
+                    title: "Inteligência Artificial",
+                    items: [
+                        "Chatbots inteligentes",
+                        "Análise preditiva",
+                        "Processamento de linguagem",
+                        "Visão computacional"
+                    ],
+                    pricing: {
+                        basic: "R$ 15.000 - R$ 50.000",
+                        advanced: "R$ 50.000+"
+                    }
+                },
+                design: {
+                    title: "Design & UX",
+                    items: [
+                        "UI/UX Design premium",
+                        "Design Systems",
+                        "Prototipagem interativa",
+                        "Identidade visual"
+                    ],
+                    pricing: {
+                        basic: "R$ 5.000 - R$ 20.000",
+                        complete: "R$ 20.000+"
+                    }
+                }
+            },
+            
+            portfolio: [
+                {
+                    category: "Saúde",
+                    projects: [
+                        "App de telemedicina com IA",
+                        "Sistema de gestão para clínicas",
+                        "Plataforma de wellness corporativo"
+                    ]
+                },
+                {
+                    category: "E-commerce",
+                    projects: [
+                        "Marketplace com recomendação IA",
+                        "E-commerce com realidade aumentada",
+                        "Sistema de logística integrado"
+                    ]
+                },
+                {
+                    category: "Educação",
+                    projects: [
+                        "Plataforma E-learning gamificada",
+                        "App de cursos com tutoria IA",
+                        "Sistema de gestão escolar"
+                    ]
+                }
+            ],
+            
+            process: [
+                { step: 1, title: "Descoberta", desc: "Análise de requisitos" },
+                { step: 2, title: "Protótipo", desc: "Wireframes e validação" },
+                { step: 3, title: "Desenvolvimento", desc: "Implementação com sprints" },
+                { step: 4, title: "Testes", desc: "QA e otimização" },
+                { step: 5, title: "Lançamento", desc: "Deploy e treinamento" },
+                { step: 6, title: "Manutenção", desc: "Suporte contínuo" }
+            ],
+            
+            contact: {
+                email: "contato@makerai.com.br",
+                phone: "(11) 99999-9999",
+                location: "São Paulo - SP",
+                hours: "Segunda a Sexta: 9h às 18h"
+            }
+        };
+
+        // ============================================
+        // ELEMENTOS DOM
+        // ============================================
+        const elements = {
+            // Container
+            container: document.getElementById('assistantContainer'),
+            
+            // Header
+            statusText: document.getElementById('statusText'),
+            historyBtn: document.getElementById('historyBtn'),
+            clearBtn: document.getElementById('clearBtn'),
+            settingsBtn: document.getElementById('settingsBtn'),
+            closeBtn: document.getElementById('closeBtn'),
+            
+            // Messages
+            messagesArea: document.getElementById('messagesArea'),
+            
+            // Input
+            userInput: document.getElementById('userInput'),
+            sendButton: document.getElementById('sendButton'),
+            
+            // Carousel
+            suggestionsCarousel: document.getElementById('suggestionsCarousel'),
+            carouselDots: document.getElementById('carouselDots'),
+            
+            // Modals
+            confirmationModal: document.getElementById('confirmationModal'),
+            modalTitle: document.getElementById('modalTitle'),
+            modalDescription: document.getElementById('modalDescription'),
+            modalCancel: document.getElementById('modalCancel'),
+            modalConfirm: document.getElementById('modalConfirm'),
+            
+            apiConfigModal: document.getElementById('apiConfigModal'),
+            apiKeyInput: document.getElementById('apiKeyInput'),
+            apiConfigCancel: document.getElementById('apiConfigCancel'),
+            apiConfigSave: document.getElementById('apiConfigSave')
+        };
+
+        // ============================================
+        // ESTADO DA APLICAÇÃO
+        // ============================================
+        const state = {
+            // Conversação
+            conversation: [],
+            isProcessing: false,
+            messageCount: 0,
+            
+            // Carrossel
+            carouselInterval: null,
+            currentSlide: 0,
+            slidesCount: 0,
+            
+            // API
+            deepseekApiKey: localStorage.getItem(CONFIG.STORAGE_KEYS.API_KEY) || '',
+            useDeepSeek: false,
+            
+            // Performance
+            typingTimeout: null,
+            isOnline: navigator.onLine,
+            sessionId: generateSessionId(),
+            
+            // Responsividade
+            isMobile: window.innerWidth <= 767,
+            isTablet: window.innerWidth >= 768 && window.innerWidth <= 1023,
+            isDesktop: window.innerWidth >= 1024,
+            itemsPerView: calculateItemsPerView(),
+            
+            // UI State
+            isModalOpen: false
+        };
 
         // ============================================
         // FUNÇÕES UTILITÁRIAS
@@ -1237,28 +1503,6 @@
                 hour: '2-digit', 
                 minute: '2-digit' 
             });
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = elements.notification;
-            notification.textContent = message;
-            notification.className = 'notification';
-            
-            if (type === 'success') {
-                notification.style.borderLeft = '4px solid var(--success-color)';
-            } else if (type === 'error') {
-                notification.style.borderLeft = '4px solid var(--error-color)';
-            } else if (type === 'warning') {
-                notification.style.borderLeft = '4px solid var(--warning-color)';
-            } else {
-                notification.style.borderLeft = '4px solid var(--accent-color)';
-            }
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
         }
 
         function debounce(func, wait) {
@@ -1276,87 +1520,105 @@
         function sanitizeHTML(text) {
             const div = document.createElement('div');
             div.textContent = text;
-            return div.innerHTML;
+            return div.innerHTML
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function calculateItemsPerView() {
+            const width = window.innerWidth;
+            if (width < 480) return 1;     // Mobile pequeno: 1 item
+            if (width < 768) return 1.5;   // Mobile médio: 1.5 items (scroll parcial)
+            if (width < 1024) return 2;    // Tablet: 2 items
+            if (width < 1440) return 3;    // Desktop médio: 3 items
+            return 4;                      // Desktop grande: 4 items
         }
 
         // ============================================
-        // GERENCIAMENTO DE MENSAGENS
+        // SISTEMA DE MENSAGENS
         // ============================================
         function addMessage(text, sender, timestamp = new Date()) {
-            // Limita o número de mensagens no DOM para performance
-            if (state.messageCount > 50) {
-                const messages = elements.messagesContainer.querySelectorAll('.message');
-                if (messages.length > 50) {
+            // Limita mensagens para performance
+            if (state.messageCount > CONFIG.MAX_MESSAGES) {
+                const messages = elements.messagesArea.querySelectorAll('.message');
+                if (messages.length > CONFIG.MAX_MESSAGES) {
                     messages[0].remove();
                 }
             }
 
             const messageId = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const div = document.createElement('div');
-            div.className = `message ${sender}-message`;
-            div.dataset.messageId = messageId;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${sender}`;
+            messageDiv.dataset.messageId = messageId;
             
             const formattedTime = formatTime(timestamp);
             
-            // Sanitiza e processa markdown básico
+            // Processa markdown básico
             let processedText = sanitizeHTML(text)
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>')
                 .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/# (.*?)(\n|$)/g, '<h4>$1</h4>')
+                .replace(/- (.*?)(\n|$)/g, '<li>$1</li>')
                 .replace(/\n/g, '<br>');
             
-            div.innerHTML = processedText + `<span class="message-time">${formattedTime}</span>`;
+            messageDiv.innerHTML = `
+                ${processedText}
+                <span class="message-time">${formattedTime}</span>
+            `;
             
-            // Aplica animação apenas para novas mensagens
+            // Animação otimizada para performance
             if (state.messageCount < 30) {
-                const delay = state.messageCount * 0.1;
-                div.style.animationDelay = `${delay}s`;
+                const delay = state.messageCount * 0.05;
+                messageDiv.style.animationDelay = `${delay}s`;
             } else {
-                div.style.animation = 'none';
-                div.style.opacity = '1';
-                div.style.transform = 'none';
+                messageDiv.style.animation = 'none';
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'none';
             }
             
-            elements.messagesContainer.appendChild(div);
+            elements.messagesArea.appendChild(messageDiv);
             
-            // Scroll suave com requestAnimationFrame
-            requestAnimationFrame(() => {
-                elements.messagesContainer.scrollTo({
-                    top: elements.messagesContainer.scrollHeight,
-                    behavior: 'smooth'
-                });
+            // Scroll suave com debounce
+            clearTimeout(state.typingTimeout);
+            state.typingTimeout = setTimeout(() => {
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+            
+            // Atualiza estado
+            state.messageCount++;
+            state.conversation.push({
+                id: messageId,
+                sender,
+                content: text,
+                timestamp: timestamp.toISOString()
             });
             
-            state.messageCount++;
-            state.lastMessages.push({ sender, content: text });
-            
-            // Mantém apenas as últimas 6 mensagens para contexto
-            if (state.lastMessages.length > 6) {
-                state.lastMessages.shift();
-            }
+            // Salva histórico
+            saveConversation();
             
             return messageId;
         }
 
-        function showTyping() {
-            if (document.getElementById('typingIndicator')) return;
+        function showTypingIndicator() {
+            if (document.querySelector('.typing-indicator')) return;
             
             const typing = document.createElement('div');
             typing.className = 'typing-indicator';
             typing.id = 'typingIndicator';
             typing.innerHTML = '<span></span><span></span><span></span>';
-            elements.messagesContainer.appendChild(typing);
+            elements.messagesArea.appendChild(typing);
             
+            // Scroll para o indicador
             requestAnimationFrame(() => {
-                elements.messagesContainer.scrollTo({
-                    top: elements.messagesContainer.scrollHeight,
-                    behavior: 'smooth'
-                });
+                typing.scrollIntoView({ behavior: 'smooth', block: 'end' });
             });
         }
 
-        function hideTyping() {
+        function hideTypingIndicator() {
             const typing = document.getElementById('typingIndicator');
             if (typing) typing.remove();
         }
@@ -1364,90 +1626,184 @@
         // ============================================
         // GERENCIAMENTO DE HISTÓRICO
         // ============================================
-        function saveHistory() {
-            const history = {
-                sessionId: state.sessionId,
-                messages: state.conversationHistory,
-                lastUpdated: new Date().toISOString(),
-                messageCount: state.messageCount,
-                deepSeekKey: DEEPSEEK_API_KEY
-            };
+        function saveConversation() {
             try {
-                localStorage.setItem('makerai_chat_history', JSON.stringify(history));
+                const history = {
+                    sessionId: state.sessionId,
+                    conversation: state.conversation,
+                    messageCount: state.messageCount,
+                    lastUpdated: new Date().toISOString(),
+                    settings: {
+                        useDeepSeek: state.useDeepSeek,
+                        deepseekApiKey: state.deepseekApiKey ? '***' : ''
+                    }
+                };
+                
+                localStorage.setItem(CONFIG.STORAGE_KEYS.HISTORY, JSON.stringify(history));
                 updateHistoryBadge();
-            } catch (e) {
-                console.warn('Não foi possível salvar histórico:', e);
+            } catch (error) {
+                console.warn('Não foi possível salvar histórico:', error);
             }
         }
 
-        function loadHistory() {
+        function loadConversation() {
             try {
-                const saved = localStorage.getItem('makerai_chat_history');
-                if (saved) {
-                    const history = JSON.parse(saved);
+                const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.HISTORY);
+                if (!saved) return false;
+                
+                const history = JSON.parse(saved);
+                
+                // Verifica se a sessão é muito antiga (24 horas)
+                const lastUpdated = new Date(history.lastUpdated);
+                const now = new Date();
+                const diffHours = (now - lastUpdated) / (1000 * 60 * 60);
+                
+                if (diffHours < 24) {
+                    state.conversation = history.conversation || [];
+                    state.messageCount = history.messageCount || 0;
                     
-                    // Verifica se a sessão é muito antiga
-                    const lastUpdated = new Date(history.lastUpdated);
-                    const now = new Date();
-                    const diffHours = (now - lastUpdated) / (1000 * 60 * 60);
+                    // Renderiza histórico sem animações para performance
+                    elements.messagesArea.innerHTML = '';
+                    state.conversation.forEach(msg => {
+                        const timestamp = msg.timestamp ? new Date(msg.timestamp) : new Date();
+                        addMessage(msg.content, msg.sender, timestamp);
+                    });
                     
-                    if (diffHours < 24) { // Mantém histórico por 24 horas
-                        state.conversationHistory = history.messages || [];
-                        state.messageCount = history.messageCount || 0;
-                        DEEPSEEK_API_KEY = history.deepSeekKey || '';
-                        
-                        // Renderiza histórico (sem animações para performance)
-                        state.conversationHistory.forEach(msg => {
-                            const timestamp = msg.timestamp ? new Date(msg.timestamp) : new Date();
-                            addMessage(msg.content, msg.role, timestamp);
-                        });
-                        
-                        updateStatus();
-                        updateHistoryBadge();
-                        return true;
-                    }
+                    updateHistoryBadge();
+                    return true;
                 }
             } catch (error) {
                 console.error('Erro ao carregar histórico:', error);
             }
+            
             return false;
         }
 
-        function clearHistory() {
-            state.conversationHistory = [];
+        function clearConversation() {
+            // Confirmação já foi feita no modal
+            state.conversation = [];
             state.messageCount = 0;
-            state.lastMessages = [];
-            elements.messagesContainer.innerHTML = '';
-            localStorage.removeItem('makerai_chat_history');
-            updateHistoryBadge();
-            showNotification('Histórico limpo com sucesso!', 'success');
+            elements.messagesArea.innerHTML = '';
             
-            // Adiciona mensagem inicial
+            // Remove do localStorage
+            localStorage.removeItem(CONFIG.STORAGE_KEYS.HISTORY);
+            
+            // Atualiza badge
+            updateHistoryBadge();
+            
+            // Adiciona mensagem de boas-vindas
             setTimeout(() => {
-                addMessage(getInitialGreeting(), 'ai');
-            }, 500);
+                addMessage(getWelcomeMessage(), 'ai');
+            }, 300);
         }
 
         function updateHistoryBadge() {
             const badge = elements.historyBtn;
-            const count = state.conversationHistory.length;
-            badge.dataset.badge = count > 0 ? count : '';
+            const userMessages = state.conversation.filter(m => m.sender === 'user').length;
+            badge.dataset.badge = userMessages > 0 ? userMessages : '';
         }
 
-        function updateStatus() {
-            if (DEEPSEEK_API_KEY) {
-                elements.statusText.textContent = 'Online • DeepSeek Ativo';
-                state.useDeepSeek = true;
-            } else {
-                elements.statusText.textContent = 'Online • IA Generativa';
-                state.useDeepSeek = false;
+        // ============================================
+        // CARROSSEL DE SUGESTÕES
+        // ============================================
+        function initCarousel() {
+            // Opções do carrossel
+            const quickOptions = [
+                { icon: 'fas fa-cogs', text: 'Serviços', query: 'Quais serviços vocês oferecem?' },
+                { icon: 'fas fa-money-bill-wave', text: 'Orçamento', query: 'Quanto custa um site?' },
+                { icon: 'fas fa-images', text: 'Portfólio', query: 'Podem mostrar alguns projetos?' },
+                { icon: 'fas fa-users', text: 'Equipe', query: 'Quem faz parte da equipe?' },
+                { icon: 'fas fa-clock', text: 'Prazos', query: 'Quanto tempo leva um projeto?' },
+                { icon: 'fas fa-envelope', text: 'Contato', query: 'Como posso entrar em contato?' },
+                { icon: 'fas fa-robot', text: 'IA', query: 'Vocês trabalham com inteligência artificial?' },
+                { icon: 'fas fa-shopping-cart', text: 'E-commerce', query: 'Fazem lojas virtuais?' }
+            ];
+            
+            // Limpa o carrossel
+            elements.suggestionsCarousel.innerHTML = '';
+            
+            // Adiciona opções
+            quickOptions.forEach((option, index) => {
+                const optionElement = document.createElement('button');
+                optionElement.className = 'suggestion-option';
+                optionElement.innerHTML = `
+                    <i class="${option.icon}"></i>
+                    <span>${option.text}</span>
+                `;
+                optionElement.onclick = () => {
+                    elements.userInput.value = option.query;
+                    sendMessage();
+                };
+                elements.suggestionsCarousel.appendChild(optionElement);
+            });
+            
+            // Calcula slides
+            state.itemsPerView = calculateItemsPerView();
+            state.slidesCount = Math.ceil(quickOptions.length / Math.floor(state.itemsPerView));
+            
+            // Atualiza dots
+            updateCarouselDots();
+            
+            // Inicia carrossel automático
+            startCarousel();
+        }
+
+        function updateCarouselDots() {
+            elements.carouselDots.innerHTML = '';
+            
+            for (let i = 0; i < state.slidesCount; i++) {
+                const dot = document.createElement('button');
+                dot.className = `carousel-dot ${i === state.currentSlide ? 'active' : ''}`;
+                dot.setAttribute('aria-label', `Slide ${i + 1}`);
+                dot.onclick = () => goToSlide(i);
+                elements.carouselDots.appendChild(dot);
             }
         }
 
+        function goToSlide(slideIndex) {
+            if (slideIndex < 0) slideIndex = state.slidesCount - 1;
+            if (slideIndex >= state.slidesCount) slideIndex = 0;
+            
+            state.currentSlide = slideIndex;
+            
+            // Calcula scroll
+            const carousel = elements.suggestionsCarousel;
+            const items = carousel.children;
+            if (items.length > 0) {
+                const itemWidth = items[0].offsetWidth + 10; // width + gap
+                const scrollAmount = slideIndex * Math.floor(state.itemsPerView) * itemWidth;
+                carousel.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+            }
+            
+            // Atualiza dots
+            updateCarouselDots();
+            
+            // Reinicia carrossel automático
+            restartCarousel();
+        }
+
+        function startCarousel() {
+            if (state.carouselInterval) clearInterval(state.carouselInterval);
+            
+            state.carouselInterval = setInterval(() => {
+                goToSlide(state.currentSlide + 1);
+            }, CONFIG.CAROUSEL_INTERVAL);
+        }
+
+        function restartCarousel() {
+            clearInterval(state.carouselInterval);
+            startCarousel();
+        }
+
+        // Pausa carrossel durante interação
+        function pauseCarousel() {
+            clearInterval(state.carouselInterval);
+        }
+
         // ============================================
-        // SISTEMA DE RESPOSTAS HÍBRIDO
+        // RESPOSTAS INTELIGENTES
         // ============================================
-        function getInitialGreeting() {
+        function getWelcomeMessage() {
             const hour = new Date().getHours();
             let greeting;
             
@@ -1455,361 +1811,283 @@
             else if (hour < 18) greeting = "Boa tarde";
             else greeting = "Boa noite";
             
-            const greetings = [
-                `${greeting}! 👋 Sou o assistente da MakerAI. Como posso te ajudar hoje?`,
+            const messages = [
+                `${greeting}! 👋 Sou o assistente da MakerAI Studio. Como posso te ajudar hoje?`,
                 `${greeting}! 😊 Aqui é o assistente da MakerAI. Pronto para criar algo incrível juntos?`,
                 `${greeting}! 🚀 Eu sou o assistente da MakerAI. Vamos transformar sua ideia em realidade?`
             ];
             
-            return greetings[Math.floor(Math.random() * greetings.length)];
+            return messages[Math.floor(Math.random() * messages.length)];
         }
 
-        function analyzeMessage(message) {
-            const lowerMsg = message.toLowerCase().trim();
-            const words = lowerMsg.split(/\s+/);
+        function analyzeIntent(message) {
+            const lowerMsg = message.toLowerCase();
             
-            // Análise de intenção com pesos
+            // Palavras-chave e seus pesos
             const intents = {
-                greeting: /^(oi|olá|ola|e aí|bom dia|boa tarde|boa noite|hello|hi|hey)/i.test(lowerMsg) ? 1.0 : 0,
-                services: /servi[çc]os|desenvolvimento|site|app|sistema|programa[çc]|software/i.test(lowerMsg) ? 0.9 : 0,
-                pricing: /pre[çc]o|valor|custo|or[çc]amento|quanto custa|investimento/i.test(lowerMsg) ? 0.8 : 0,
-                portfolio: /portf[óo]lio|cases|projetos|trabalhos|exemplos|j[aá] fez/i.test(lowerMsg) ? 0.7 : 0,
-                contact: /contato|whatsapp|email|telefone|falar|conversar|agendar|reuni[aã]o/i.test(lowerMsg) ? 0.6 : 0,
-                help: /ajuda|como funciona|duvida|d[uú]vida|informa[çc][ãa]o/i.test(lowerMsg) ? 0.5 : 0,
-                urgent: /urgente|r[aá]pido|imediat[ao]|hoje|agora|j[aá]/i.test(lowerMsg) ? 1.0 : 0,
-                technical: /tecn[íi]|c[óo]digo|programa[çc]|api|integracao|banco de dados|frontend|backend/i.test(lowerMsg) ? 0.9 : 0
+                greeting: ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite', 'hello', 'hi'],
+                services: ['serviço', 'desenvolvimento', 'site', 'app', 'sistema', 'web', 'mobile', 'programação'],
+                pricing: ['preço', 'valor', 'custo', 'orçamento', 'quanto custa', 'investimento'],
+                portfolio: ['portfólio', 'cases', 'projetos', 'trabalhos', 'exemplos'],
+                team: ['equipe', 'time', 'profissionais', 'quem são', 'desenvolvedores'],
+                contact: ['contato', 'whatsapp', 'email', 'telefone', 'falar', 'conversar'],
+                timeline: ['prazo', 'tempo', 'quanto tempo', 'quando fica pronto', 'data'],
+                technical: ['tecnologia', 'tecnico', 'codigo', 'api', 'banco de dados', 'frontend', 'backend'],
+                ai: ['ia', 'inteligência artificial', 'machine learning', 'chatbot', 'deep learning'],
+                ecommerce: ['e-commerce', 'loja virtual', 'shop', 'carrinho', 'pagamento']
             };
-            
-            // Verifica contexto anterior
-            const lastUserMessage = state.lastMessages.filter(m => m.sender === 'user').pop();
-            if (lastUserMessage) {
-                const lastLower = lastUserMessage.content.toLowerCase();
-                if (lastLower.includes('preço') || lastLower.includes('valor')) {
-                    intents.pricing += 0.2;
-                }
-                if (lastLower.includes('serviço') || lastLower.includes('desenvolvimento')) {
-                    intents.services += 0.2;
-                }
-                if (lastLower.includes('tecnico') || lastLower.includes('codigo')) {
-                    intents.technical += 0.2;
-                }
-            }
-            
-            // Análise de sentimento
-            let sentiment = 'neutral';
-            const positiveWords = ['ótimo', 'excelente', 'perfeito', 'bom', 'legal', 'incrível', 'maravilhoso'];
-            const negativeWords = ['ruim', 'péssimo', 'horrível', 'problema', 'erro', 'bug', 'não funciona'];
-            
-            if (positiveWords.some(word => lowerMsg.includes(word))) sentiment = 'positive';
-            if (negativeWords.some(word => lowerMsg.includes(word))) sentiment = 'negative';
             
             // Encontra intenção principal
             let mainIntent = 'generic';
-            let highestScore = 0;
+            let maxMatches = 0;
             
-            for (const [intent, score] of Object.entries(intents)) {
-                if (score > highestScore) {
-                    highestScore = score;
+            for (const [intent, keywords] of Object.entries(intents)) {
+                const matches = keywords.filter(keyword => lowerMsg.includes(keyword)).length;
+                if (matches > maxMatches) {
+                    maxMatches = matches;
                     mainIntent = intent;
                 }
             }
             
             return {
-                intents,
                 mainIntent,
-                sentiment,
-                words: words.length,
+                confidence: maxMatches / Math.max(...Object.values(intents).map(arr => arr.length)),
                 hasQuestion: /\?$/.test(message),
-                isUrgent: intents.urgent > 0,
-                score: highestScore,
-                isTechnical: intents.technical > 0.5
+                wordCount: lowerMsg.split(/\s+/).length
             };
         }
 
-        async function callDeepSeekAPI(message) {
-            try {
-                if (!DEEPSEEK_API_KEY) throw new Error('No API key');
+        function getLocalResponse(intent, message) {
+            switch (intent.mainIntent) {
+                case 'greeting':
+                    const hour = new Date().getHours();
+                    let timeGreeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
+                    return `${timeGreeting}! 😊\n\nSou o assistente da MakerAI Studio, especializado em transformar ideias em soluções digitais incríveis.\n\nNo que posso te ajudar hoje? Pode me contar sobre seu projeto, tirar dúvidas sobre orçamentos ou conhecer nossos cases de sucesso!`;
                 
-                const response = await fetch(DEEPSEEK_CONFIG.API_URL, {
-                    method: "POST",
+                case 'services':
+                    return `🚀 **Nossos Serviços Principais**\n\n` +
+                           `**💻 Desenvolvimento Web & Mobile**\n` +
+                           `• Sites institucionais e corporativos\n` +
+                           `• Progressive Web Apps (PWAs)\n` +
+                           `• E-commerce e marketplaces\n` +
+                           `• Aplicativos nativos (React Native/Flutter)\n` +
+                           `• Sistemas web complexos\n\n` +
+                           `**🤖 Inteligência Artificial**\n` +
+                           `• Assistentes virtuais e chatbots\n` +
+                           `• Análise preditiva de dados\n` +
+                           `• Processamento de linguagem natural\n` +
+                           `• Visão computacional\n` +
+                           `• Automação com IA\n\n` +
+                           `**🎨 Design & Experiência**\n` +
+                           `• UI/UX Design premium\n` +
+                           `• Identidade visual\n` +
+                           `• Prototipagem interativa\n` +
+                           `• Design System\n` +
+                           `• Microinterações\n\n` +
+                           `*Qual área você gostaria de explorar?* 😊`;
+                
+                case 'pricing':
+                    return `💰 **Transparência Total nos Valores**\n\n` +
+                           `**📊 Modelos de Preço**\n` +
+                           `1. **Projeto Fixo** - Escopo definido, prazo fechado\n` +
+                           `   • Sites: R$ 8.000 - R$ 25.000\n` +
+                           `   • Apps: R$ 30.000 - R$ 80.000\n` +
+                           `   • Sistemas: R$ 40.000 - R$ 150.000\n\n` +
+                           `2. **Horas Avulsas** - R$ 120/hora\n` +
+                           `   • Para ajustes e melhorias\n` +
+                           `   • Manutenção contínua\n` +
+                           `   • Consultorias técnicas\n\n` +
+                           `3. **Assinatura Mensal** - A partir de R$ 1.500/mês\n` +
+                           `   • Suporte prioritário\n` +
+                           `   • Atualizações constantes\n` +
+                           `   • Monitoramento 24/7\n\n` +
+                           `**🎯 Fatores que Influenciam:**\n` +
+                           `• Complexidade do projeto\n` +
+                           `• Prazo de entrega\n` +
+                           `• Integrações necessárias\n` +
+                           `• Nível de design\n` +
+                           `• Recursos de IA incluídos\n\n` +
+                           `*Posso te passar uma estimativa mais precisa se você me contar sobre seu projeto!* ✨`;
+                
+                case 'portfolio':
+                    return `🎨 **Cases de Sucesso**\n\n` +
+                           `**🏥 Saúde & Bem-estar**\n` +
+                           `• App de telemedicina com IA\n` +
+                           `• Sistema de gestão para clínicas\n` +
+                           `• Plataforma de wellness corporativo\n\n` +
+                           `**🏢 Empresarial**\n` +
+                           `• Dashboard de BI em tempo real\n` +
+                           `• Sistema de automação de processos\n` +
+                           `• CRM personalizado com IA\n\n` +
+                           `**🛒 E-commerce**\n` +
+                           `• Marketplace com recomendação IA\n` +
+                           `• E-commerce com realidade aumentada\n` +
+                           `• Sistema de logística integrado\n\n` +
+                           `**🎓 Educação**\n` +
+                           `• Plataforma E-learning gamificada\n` +
+                           `• App de cursos com tutoria IA\n` +
+                           `• Sistema de gestão escolar\n\n` +
+                           `*Tem algum setor específico que te interessa? Posso detalhar cases similares!* 📊`;
+                
+                case 'contact':
+                    return `📞 **Vamos Conversar!**\n\n` +
+                           `**📱 Canais Diretos**\n` +
+                           `• WhatsApp: ${AGENCY_KNOWLEDGE.contact.phone}\n` +
+                           `• Email: ${AGENCY_KNOWLEDGE.contact.email}\n` +
+                           `• LinkedIn: /makerai-studio\n\n` +
+                           `**📍 Endereço**\n` +
+                           `• ${AGENCY_KNOWLEDGE.contact.location}\n` +
+                           `• Atendimento remoto em todo Brasil\n\n` +
+                           `**⏰ Horário de Atendimento**\n` +
+                           `• ${AGENCY_KNOWLEDGE.contact.hours}\n` +
+                           `• Plantão técnico: 24/7\n\n` +
+                           `**🎯 Próximos Passos:**\n` +
+                           `1. Agendamos uma call exploratória\n` +
+                           `2. Analisamos suas necessidades\n` +
+                           `3. Criamos uma proposta personalizada\n` +
+                           `4. Iniciamos o projeto!\n\n` +
+                           `*Prefere que eu te direcione para o formulário ou já quer marcar uma call?* 🚀`;
+                
+                case 'timeline':
+                    return `⏰ **Prazos de Entrega**\n\n` +
+                           `• **Landing Page**: 1-2 semanas\n` +
+                           `• **Site Institucional**: 3-6 semanas\n` +
+                           `• **E-commerce Básico**: 4-8 semanas\n` +
+                           `• **PWA Completo**: 6-12 semanas\n` +
+                           `• **Sistema com IA**: 8-16 semanas\n\n` +
+                           `**📋 Nosso Processo:**\n` +
+                           `1. Descoberta (1-2 semanas)\n` +
+                           `2. Protótipo (1-2 semanas)\n` +
+                           `3. Desenvolvimento (varia por projeto)\n` +
+                           `4. Testes (1-2 semanas)\n` +
+                           `5. Lançamento (1 semana)\n\n` +
+                           `*Estes são prazos estimados. Podemos fornecer um cronograma mais preciso após entender suas necessidades específicas.*`;
+                
+                default:
+                    const genericResponses = [
+                        `Interessante! 🧐\n\nNo que mais posso te ajudar sobre isso? Se for sobre desenvolvimento, IA, design ou qualquer outra área da tecnologia, estou aqui para esclarecer!`,
+                        `Show! ✨\n\nVamos explorar isso juntos! Me conta qual o objetivo principal do seu projeto ou que problema você quer resolver com a tecnologia.`,
+                        `Perfeito! 🎯\n\nPara te dar as melhores opções, você poderia me falar:\n\n1. Qual é o seu setor/niche?\n2. Tem algum prazo específico?\n3. Já tem alguma ideia de funcionalidades?\n\nAssim posso te ajudar de forma personalizada!`
+                    ];
+                    return genericResponses[Math.floor(Math.random() * genericResponses.length)];
+            }
+        }
+
+        async function getDeepSeekResponse(message) {
+            try {
+                if (!state.deepseekApiKey) {
+                    throw new Error('API key not configured');
+                }
+                
+                const response = await fetch(CONFIG.DEEPSEEK_API_URL, {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.deepseekApiKey}`
                     },
                     body: JSON.stringify({
-                        model: DEEPSEEK_CONFIG.MODEL,
+                        model: CONFIG.DEEPSEEK_MODEL,
                         messages: [
-                            { 
-                                role: "system", 
-                                content: "Você é um assistente especialista da MakerAI Studio, uma empresa brasileira de desenvolvimento web, mobile, sistemas e inteligência artificial. Seja profissional, amigável e detalhista. Use emojis quando apropriado. Responda sempre em português brasileiro."
+                            {
+                                role: 'system',
+                                content: `Você é um assistente especialista da MakerAI Studio, uma empresa brasileira de desenvolvimento web, mobile, sistemas e inteligência artificial.
+                                
+                                Informações sobre a empresa:
+                                • Serviços: ${JSON.stringify(AGENCY_KNOWLEDGE.services)}
+                                • Portfólio: ${JSON.stringify(AGENCY_KNOWLEDGE.portfolio)}
+                                • Processo: ${JSON.stringify(AGENCY_KNOWLEDGE.process)}
+                                • Contato: ${JSON.stringify(AGENCY_KNOWLEDGE.contact)}
+                                
+                                Seja profissional, amigável e detalhista. Use emojis quando apropriado. 
+                                Responda sempre em português brasileiro. Para orçamentos, forneça informações realistas baseadas nos dados da empresa.`
                             },
-                            ...state.conversationHistory.slice(-8).map(m => ({
-                                role: m.role === 'user' ? 'user' : 'assistant',
-                                content: m.content
+                            ...state.conversation.slice(-6).map(msg => ({
+                                role: msg.sender === 'user' ? 'user' : 'assistant',
+                                content: msg.content
                             })),
-                            { role: "user", content: message }
+                            { role: 'user', content: message }
                         ],
-                        temperature: DEEPSEEK_CONFIG.TEMPERATURE,
-                        max_tokens: DEEPSEEK_CONFIG.MAX_TOKENS,
+                        temperature: CONFIG.TEMPERATURE,
+                        max_tokens: CONFIG.MAX_TOKENS,
                         stream: false
                     })
                 });
-
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-
+                
                 const data = await response.json();
                 return data.choices[0]?.message?.content?.trim() || null;
                 
             } catch (error) {
-                console.error('Erro DeepSeek:', error);
+                console.error('DeepSeek API Error:', error);
                 return null;
             }
         }
 
-        function getLocalResponse(analysis) {
-            // Respostas para saudações
-            if (analysis.mainIntent === 'greeting') {
-                const hour = new Date().getHours();
-                let timeGreeting;
-                
-                if (hour < 12) timeGreeting = "Bom dia";
-                else if (hour < 18) timeGreeting = "Boa tarde";
-                else timeGreeting = "Boa noite";
-                
-                return `${timeGreeting}! 😊\n\nSou o assistente da MakerAI Studio, especializado em transformar ideias em soluções digitais incríveis.\n\nNo que posso te ajudar hoje? Pode me contar sobre seu projeto, tirar dúvidas sobre orçamentos ou conhecer nossos cases de sucesso!`;
-            }
-            
-            // Mapeamento de intenções para respostas locais
-            const intentResponses = {
-                services: `🚀 **Soluções Completas em Tecnologia**\n\n**💻 Desenvolvimento Web & Mobile**\n• Sites institucionais e corporativos\n• PWAs (Progressive Web Apps)\n• E-commerce e marketplaces\n• Aplicativos nativos (React Native/Flutter)\n• Sistemas web complexos\n\n**🤖 Inteligência Artificial**\n• Assistentes virtuais e chatbots\n• Análise preditiva de dados\n• Processamento de linguagem natural\n• Visão computacional\n• Automação com IA\n\n**🎨 Design & Experiência**\n• UI/UX Design premium\n• Identidade visual\n• Prototipagem interativa\n• Design System\n• Microinterações\n\n**⚡ Otimização & Performance**\n• SEO técnico\n• Performance web\n• Segurança digital\n• DevOps & CI/CD\n• Monitoramento\n\n*Qual área você gostaria de explorar?* 😊`,
-                pricing: `💰 **Transparência Total nos Valores**\n\n**📊 Modelos de Preço**\n1. **Projeto Fixo** - Escopo definido, prazo fechado\n   • Sites: R$ 8.000 - R$ 25.000\n   • Apps: R$ 30.000 - R$ 80.000\n   • Sistemas: R$ 40.000 - R$ 150.000\n\n2. **Horas Avulsas** - R$ 120/hora\n   • Para ajustes e melhorias\n   • Manutenção contínua\n   • Consultorias técnicas\n\n3. **Assinatura Mensal** - A partir de R$ 1.500/mês\n   • Suporte prioritário\n   • Atualizações constantes\n   • Monitoramento 24/7\n\n**🎯 Fatores que Influenciam:**\n• Complexidade do projeto\n• Prazo de entrega\n• Integrações necessárias\n• Nível de design\n• Recursos de IA incluídos\n\n*Posso te passar uma estimativa mais precisa se você me contar sobre seu projeto!* ✨`,
-                portfolio: `🎨 **Cases de Sucesso**\n\n**🏥 Saúde & Bem-estar**\n• App de telemedicina com IA\n• Sistema de gestão para clínicas\n• Plataforma de wellness corporativo\n\n**🏢 Empresarial**\n• Dashboard de BI em tempo real\n• Sistema de automação de processos\n• CRM personalizado com IA\n\n**🛒 E-commerce**\n• Marketplace com recomendação IA\n• E-commerce com realidade aumentada\n• Sistema de logística integrado\n\n**🎓 Educação**\n• Plataforma E-learning gamificada\n• App de cursos com tutoria IA\n• Sistema de gestão escolar\n\n**🔗 Tecnologia**\n• API Gateway para fintech\n• Sistema de monitoramento IoT\n• Plataforma de análise de dados\n\n*Tem algum setor específico que te interessa? Posso detalhar cases similares!* 📊`,
-                contact: `📞 **Vamos Conversar!**\n\n**📱 Canais Diretos**\n• WhatsApp: (11) 99999-9999\n• Email: contato@makerai.com.br\n• LinkedIn: /makerai-studio\n\n**📍 Endereço**\n• São Paulo - SP\n• Atendimento remoto em todo Brasil\n\n**⏰ Horário de Atendimento**\n• Segunda a Sexta: 9h às 18h\n• Sábado: 9h às 12h\n• Plantão técnico: 24/7\n\n**🎯 Próximos Passos:**\n1. Agendamos uma call exploratória\n2. Analisamos suas necessidades\n3. Criamos uma proposta personalizada\n4. Iniciamos o projeto!\n\n*Prefere que eu te direcione para o formulário ou já quer marcar uma call?* 🚀`,
-                help: `🤝 **Como Posso Ajudar?**\n\nPosso te auxiliar com:\n\n• Informações sobre nossos serviços\n• Estimativas de orçamento\n• Exemplos de projetos realizados\n• Processo de trabalho\n• Agendamento de reuniões\n\n**Dica:** Use os botões rápidos abaixo para navegar pelos tópicos principais! 🚀`,
-                urgent: `⚡ **Entendi que é urgente!**\n\nVamos acelerar o processo:\n\n1. Me conte rapidamente sobre o projeto\n2. Posso conectar você diretamente com nossa equipe\n3. Priorizamos atendimento imediato\n\n*Qual é a situação?* 🚨`,
-                technical: `🔧 **Suporte Técnico Especializado**\n\nPosso te ajudar com:\n\n• Arquitetura de sistemas\n• Escolha de tecnologias\n• Melhores práticas de desenvolvimento\n• Otimização de performance\n• Integrações de API\n• Problemas de código\n\n*Qual aspecto técnico você gostaria de discutir?* 💻`
-            };
-            
-            if (intentResponses[analysis.mainIntent]) {
-                return intentResponses[analysis.mainIntent];
-            }
-            
-            // Resposta baseada no sentimento
-            if (analysis.sentiment === 'negative') {
-                return `Entendi que você pode estar com alguma dificuldade. 😔\n\nPosso te ajudar a resolver isso! Me conte mais detalhes sobre o que está acontecendo ou que tipo de solução você está procurando.\n\nJuntos vamos encontrar a melhor opção! 🤝`;
-            }
-            
-            if (analysis.hasQuestion) {
-                return `Ótima pergunta! 🤔\n\nPara te dar uma resposta precisa, me conta um pouco mais sobre:\n\n• O contexto do projeto\n• Prazo que você tem em mente\n• Orçamento disponível\n• Funcionalidades principais\n\nAssim posso te orientar da melhor forma possível! 📋`;
-            }
-            
-            // Resposta generica com variação
-            const genericResponses = [
-                `Interessante! 🧐\n\nNo que mais posso te ajudar sobre isso? Se for sobre desenvolvimento, IA, design ou qualquer outra área da tecnologia, estou aqui para esclarecer!`,
-                `Show! ✨\n\nVamos explorar isso juntos! Me conta qual o objetivo principal do seu projeto ou que problema você quer resolver com a tecnologia.`,
-                `Perfeito! 🎯\n\nPara te dar as melhores opções, você poderia me falar:\n\n1. Qual é o seu setor/niche?\n2. Tem algum prazo específico?\n3. Já tem alguma ideia de funcionalidades?\n\nAssim posso te ajudar de forma personalizada!`,
-                `Entendi! 🤝\n\nPara me ajudar a entender melhor, você está pensando em algo mais técnico ou mais focado na experiência do usuário?`,
-                `Certo! 📝\n\nVamos por partes: me conta primeiro qual é o principal objetivo do seu projeto, depois detalhamos as funcionalidades.`
-            ];
-            
-            return genericResponses[Math.floor(Math.random() * genericResponses.length)];
-        }
-
         async function generateResponse(message) {
-            try {
-                const analysis = analyzeMessage(message);
-                
-                // Atualiza status no header
-                elements.statusText.textContent = DEEPSEEK_API_KEY ? 'Consultando DeepSeek...' : 'Analisando sua pergunta...';
-                
-                // Decide se usa DeepSeek ou resposta local
-                const useDeepSeek = DEEPSEEK_API_KEY && (
-                    analysis.isTechnical || 
-                    analysis.score < 0.7 || // Perguntas fora do escopo padrão
-                    analysis.words > 15 || // Perguntas longas/complexas
-                    state.conversationHistory.length > 3 // Conversa já estabelecida
-                );
-                
-                if (useDeepSeek) {
-                    const deepSeekResponse = await callDeepSeekAPI(message);
-                    if (deepSeekResponse) {
-                        return deepSeekResponse;
-                    }
-                    // Se falhar, usa resposta local
-                    showNotification('Usando respostas locais', 'info');
-                }
-                
-                // Usa resposta local
-                return getLocalResponse(analysis);
-                
-            } catch (error) {
-                console.error('Erro ao gerar resposta:', error);
-                return `Desculpe, tive um pequeno atraso no processamento. 😅\n\nPode repetir sua pergunta ou reformular de outra forma? Estou aqui para ajudar!`;
-            }
-        }
-
-        // ============================================
-        // SUGESTÕES EM TEMPO REAL
-        // ============================================
-        const updateSuggestions = debounce(function() {
-            const query = elements.assistantInput.value.trim().toLowerCase();
-            if (!query || query.length < 2) {
-                elements.suggestionsContainer.style.display = 'none';
-                return;
-            }
+            const intent = analyzeIntent(message);
             
-            // Conhecimento base para sugestões
-            const knowledge = [
-                { text: 'Serviços', tags: ['serviço', 'desenvolvimento', 'site', 'app', 'sistema', 'web', 'mobile'] },
-                { text: 'Orçamento', tags: ['preço', 'valor', 'custo', 'orçamento', 'quanto custa', 'investimento'] },
-                { text: 'Portfólio', tags: ['portfolio', 'cases', 'projetos', 'trabalhos', 'exemplos'] },
-                { text: 'Contato', tags: ['contato', 'whatsapp', 'email', 'telefone', 'agendar', 'reunião'] },
-                { text: 'Suporte Técnico', tags: ['tecnico', 'codigo', 'programação', 'api', 'bug', 'erro'] },
-                { text: 'IA & Machine Learning', tags: ['inteligência artificial', 'machine learning', 'deep learning', 'chatbot'] }
-            ];
+            // Atualiza status
+            updateStatus('processando');
             
-            // Filtra sugestões baseadas na query
-            const allSuggestions = knowledge.flatMap(item => 
-                item.tags.filter(tag => tag.includes(query)).map(() => ({
-                    text: `${item.text}`,
-                    action: () => {
-                        elements.assistantInput.value = item.text;
-                        sendMessage();
-                    }
-                }))
+            // Decide qual fonte usar
+            const shouldUseDeepSeek = state.deepseekApiKey && (state.isOnline) && (
+                intent.confidence < 0.3 ||          // Baixa confiança no match local
+                intent.wordCount > 20 ||            // Perguntas longas/complexas
+                state.conversation.length > 5 ||    // Conversa já estabelecida
+                intent.mainIntent === 'technical'   // Perguntas técnicas
             );
             
-            // Remove duplicatas
-            const uniqueSuggestions = Array.from(
-                new Map(allSuggestions.map(s => [s.text, s])).values()
-            ).slice(0, CONFIG.SUGGESTIONS_LIMIT);
+            let response;
             
-            if (uniqueSuggestions.length === 0) {
-                elements.suggestionsContainer.style.display = 'none';
-                return;
+            if (shouldUseDeepSeek) {
+                response = await getDeepSeekResponse(message);
             }
             
-            // Atualiza UI
-            elements.suggestionsContainer.innerHTML = '';
-            uniqueSuggestions.forEach(suggestion => {
-                const item = document.createElement('div');
-                item.className = 'suggestion-item';
-                item.textContent = suggestion.text;
-                item.onclick = suggestion.action;
-                elements.suggestionsContainer.appendChild(item);
-            });
-            
-            elements.suggestionsContainer.style.display = 'block';
-        }, 300);
-
-        // ============================================
-        // CARROSSEL DE OPÇÕES (RESPONSIVO)
-        // ============================================
-        function initQuickOptions() {
-            elements.quickOptionsCarousel.innerHTML = '';
-            
-            const options = [
-                { icon: 'fas fa-cogs', title: 'Serviços' },
-                { icon: 'fas fa-money-bill-wave', title: 'Orçamento' },
-                { icon: 'fas fa-images', title: 'Portfólio' },
-                { icon: 'fas fa-envelope', title: 'Contato' }
-            ];
-            
-            options.forEach(item => {
-                const btn = document.createElement('button');
-                btn.className = 'quick-option';
-                btn.innerHTML = `<i class="${item.icon}"></i> ${item.title}`;
-                btn.onclick = () => {
-                    elements.assistantInput.value = item.title;
-                    sendMessage();
-                };
-                elements.quickOptionsCarousel.appendChild(btn);
-            });
-            
-            updateIndicators();
-            startCarousel();
-        }
-
-        function updateIndicators() {
-            CONFIG.ITEMS_PER_VIEW = calculateItemsPerView();
-            const total = Math.ceil(4 / CONFIG.ITEMS_PER_VIEW);
-            elements.carouselIndicators.innerHTML = '';
-            
-            for (let i = 0; i < total; i++) {
-                const dot = document.createElement('button');
-                dot.className = `carousel-indicator ${i === state.currentSlide ? 'active' : ''}`;
-                dot.onclick = () => goToSlide(i);
-                elements.carouselIndicators.appendChild(dot);
+            // Fallback para resposta local se DeepSeek falhar ou não for apropriado
+            if (!response) {
+                response = getLocalResponse(intent, message);
             }
-        }
-
-        function goToSlide(index) {
-            const totalSlides = Math.ceil(4 / CONFIG.ITEMS_PER_VIEW);
             
-            if (index < 0) index = totalSlides - 1;
-            if (index >= totalSlides) index = 0;
+            // Atualiza status
+            updateStatus('ready');
             
-            state.currentSlide = index;
-            const options = elements.quickOptionsCarousel.children;
-            if (options.length > 0) {
-                const optionWidth = options[0].offsetWidth + 10;
-                const offset = index * CONFIG.ITEMS_PER_VIEW * optionWidth;
-                elements.quickOptionsCarousel.scrollTo({ left: offset, behavior: 'smooth' });
-            }
-            updateIndicators();
-            
-            clearInterval(state.carouselInterval);
-            startCarousel();
-        }
-
-        function startCarousel() {
-            state.carouselInterval = setInterval(() => {
-                goToSlide(state.currentSlide + 1);
-            }, CONFIG.CAROUSEL_INTERVAL);
+            return response;
         }
 
         // ============================================
         // PROCESSAMENTO DE MENSAGENS
         // ============================================
         async function sendMessage() {
-            const message = elements.assistantInput.value.trim();
+            const message = elements.userInput.value.trim();
             if (!message || state.isProcessing) return;
             
-            // Esconde sugestões
-            elements.suggestionsContainer.style.display = 'none';
+            // Limpa input
+            elements.userInput.value = '';
             
             // Atualiza estado
             state.isProcessing = true;
-            elements.assistantInput.value = '';
-            elements.assistantInput.disabled = true;
-            elements.sendAssistantBtn.disabled = true;
+            elements.userInput.disabled = true;
+            elements.sendButton.disabled = true;
             
             // Adiciona mensagem do usuário
-            const timestamp = new Date();
-            addMessage(message, 'user', timestamp);
-            
-            // Salva no histórico
-            state.conversationHistory.push({
-                role: 'user',
-                content: message,
-                timestamp: timestamp.toISOString()
-            });
-            saveHistory();
+            const userMessageId = addMessage(message, 'user');
             
             // Mostra indicador de digitação
-            showTyping();
+            showTypingIndicator();
             
             // Timeout de segurança
             const safetyTimeout = setTimeout(() => {
-                hideTyping();
-                updateStatus();
+                hideTypingIndicator();
                 state.isProcessing = false;
-                elements.assistantInput.disabled = false;
-                elements.sendAssistantBtn.disabled = false;
-                elements.assistantInput.focus();
-                showNotification('Tempo esgotado. Por favor, tente novamente.', 'error');
+                elements.userInput.disabled = false;
+                elements.sendButton.disabled = false;
+                elements.userInput.focus();
+                
+                addMessage('Desculpe, levei um tempo para processar. Pode reformular sua pergunta?', 'ai');
+                updateStatus('ready');
             }, 15000);
             
             try {
@@ -1817,302 +2095,448 @@
                 const response = await generateResponse(message);
                 
                 clearTimeout(safetyTimeout);
-                hideTyping();
+                hideTypingIndicator();
                 
-                const responseTimestamp = new Date();
-                addMessage(response, 'ai', responseTimestamp);
+                // Adiciona resposta
+                addMessage(response, 'ai');
                 
-                // Atualiza histórico
-                state.conversationHistory.push({
-                    role: 'assistant',
-                    content: response,
-                    timestamp: responseTimestamp.toISOString()
-                });
-                saveHistory();
-                
-                // Restaura status
-                updateStatus();
-                
-                // Habilita input novamente
+                // Restaura estado
                 state.isProcessing = false;
-                elements.assistantInput.disabled = false;
-                elements.sendAssistantBtn.disabled = false;
-                elements.assistantInput.focus();
-                
-                // Notificação para urgência
-                const analysis = analyzeMessage(message);
-                if (analysis.isUrgent) {
-                    showNotification('⚡ Atendimento prioritário ativado', 'warning');
-                }
+                elements.userInput.disabled = false;
+                elements.sendButton.disabled = false;
+                elements.userInput.focus();
                 
             } catch (error) {
                 clearTimeout(safetyTimeout);
-                console.error('Erro no processamento:', error);
-                hideTyping();
-                addMessage('Desculpe, ocorreu um erro no processamento. Pode tentar novamente?', 'ai');
-                updateStatus();
+                hideTypingIndicator();
+                
+                console.error('Error processing message:', error);
+                addMessage('Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.', 'ai');
+                
                 state.isProcessing = false;
-                elements.assistantInput.disabled = false;
-                elements.sendAssistantBtn.disabled = false;
-                elements.assistantInput.focus();
+                elements.userInput.disabled = false;
+                elements.sendButton.disabled = false;
+                elements.userInput.focus();
+                updateStatus('ready');
             }
         }
 
         // ============================================
-        // MODAL DE CONFIRMAÇÃO
+        // GERENCIAMENTO DE ESTADO
         // ============================================
-        function showConfirmation(type, message, onConfirm) {
-            const modal = elements.confirmationModal;
-            
-            switch(type) {
-                case 'clear':
-                    elements.modalTitle.textContent = 'Limpar Conversa';
-                    elements.modalMessage.textContent = message;
+        function updateStatus(status) {
+            switch (status) {
+                case 'processando':
+                    elements.statusText.textContent = 'Processando...';
                     break;
-                case 'close':
-                    elements.modalTitle.textContent = 'Fechar Assistente';
-                    elements.modalMessage.textContent = message;
+                case 'deepseek':
+                    elements.statusText.textContent = 'Consultando DeepSeek...';
+                    break;
+                case 'ready':
+                    elements.statusText.textContent = state.deepseekApiKey ? 
+                        'Online • DeepSeek Ativo' : 
+                        'Online • IA Generativa';
+                    break;
+                case 'offline':
+                    elements.statusText.textContent = 'Offline • Modo Local';
                     break;
             }
+        }
+
+        function saveSettings() {
+            try {
+                const settings = {
+                    deepseekApiKey: state.deepseekApiKey ? '***' : '',
+                    useDeepSeek: state.useDeepSeek,
+                    lastConfig: new Date().toISOString()
+                };
+                localStorage.setItem(CONFIG.STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+            } catch (error) {
+                console.warn('Não foi possível salvar configurações:', error);
+            }
+        }
+
+        // ============================================
+        // MODAIS E CONFIGURAÇÕES
+        // ============================================
+        function showConfirmationModal(title, message, onConfirm) {
+            state.isModalOpen = true;
+            elements.modalTitle.textContent = title;
+            elements.modalDescription.textContent = message;
+            elements.confirmationModal.style.display = 'flex';
             
             elements.modalConfirm.onclick = () => {
+                elements.confirmationModal.style.display = 'none';
+                state.isModalOpen = false;
                 onConfirm();
-                modal.style.display = 'none';
             };
             
             elements.modalCancel.onclick = () => {
-                modal.style.display = 'none';
+                elements.confirmationModal.style.display = 'none';
+                state.isModalOpen = false;
             };
-            
-            modal.style.display = 'flex';
         }
 
-        function showApiKeyModal() {
-            elements.apiKeyInput.value = DEEPSEEK_API_KEY || '';
-            elements.apiKeyModal.style.display = 'flex';
+        function showApiConfigModal() {
+            state.isModalOpen = true;
+            elements.apiKeyInput.value = state.deepseekApiKey || '';
+            elements.apiConfigModal.style.display = 'flex';
         }
 
-        function saveApiKey() {
+        function saveApiConfig() {
             const key = elements.apiKeyInput.value.trim();
             
             if (key === '') {
-                DEEPSEEK_API_KEY = '';
-                localStorage.removeItem('makerai_deepseek_key');
+                state.deepseekApiKey = '';
+                state.useDeepSeek = false;
+                updateStatus('ready');
                 showNotification('DeepSeek desativado. Usando respostas locais.', 'info');
             } else if (key.startsWith('sk-')) {
-                DEEPSEEK_API_KEY = key;
-                localStorage.setItem('makerai_deepseek_key', key);
-                showNotification('Chave DeepSeek salva com sucesso! ✅', 'success');
+                state.deepseekApiKey = key;
+                state.useDeepSeek = true;
+                updateStatus('ready');
+                showNotification('Chave DeepSeek configurada com sucesso! ✅', 'success');
             } else {
                 showNotification('Chave inválida. Deve começar com "sk-"', 'error');
                 return;
             }
             
-            updateStatus();
-            elements.apiKeyModal.style.display = 'none';
-            saveHistory();
+            localStorage.setItem(CONFIG.STORAGE_KEYS.API_KEY, state.deepseekApiKey);
+            saveSettings();
+            elements.apiConfigModal.style.display = 'none';
+            state.isModalOpen = false;
+        }
+
+        function showNotification(message, type = 'info') {
+            // Implementação simples de notificação
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-lg);
+                z-index: 10001;
+                font-size: 14px;
+                font-weight: 500;
+                transform: translateX(120%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+                pointer-events: none;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animação de entrada
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Remove após 3 segundos
+            setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
         }
 
         // ============================================
         // EVENT LISTENERS
         // ============================================
         function setupEventListeners() {
-            // Input principal
-            elements.assistantInput.addEventListener('keydown', e => {
+            // Input
+            elements.userInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                 }
             });
             
-            elements.assistantInput.addEventListener('input', updateSuggestions);
-            
             // Botão enviar
-            elements.sendAssistantBtn.addEventListener('click', sendMessage);
-            
-            // Botão fechar
-            elements.closeAssistant.addEventListener('click', () => {
-                if (state.conversationHistory.length > 0) {
-                    showConfirmation(
-                        'close',
-                        'Tem certeza que deseja fechar o assistente? Seu progresso será salvo automaticamente.',
-                        () => window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*')
-                    );
-                } else {
-                    window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
-                }
-            });
-            
-            // Botão voltar
-            elements.backBtn.addEventListener('click', () => {
-                window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
-            });
+            elements.sendButton.addEventListener('click', sendMessage);
             
             // Botão histórico
             elements.historyBtn.addEventListener('click', () => {
-                showNotification(`Você tem ${state.conversationHistory.length} mensagens nesta conversa.`, 'info');
+                const count = state.conversation.filter(m => m.sender === 'user').length;
+                showNotification(`Você enviou ${count} mensagens nesta conversa.`, 'info');
             });
             
             // Botão limpar
             elements.clearBtn.addEventListener('click', () => {
-                showConfirmation(
-                    'clear',
+                showConfirmationModal(
+                    'Limpar Conversa',
                     'Tem certeza que deseja limpar toda a conversa? Esta ação não pode ser desfeita.',
-                    clearHistory
+                    clearConversation
                 );
             });
             
-            // Botão API Key
-            elements.apiKeyBtn.addEventListener('click', showApiKeyModal);
+            // Botão configurações
+            elements.settingsBtn.addEventListener('click', showApiConfigModal);
             
-            // Botões do modal API Key
-            elements.apiKeySave.addEventListener('click', saveApiKey);
-            elements.apiKeyCancel.addEventListener('click', () => {
-                elements.apiKeyModal.style.display = 'none';
+            // Botão fechar
+            elements.closeBtn.addEventListener('click', () => {
+                if (state.conversation.length > 0) {
+                    showConfirmationModal(
+                        'Fechar Assistente',
+                        'Tem certeza que deseja fechar o assistente? Seu progresso será salvo automaticamente.',
+                        () => {
+                            if (window.parent && window.parent !== window) {
+                                window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
+                            }
+                        }
+                    );
+                } else {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'CLOSE_ASSISTANT' }, '*');
+                    }
+                }
             });
             
-            // Fechar modal com ESC
+            // Configuração da API
+            elements.apiConfigSave.addEventListener('click', saveApiConfig);
+            elements.apiConfigCancel.addEventListener('click', () => {
+                elements.apiConfigModal.style.display = 'none';
+                state.isModalOpen = false;
+            });
+            
+            // Fechar modais com ESC ou clicar fora
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
+                if (e.key === 'Escape' && state.isModalOpen) {
                     if (elements.confirmationModal.style.display === 'flex') {
                         elements.confirmationModal.style.display = 'none';
+                        state.isModalOpen = false;
                     }
-                    if (elements.apiKeyModal.style.display === 'flex') {
-                        elements.apiKeyModal.style.display = 'none';
+                    if (elements.apiConfigModal.style.display === 'flex') {
+                        elements.apiConfigModal.style.display = 'none';
+                        state.isModalOpen = false;
                     }
                 }
             });
-            
-            // Fechar sugestões ao clicar fora
+
+            // Fechar modal clicando fora
             document.addEventListener('click', (e) => {
-                if (!elements.suggestionsContainer.contains(e.target) && 
-                    !elements.assistantInput.contains(e.target)) {
-                    elements.suggestionsContainer.style.display = 'none';
+                if (state.isModalOpen && e.target.classList.contains('modal-overlay')) {
+                    elements.confirmationModal.style.display = 'none';
+                    elements.apiConfigModal.style.display = 'none';
+                    state.isModalOpen = false;
                 }
             });
             
-            // Comunicação com o iframe pai
-            window.addEventListener('message', (e) => {
-                if (e.data?.type === 'OPEN_ASSISTANT') {
-                    elements.panel.style.display = 'flex';
-                    setTimeout(() => elements.assistantInput.focus(), 500);
+            // Interação com carrossel
+            elements.suggestionsCarousel.addEventListener('mouseenter', pauseCarousel);
+            elements.suggestionsCarousel.addEventListener('mouseleave', startCarousel);
+            elements.suggestionsCarousel.addEventListener('touchstart', pauseCarousel);
+            elements.suggestionsCarousel.addEventListener('touchend', () => {
+                setTimeout(startCarousel, 3000);
+            });
+            
+            // Comunicação com iframe pai
+            window.addEventListener('message', (event) => {
+                if (event.data?.type === 'OPEN_ASSISTANT') {
+                    elements.container.style.display = 'flex';
+                    setTimeout(() => elements.userInput.focus(), 100);
                 }
                 
-                if (e.data?.type === 'SET_INITIAL_MESSAGE') {
-                    const msg = e.data.message || getInitialGreeting();
-                    addMessage(msg, 'ai');
-                    state.conversationHistory.push({
-                        role: 'assistant',
-                        content: msg,
-                        timestamp: new Date().toISOString()
-                    });
-                    saveHistory();
-                }
-                
-                if (e.data?.type === 'GET_HISTORY') {
-                    window.parent.postMessage({
-                        type: 'HISTORY_DATA',
-                        data: state.conversationHistory
-                    }, '*');
-                }
-                
-                if (e.data?.type === 'SET_API_KEY') {
-                    DEEPSEEK_API_KEY = e.data.key || '';
-                    if (DEEPSEEK_API_KEY) {
-                        localStorage.setItem('makerai_deepseek_key', DEEPSEEK_API_KEY);
-                    } else {
-                        localStorage.removeItem('makerai_deepseek_key');
+                if (event.data?.type === 'SET_API_KEY') {
+                    state.deepseekApiKey = event.data.key || '';
+                    if (state.deepseekApiKey) {
+                        localStorage.setItem(CONFIG.STORAGE_KEYS.API_KEY, state.deepseekApiKey);
+                        state.useDeepSeek = true;
                     }
-                    updateStatus();
+                    updateStatus('ready');
+                }
+                
+                if (event.data?.type === 'GET_STATE') {
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'ASSISTANT_STATE',
+                            data: {
+                                conversationLength: state.conversation.length,
+                                hasApiKey: !!state.deepseekApiKey,
+                                messageCount: state.messageCount,
+                                isOnline: state.isOnline
+                            }
+                        }, '*');
+                    }
                 }
             });
+            
+            // Detectar mudança de rede
+            window.addEventListener('online', () => {
+                state.isOnline = true;
+                updateStatus('ready');
+                showNotification('Conexão restabelecida!', 'success');
+            });
+            
+            window.addEventListener('offline', () => {
+                state.isOnline = false;
+                updateStatus('offline');
+                showNotification('Conexão perdida - usando respostas locais', 'warning');
+            });
+            
+            // Detectar mudança de tema
+            const themeObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.attributeName === 'data-theme') {
+                        const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+                        document.body.setAttribute('data-theme', theme);
+                    }
+                });
+            });
+            
+            themeObserver.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
+            
+            // Sincronizar tema inicial
+            const initialTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            document.body.setAttribute('data-theme', initialTheme);
             
             // Redimensionamento responsivo
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(() => {
-                    state.isLandscape = window.innerWidth > window.innerHeight;
-                    CONFIG.ITEMS_PER_VIEW = calculateItemsPerView();
-                    updateIndicators();
-                    goToSlide(state.currentSlide);
+                    state.isMobile = window.innerWidth <= 767;
+                    state.isTablet = window.innerWidth >= 768 && window.innerWidth <= 1023;
+                    state.isDesktop = window.innerWidth >= 1024;
+                    state.itemsPerView = calculateItemsPerView();
+                    
+                    // Atualizar carrossel se necessário
+                    const oldSlides = state.slidesCount;
+                    const itemsCount = elements.suggestionsCarousel.children.length;
+                    state.slidesCount = Math.ceil(itemsCount / Math.floor(state.itemsPerView));
+                    
+                    if (oldSlides !== state.slidesCount) {
+                        updateCarouselDots();
+                        goToSlide(Math.min(state.currentSlide, state.slidesCount - 1));
+                    }
+                    
+                    // Atualizar variáveis CSS responsivas
+                    updateResponsiveVariables();
                 }, 250);
             });
-            
-            // Pausa carrossel durante interações
-            elements.quickOptionsCarousel.addEventListener('mouseenter', () => {
-                clearInterval(state.carouselInterval);
-            });
-            
-            elements.quickOptionsCarousel.addEventListener('mouseleave', startCarousel);
-            
-            elements.quickOptionsCarousel.addEventListener('touchstart', () => {
-                clearInterval(state.carouselInterval);
-            });
-            
-            elements.quickOptionsCarousel.addEventListener('touchend', () => {
-                setTimeout(startCarousel, 3000);
-            });
-            
-            // Verificação de conexão
-            window.addEventListener('online', () => {
-                state.isOnline = true;
-                updateStatus();
-                showNotification('Conexão restabelecida!', 'success');
-            });
-            
-            window.addEventListener('offline', () => {
-                state.isOnline = false;
-                elements.statusText.textContent = 'Offline • Modo Limitado';
-                showNotification('Conexão perdida - usando respostas locais', 'warning');
-            });
-            
-            // Touch optimization para mobile
-            document.addEventListener('touchstart', function() {}, {passive: true});
-            
-            // Previne zoom no iOS
-            document.addEventListener('gesturestart', function(e) {
-                e.preventDefault();
-            });
+
+            // Atualizar variáveis CSS baseadas no tamanho da tela
+            function updateResponsiveVariables() {
+                const width = window.innerWidth;
+                const root = document.documentElement;
+                
+                if (width < 480) {
+                    root.style.setProperty('--header-height', '56px');
+                    root.style.setProperty('--input-height', '48px');
+                    root.style.setProperty('--quick-option-height', '48px');
+                } else if (width < 768) {
+                    root.style.setProperty('--header-height', '60px');
+                    root.style.setProperty('--input-height', '52px');
+                    root.style.setProperty('--quick-option-height', '52px');
+                } else if (width < 1024) {
+                    root.style.setProperty('--header-height', '64px');
+                    root.style.setProperty('--input-height', '56px');
+                    root.style.setProperty('--quick-option-height', '56px');
+                } else if (width < 1440) {
+                    root.style.setProperty('--header-height', '68px');
+                    root.style.setProperty('--input-height', '56px');
+                    root.style.setProperty('--quick-option-height', '56px');
+                } else {
+                    root.style.setProperty('--header-height', '72px');
+                    root.style.setProperty('--input-height', '60px');
+                    root.style.setProperty('--quick-option-height', '60px');
+                }
+            }
+
+            // Inicializar variáveis
+            updateResponsiveVariables();
         }
 
         // ============================================
         // INICIALIZAÇÃO
         // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            // Detecta dispositivo inicial
-            CONFIG.ITEMS_PER_VIEW = calculateItemsPerView();
-            state.isLandscape = window.innerWidth > window.innerHeight;
+        function init() {
+            // Configuração inicial
+            state.useDeepSeek = !!state.deepseekApiKey;
+            updateStatus('ready');
             
-            // Inicializa componentes
-            initQuickOptions();
+            // Inicializar componentes
+            initCarousel();
             setupEventListeners();
-            updateStatus();
             
-            // Carrega histórico ou inicia nova conversa
-            const hasHistory = loadHistory();
+            // Carregar histórico ou iniciar nova conversa
+            const hasHistory = loadConversation();
             if (!hasHistory) {
+                // Adicionar mensagem de boas-vindas com delay
                 setTimeout(() => {
-                    addMessage(getInitialGreeting(), 'ai');
+                    addMessage(getWelcomeMessage(), 'ai');
                 }, 800);
             }
             
-            // Foco automático com delay
+            // Focar no input
             setTimeout(() => {
-                elements.assistantInput.focus();
-            }, 1200);
-            
-            // Notifica que está pronto
-            setTimeout(() => {
-                window.parent.postMessage({ type: 'ASSISTANT_READY' }, '*');
+                elements.userInput.focus();
             }, 1000);
-        });
+            
+            // Notificar que está pronto
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'ASSISTANT_READY' }, '*');
+            }
+        }
 
-        // Limpeza
-        window.addEventListener('beforeunload', () => {
-            clearInterval(state.carouselInterval);
-            saveHistory();
-        });
+        // ============================================
+        // LIMPEZA
+        // ============================================
+        function cleanup() {
+            if (state.carouselInterval) {
+                clearInterval(state.carouselInterval);
+            }
+            
+            if (state.typingTimeout) {
+                clearTimeout(state.typingTimeout);
+            }
+            
+            saveConversation();
+        }
+
+        // ============================================
+        // EVENTOS GLOBAIS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('beforeunload', cleanup);
+        
+        // Expor funções globais para comunicação
+        window.Assistant = {
+            open: () => {
+                elements.container.style.display = 'flex';
+                setTimeout(() => elements.userInput.focus(), 100);
+                return true;
+            },
+            close: () => {
+                elements.container.style.display = 'none';
+                return true;
+            },
+            clear: clearConversation,
+            setApiKey: (key) => {
+                state.deepseekApiKey = key;
+                state.useDeepSeek = !!key;
+                if (key) {
+                    localStorage.setItem(CONFIG.STORAGE_KEYS.API_KEY, key);
+                }
+                updateStatus('ready');
+                return true;
+            },
+            getState: () => ({
+                conversationLength: state.conversation.length,
+                hasApiKey: !!state.deepseekApiKey,
+                messageCount: state.messageCount,
+                isOnline: state.isOnline,
+                isModalOpen: state.isModalOpen
+            }),
+            isReady: () => true
+        };
     </script>
 </body>
 </html>
